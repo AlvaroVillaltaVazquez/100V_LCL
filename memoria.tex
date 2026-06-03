@@ -1568,11 +1568,135 @@ La justificación teórica nos lleva a los valores descritos de $47\text{ }\mu F
 \end{equation}
 
 Un rizado de 31,3 mV supone únicamente un $0,031\%$ de la tensión nominal de $100\text{ V}$, estando a su vez lejos de la caída de voltaje propia del paso de $3,7\text{ A}$. Por tanto, con estos valores se garantiza un bus estable y seguro cumpliendo con los requisitos determinados a lo largo del capítulo. 
+\begin{bloqueRevisar}
+\section{Síntesis de los valores principales}   
+\end{bloqueRevisar}
 
-\section{Síntesis de los valores principales}
 
 \chapter{Elección de componentes e implementación en psim con parásitas de los componentes seleccionados}
+Una vez realizado el dimensionamiento y análisis teórico del circuito debemos trasladar lo observado a la realidad de nuestra aplicación. En el anterior capítulo se presentaron ciertos valores parásitos de los componentes a usar sin justificar la elección de los mismos para no repetir los cálculos en el caso ideal y con elementos parásitos. 
+
+El presente capítulo se divide en dos fases. Durante la primera fase se justifican las especificaciones buscadas para los componentes más críticos  del dispositivo y los componentes comerciales elegidos para el protótipo físico del laboratorio. Posteriormente, se mostrará la implementación del circuito en la herramienta de simulación PSIM, incluyendo los modélos parásitos obtenidos de las hojas de características de los fabricantes para validar el comportamiento dinámico y comprobar que los cálculos realizados para obtener el \textit{trip-off time} y los límites de histéresis deseados han sido correctos. 
+
 \section{Justificación de los componentes seleccionados}
+El propósito de la sección es justificar qué dispositivos comerciales disponibles en distribuidores de renombre como Mouser o DigiKey se han seleccionado para realizar este primer prototipo del LCL conmutado. Como se ha ido remarcando durante el trascurso del documento, el diseño se entiende como una primera aproximación o prueba para validar el funcionamiento de la topología en un entorno de laboratorio controlado. Es por esto por lo que se ha priorizado emplear componentes comerciales disponibles en el momento del montaje de la placa frente a dispositivos con calificación espacial los cuales, además de incrementar enormemente el precio del prototipado, obligarían en el momento de su elección a tener en cuenta ciertos parámetros como la inmunidad a radiación, encapsulados... que quedan fuera del objetivo del trabajo. 
+
+Para faciltar el replicamiento del prototipo, la lista de materiales detallada con las referencias de los fabricantes y encapsulados se encuentra disponible en el Anexo [1].\begin{bloqueRevisar}
+\subsection{MOSFET de potencia: IRFB4020PbF}
+
+Para el elemento activo de conmutación encargado de la interrupción y control de la corriente en la etapa de potencia se ha seleccionado el transistor MOSFET de canal N comercial \textit{IRFB4020PbF} de Infineon (International Rectifier). Este dispositivo, fabricado en tecnología de Silicio (Si) convencional, presenta una tensión máxima drenador-fuente ($V_{DSS}$) de $200\text{ V}$, una capacidad de corriente continua de drenador ($I_D$) de $18\text{ A}$ a $25^\circ\text{C}$ y una resistencia en conducción típica de $R_{DS(on)} \approx 80\text{ m}\Omega$. 
+
+Frente a otros transistores de Silicio de similar rango de tensión disponibles en el mercado, el \textit{IRFB4020PbF} presenta ventajas críticas que justifican su selección para este lazo analógico de alta frecuencia:
+\begin{itemize}
+    \item \textbf{Optimización del Factor de Mérito ($FOM$):} Presenta una carga de puerta total extraordinariamente baja ($Q_g \approx 18\text{ nC}$ de valor típico y una carga de conmutación $Q_{sw} \approx 6.7\text{ nC}$). El factor de mérito, definido como $FOM = R_{DS(on)} \cdot Q_g$, es significativamente menor que el de otros MOSFETs de Silicio de $200\text{ V}$ optimizados para conducción pura. Esto resulta indispensable para minimizar las pérdidas por conmutación dinámicas a la elevada frecuencia de trabajo del lazo ($\approx 615\text{ kHz}$).
+    \item \textbf{Reducida resistencia interna de puerta ($R_{G(int)} = 3.2\ \Omega$):} Esta baja impedancia parásita interna permite que las corrientes del controlador actúen directamente sobre la capacidad de entrada del dispositivo de forma casi instantánea, acortando los tiempos de transición.
+\end{itemize}
+
+A pesar de haber expuesto en el Capítulo 2 las excelentes propiedades físicas de los materiales de banda prohibida ancha (\textit{Wide Bandgap}, WBG) como el Carburo de Silicio (SiC), su uso para el interruptor principal se ha descartado de forma intencionada en este prototipo de laboratorio, respondiendo a los siguientes criterios de compromiso de ingeniería (\textit{trade-offs}):
+\begin{itemize}
+    \item \textbf{Idoneidad frente a la tensión de operación:} Los beneficios comerciales y térmicos del SiC se consolidan de forma drástica en aplicaciones de alta tensión (por encima de $650\text{ V}$ o $1200\text{ V}$). Para un bus de potencia moderado de $100\text{ V}$ como el de este sistema, la tecnología de Silicio no se encuentra penalizada y el margen del 100\% que ofrece el \textit{IRFB4020PbF} ($200\text{ V}$) proporciona una envolvente de seguridad óptima frente a sobretensiones inducidas.
+    \item \textbf{Complejidad del circuito de disparo y fuentes:} Los transistores de SiC exigen habitualmente tensiones de accionamiento críticas y asimétricas (por ejemplo, $+18\text{ V}$ para la conducción y tensiones negativas de $-4\text{ V}$ para asegurar un bloqueo robusto frente al ruido). El MOSFET de Silicio seleccionado se gobierna con plenas garantías mediante una tensión unipolar estándar de $0\text{ V} / +15\text{ V}$, simplificando la topología de la fuente flotante del circuito impreso.
+    \item \textbf{Mitigación de oscilaciones parásitas (\textit{ringing}) en baja fidelidad (TRL bajo):} Los dispositivos de SiC poseen pendientes de conmutación ($dv/dt$ y $di/dt$) extremadamente abruptas. En un primer prototipo funcional de laboratorio, dichas transiciones excitan las inductancias parásitas de las pistas de la placa, induciendo sobretensiones destructivas y ruido que falsearía el lazo de histéresis analógico. El silicio convencional ofrece una conmutación más suave y amortiguada, aportando robustez y tolerancia al \textit{layout} experimental.
+\end{itemize}
+
+\subsection{Controlador de puerta: UCC27511AQDBVRQ1}
+
+El funcionamiento del MOSFET a frecuencias elevadas exige la inyección y extracción rápida de portadores en la capacidad de puerta ($C_{iss}$). Debido a que las etapas analógicas de control carecen de la capacidad de corriente necesaria, se ha implementado el circuito integrado controlador de puerta (\textit{gate driver}) de alta velocidad \textit{UCC27511AQDBVRQ1} de Texas Instruments.
+
+La idoneidad técnica de este controlador se fundamenta en las siguientes prestaciones extraídas de su hoja de características:
+\begin{itemize}
+    \item \textbf{Capacidad de corriente asimétrica de pico:} El integrado puede entregar una corriente de pico de $4\text{ A}$ durante el encendido (\textit{source}) y absorber hasta $8\text{ A}$ durante el apagado (\textit{sink}). Esta asimetría es una ventaja de diseño crítica: la robusta capacidad de absorción de $8\text{ A}$ drena la carga de puerta a la máxima velocidad, garantizando una inmunidad total contra el indeseado efecto de re-encendido por capacidad de Miller provocado por el gradiente $dv/dt$ del nodo de potencia.
+    \item \textbf{Configuración de salida dividida (\textit{Split Output}):} El dispositivo dispone de pines independientes para el encendido (\textit{OUTH}) y el apagado (\textit{OUTL}). Esto permite sintonizar de manera desacoplada la velocidad de conmutación mediante resistencias de puerta externas diferenciadas, optimizando el compromiso entre pérdidas energéticas e interferencias electromagnéticas (EMI).
+    \item \textbf{Mínimo retardo de propagación:} El \textit{UCC27511A-Q1} presenta un retardo de propagación interno de tan solo $13\text{ ns}$ típicos, con tiempos de subida y bajada de $8\text{ ns}$ y $7\text{ ns}$ respectivamente. Al representar una fracción marginal frente al límite crítico de $171.4\text{ ns}$ calculado analíticamente para todo el lazo ($t_{sense}$), asegura que la respuesta temporal dependa casi exclusivamente de los comparadores analógicos.
+\end{itemize}
+
+\subsection{Diodo de libre conducción: STPSC6H065B-TR}
+
+Cuando el N-MOSFET se apaga para limitar la sobrecorriente dentro de la banda de histéresis, la energía almacenada en la inductancia de filtrado obliga a circular la corriente a través del diodo de libre conducción. Para esta función se ha optado por un enfoque de diseño híbrido altamente eficiente mediante la selección del diodo de Carburo de Silicio (SiC) Schottky de potencia \textit{STPSC6H065B-TR} de STMicroelectronics ($650\text{ V}$, $6\text{ A}$, encapsulado TO-220AC).
+
+A pesar de haber mantenido la tecnología de Silicio en el MOSFET para contener la complejidad del circuito de disparo, la introducción del Carburo de Silicio de forma exclusiva en el diodo de libre conducción se justifica firmemente bajo principios dinámicos:
+\begin{itemize}
+    \item \textbf{Anulación del fenómeno de recuperación inversa ($Q_{rr} \approx 0$):} Al tratarse de un diodo Schottky de SiC, es un dispositivo basado exclusivamente en portadores mayoritarios. Por consiguiente, carece de la carga de recuperación inversa intrínseca en los diodos bipolares ultrarrápidos de Silicio. En conmutación forzada a alta frecuencia, un diodo de Silicio convencional induciría una corriente de pico inversa severa ($I_{RRM}$) al encenderse el MOSFET, lo que elevaría drásticamente las pérdidas de conmutación del transistor, generaría sobrecalentamiento y causaría falsos disparos en la resistencia de \textit{shunt}. El diodo de SiC elimina este transitorio por completo, garantizando que el comportamiento dinámico sea independiente de la temperatura.
+    \item \textbf{Elevado margen de seguridad contra tensiones transitorias:} Con una tensión inversa máxima de catálogo ($V_{RRM}$) de $650\text{ V}$, el semiconductor opera con un margen del 550\% respecto al bus continuo de $100\text{ V}$. Esta holgura inmuniza por completo al componente frente a los picos de tensión inductivos del bucle de potencia (\textit{power loop}) durante los cortes abruptos de corriente, prescindiendo del uso de redes de amortiguación (\textit{snubbers}) adicionales que penalizarían la eficiencia global.
+\end{itemize}
+\subsection{Comparadores analógicos: LM319AM/NOPB y LM393BIDR}
+
+El lazo de control y protección del Limitador de Corriente de Enclavamiento (LCL) conmutado requiere la integración de dos etapas de comparación diferenciadas: el bloque de control por histéresis analógica (encargado de mantener la corriente dentro de la banda de conmutación) y el bloque del temporizador (encargado de medir el tiempo de sobrecorriente previo al enclavamiento o \textit{trip-off}). 
+
+La selección de los comparadores comerciales se ha realizado bajo una estrategia de optimización de recursos energéticos y dinámicos, segregando las tecnologías según las restricciones temporales de cada etapa. En lugar de unificar todo el diseño con un único modelo de integrado, se justifica el uso coordinado del comparador de alta velocidad \textit{LM319AM/NOPB} y del comparador de bajo consumo \textit{LM393BIDR}.
+
+\subsubsection{Bloque de control por histéresis: LM319AM/NOPB}
+
+El bloque de histéresis opera en el plano de la alta frecuencia, procesando el rizado de la corriente a $\approx 615\text{ kHz}$. Como se demostró analíticamente en el Capítulo 3, el presupuesto temporal total de retardo admisible para este lazo ($t_{sense}$) está estrictamente acotado en $171.4\text{ ns}$ para evitar que la corriente supere los límites absolutos de seguridad durante los transitorios.
+
+Por este motivo, para el control de ventana por histéresis se ha seleccionado el \textit{LM319AM/NOPB} de Texas Instruments, un comparador analógico doble de alta velocidad cuyas especificaciones clave justifican su uso:
+\begin{itemize}
+    \item \textbf{Tiempo de respuesta ultra-rápido:} Presenta un retardo de propagación típico de tan solo $80\text{ ns}$ ante transitorios rápidos. Al consumir únicamente el 46\% del presupuesto total de $171.4\text{ ns}$, otorga el margen necesario para absorber los retardos adicionales del amplificador operacional de sensado y del propio \textit{gate driver}, garantizando que el MOSFET reciba la orden de apagado antes de que la inductancia se sature.
+    \item \textbf{Flexibilidad de alimentación y salidas en colector abierto:} A diferencia de muchos comparadores rápidos modernos que están limitados a tensiones de alimentación lógicas estrictas de $3.3\text{ V}$ o $5\text{ V}$, el \textit{LM319} admite configuraciones de alimentación amplias (hasta $\pm 15\text{ V}$). Su salida de colector abierto desacoplada de la masa del sistema permite realizar un desplazamiento de nivel (\textit{level-shifting}) directo hacia la lógica del driver sin añadir integrados adicionales.
+\end{itemize}
+
+\subsubsection{Bloque del temporizador de seguridad: LM393BIDR}
+
+En clara contraposición al bloque de histéresis, el temporizador de enclavamiento opera en una escala de tiempo macroscópica o de baja frecuencia, teniendo como objetivo cronometrar un intervalo transitorio de fallo de $1.5\text{ ms}$ (milisegundos) mediante la carga exponencial de una red RC asimétrica. 
+
+Implementar un comparador ultra-rápido como el \textit{LM319} en esta etapa constituiría un error de sobrediseño (*over-engineering*), incrementando innecesariamente el consumo energético y el coste del sistema. En su lugar, se ha seleccionado el comparador dual de propósito general \textit{LM393BIDR} (versión B mejorada de Texas Instruments), justificándose por los siguientes factores:
+\begin{itemize}
+    \item \textbf{Consumo energético optimizado:} Presenta una corriente de alimentación extremadamente baja de apenas $200\ \mu\text{A}$ por comparador. Dado que el LCL puede permanecer en modo de espera (*standby*) durante largos periodos en una misión espacial o de laboratorio, minimizar el consumo estático de las etapas analógicas auxiliares es prioritario.
+    \item \textbf{Precisión en continua ($DC$) mejorada:} La versión \textit{LM393B} reduce la tensión de \textit{offset} de entrada a un valor típico de tan solo $0.37\text{ mV}$. Esta elevada precisión es fundamental para el temporizador, ya que asegura que el disparo del enclavamiento se produzca exactamente cuando la tensión del condensador intersecte la referencia de umbral ($V_{TimON} = 2.035\text{ V}$), minimizando la deriva temporal del intervalo de $1.5\text{ ms}$.
+    \item \textbf{Retardo despreciable frente a la constante de tiempo:} El \textit{LM393B} posee un tiempo de respuesta de aproximadamente $1\ \mu\text{s}$. En el contexto de un temporizador de $1.5\text{ ms}$ ($1500\ \mu\text{s}$), un retraso de una millonésima de segundo representa un error marginal inferior al 0.07\%, resultando totalmente irrelevante para la precisión de la protección y permitiendo un diseño robusto y de bajo coste.
+\end{itemize}
+
+\subsubsection{Justificación frente a otras alternativas de mercado}
+
+Al contrastar estos dos dispositivos con otras soluciones comerciales de comparadores integrados, se consolidan las ventajas de la combinación elegida:
+\begin{itemize}
+    \item \textbf{Frente a comparadores con etapa de salida Push-Pull:} Los comparadores con salida activa \textit{push-pull} fijan rígidamente los niveles de tensión de salida a sus propios raíles de alimentación. El uso de salidas en colector abierto/drenador abierto tanto en el \textit{LM319} como en el \textit{LM393} resulta indispensable en este circuito para implementar funciones lógicas cableadas (\textit{Wired-AND}) y entrelazar la señal del temporizador con la de histéresis de forma pasiva, reduciendo el número de compuertas lógicas físicas en la PCB.
+    \item \textbf{Frente a comparadores ultra-rápidos de picosegundos (tecnología ECL/PECL):} Existen comparadores en el mercado con tiempos de respuesta inferiores a $10\text{ ns}$. Sin embargo, estos dispositivos exigen terminaciones de línea de transmisión específicas, consumen potencias elevadas y son críticamente propensos a oscilaciones inestables ante el mínimo ruido conmutado del bus de potencia. El \textit{LM319} ofrece el equilibrio idóneo de velocidad ($80\text{ ns}$) sin comprometer la inmunidad al ruido electromagnético en un entorno de conmutación industrial o de laboratorio.
+\end{itemize}
+\subsection{Inductor de potencia: WE-HCI 74435586800}
+
+Para el almacenamiento magnético de energía y el filtrado del rizado de corriente de alta frecuencia se ha seleccionado el inductor de potencia apantallado para alta corriente \textit{WE-HCI} (referencia \textit{74435586800}) de Würth Elektronik. Este componente presenta una inductancia nominal de $68\ \mu\text{H}$ ($\pm 20\%$) evaluada a $100\text{ kHz} / 10\text{ mA}$, con un comportamiento altamente estable que mantiene una inductancia típica de $66\ \mu\text{H}$ bajo su corriente nominal de operación.
+
+La selección de este dispositivo magnético comercial frente a opciones convencionales de núcleo toroidal bobinado a mano se justifica rigurosamente mediante los siguientes factores tecnológicos:
+\begin{itemize}
+    \item \textbf{Tecnología de bobinado de hilo plano (\textit{Flat Wire}):} El inductor emplea un conductor plano de cobre en lugar de hilo de sección circular. A la elevada frecuencia de conmutación del limitador ($\approx 615\text{ kHz}$), el efecto pelicular (\textit{skin effect}) restringe la circulación de corriente a la periferia del conductor, elevando de forma severa la resistencia en corriente alterna ($R_{ACA}$). El hilo plano maximiza el área superficial efectiva por unidad de volumen, mitigando drásticamente el efecto pelicular y reduciendo la resistencia en corriente continua a un valor mínimo de catálogo ($R_{DCR} \approx 27.3\text{ m}\Omega$) para contener las pérdidas térmicas por efecto Joule.
+    \item \textbf{Elevada corriente de saturación y núcleo magnético optimizado:} El material del núcleo está diseñado para ofrecer una curva de saturación suave (\textit{soft saturation}), manteniendo la integridad del valor inductivo incluso ante picos transitorios de sobrecorriente severos. Con una corriente nominal térmica ($I_R$) de $7.5\text{ A}$ (para un incremento $\Delta T = 50\text{ K}$), el componente soporta con holgura el régimen permanente de limitación (cuyo valor medio es de $4.1\text{ A}$) y tolera los picos iniciales de cortocircuito sin riesgo de saturación brusca, evitando caídas repentinas de inductancia que harían divergir la corriente.
+    \item \textbf{Apantallamiento magnético integrado:} El encapsulado metálico de la serie \textit{WE-HCI 2212} confiere un blindaje magnético que confina el flujo residual. Esto es un requisito de diseño crítico en este circuito analógico, puesto que la cercanía de campos magnéticos alternos dispersos induciría ruido electromagnético (\textit{EMI}) en las pistas del sensor de \textit{shunt} y falsearía los umbrales de conmutación de los comparadores de ventana.
+\end{itemize}
+\subsection{Amplificador operacional: OPA2836QDGKRQ1}
+
+El lazo analógico por histéresis requiere la monitorización continua y en tiempo real de la corriente de salida. Esta tarea se ejecuta mediante la lectura de la caída de tensión diferencial en una resistencia de \textit{shunt}. Al ser dicha tensión de muy baja amplitud para minimizar pérdidas dissipativas, es indispensable acondicionarla y amplificarla antes de presentarla a la etapa de comparación. Para este propósito se ha seleccionado el amplificador operacional doble de banda ultra-ancha y bajo consumo \textit{OPA2836QDGKRQ1} de Texas Instruments, con calificación AEC-Q100 Grado 1.
+
+Los parámetros dinámicos de este semiconductor son críticos y justifican su elección de manera estricta para cumplir con el presupuesto temporal del lazo ($t_{sense} = 171.4\text{ ns}$):
+\begin{itemize}
+    \item \textbf{Ancho de banda y velocidad de respuesta (\textit{Slew Rate}):} El \textit{OPA2836} cuenta con un ancho de banda excepcional de $205\text{ MHz}$ y un \textit{Slew Rate} de $560\text{ V}/\mu\text{s}$. Dado que la corriente por la inductancia presenta una forma de onda triangular con pendientes pronunciadas a $\approx 615\text{ kHz}$, un amplificador operacional de propósito general atenuaría los armónicos de alta frecuencia y retrasaría la señal. La dinámica ultra-rápida de este dispositivo garantiza una reproducción analógica idéntica y sin desfase de la rampa de corriente.
+    \item \textbf{Mínimo tiempo de asentamiento y retardo intrínseco:} El integrado presenta un tiempo de subida de tan solo $3\text{ ns}$ (para un escalón de $2\text{ V}$) y un tiempo de asentamiento (\textit{settling time}) al 0.1\% de apenas $22\text{ ns}$. Esta respuesta en el dominio del tiempo representa una fracción despreciable frente a la restricción absoluta de $171.4\text{ ns}$, asegurando que el retardo acumulado en la etapa de sensado analógico no induzca un retraso destructivo en la orden de apagado del MOSFET.
+    \item \textbf{Topología Rail-to-Rail de salida y Negative-Rail de entrada:} El circuito efectúa una medición en el lado de baja (\textit{low-side current sensing}), lo que implica que la tensión común de entrada está muy próxima al potencial de masa ($0\text{ V}$). El \textit{OPA2836} permite que el rango de tensión de entrada común incluya el raíl negativo ($V_{EE} = 0\text{ V}$), garantizando la linealidad y la precisión de la ganancia en todo el rango dinámico de la corriente, desde vacío hasta el cortocircuito abrupto.
+\end{itemize}
+\subsection{Alimentación flotante: TMA 1515S y L78L05CD13TR}
+
+La implementación de un MOSFET de canal N (NMOS) como interruptor de alta línea (*high-side switch*) en misiones de limitación de corriente introduce un desafío crítico en el circuito de disparo: el terminal de fuente (\textit{Source}) del transistor no está estático a la masa del sistema, sino que conmuta dinámicamente y se sitúa al potencial del bus de potencia ($100\text{ V}$) durante el estado de conducción. Para inyectar la tensión requerida de $V_{GS} = +15\text{ V}$ y garantizar la correcta saturación del canal, el circuito de control y el controlador de puerta (\textit{gate driver}) deben estar referenciados localmente a dicho nodo flotante. 
+
+Para resolver este desacoplo de potenciales y proporcionar los niveles de tensión necesarios a toda la electrónica analógica y lógica, se ha diseñado una etapa de alimentación flotante basada en el convertidor DC/DC aislado \textit{TMA 1515S} de Traco Power y el regulador lineal de tensión \textit{L78L05CD13TR} de STMicroelectronics.
+
+\subsubsection{Aislamiento galvánico y generación del raíl de conmutación de $+15\text{ V}$}
+
+El convertidor DC/DC \textit{TMA 1515S} actúa como el elemento central de transferencia de energía aislada. Alimentado desde el raíl de $+15\text{ V}$ primario de la instalación de laboratorio (referenciado a la masa común), este dispositivo proporciona un raíl de salida unipolar de $+15\text{ V}$ con un aislamiento galvánico de hasta $1000\text{ VDC}$. 
+
+La justificación de su integración radica en su capacidad para "hacer flotar" su masa secundaria. Al conectar físicamente el terminal de referencia negativo de la salida del \textit{TMA 1515S} directamente a la fuente (\textit{Source}) del MOSFET de potencia, se consolida una masa flotante local ($GND_{flotante}$). De este modo, la salida de $+15\text{ V}$ aislada acompaña solidariamente las excursiones de tensión del nodo de potencia, manteniendo en todo momento una diferencia de potencial constante de $+15\text{ V}$ respecto a la fuente del transistor. Este raíl flotante de alta energía alimenta de forma directa al controlador de puerta \textit{UCC27511A-Q1}, suministrando los picos de corriente necesarios para las transiciones del interruptor sin perturbar la estabilidad del bus principal.
+
+\subsubsection{Regulación de precisión y generación del raíl lógico de $+5\text{ V}$}
+
+Mientras que el controlador de puerta requiere $+15\text{ V}$ para conmutar eficientemente el MOSFET, los componentes integrados del lazo analógico y lógico (el amplificador operacional de sensado \textit{OPA2836} y los comparadores de ventana \textit{LM319} y \textit{LM393}) operan bajo tensiones lógicas de baja potencia, típicamente limitadas a un máximo de $+5\text{ V}$. 
+
+Para obtener este segundo raíl auxiliar a partir de la etapa aislada sin añadir un segundo convertidor conmutado que inyectara ruido electromagnético adicional al lazo de histéresis, se introduce el regulador lineal de tensión tipo \textit{Low Dropout} (LDO) \textit{L78L05CD13TR} en encapsulado SO-8. 
+
+Este integrado se conecta directamente al raíl flotante de $+15\text{ V}$ y, al compartir la misma referencia flotante ($GND_{flotante}$), reduce y estabiliza la tensión hasta un valor preciso de $+5\text{ V}$ flotantes. La elección de este regulador lineal se justifica bajo los siguientes criterios de diseño:
+\begin{itemize}
+    \item \textbf{Atenuación de rizado y ruido:} Al tratarse de una regulación lineal, el \textit{L78L05} ofrece un elevado factor de rechazo a la fuente de alimentación (\textit{PSRR}), filtrando el posible ruido de conmutación residual proveniente del convertidor DC/DC y entregando una alimentación limpia y altamente estable a las etapas críticas de amplificación analógica.
+    \item \textbf{Compatibilidad lógica y protección:} Fija la tensión máxima de salida de las etapas analógicas a $+5\text{ V}$, garantizando una compatibilidad directa con las compuertas lógicas aguas abajo y protegiendo las entradas de los integrados sensibles frente a sobretensiones destructivas en caso de transitorios severos en el bucle de potencia.
+\end{itemize}
+
 \section{Simulación mediante PSIM con valores parásitos}
 
 \chapter{Montaje en placa, respuesta en osciloscopio y discusión de resultados}
@@ -1583,7 +1707,7 @@ script o excel ???
 -Referencia TimON
 -Red RC temporización
 -
-\begin{bloqueRevisar}
+
     
 
 Una vez tenemos una arquitectura correcta en cuanto a perdidas, limites de histéresis, a una frecuencia controlable pero que limite las pérdidas y hemos sido capaces de ajustar la limitación a nuestro tiempo buscado el siguiente objetivo debe ser encontrar una manera de adaptar nuestro circuito a distintos:
@@ -1746,8 +1870,10 @@ Hay que modificar la red RC para que esté adaptado a los valores de histéresis
 %----------	
 
 % Si tu trabajo incluye anexos, puedes descomentar las siguientes líneas
-%\chapter* {Anexo x}
-%\pagenumbering{gobble} % Las páginas de los anexos no se numeran
+\chapter* {Anexo 1}
+
+BILL OF MATERIALS
+\pagenumbering{gobble} % Las páginas de los anexos no se numeran
 
 
 
