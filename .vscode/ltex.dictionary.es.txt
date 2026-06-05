@@ -1,0 +1,12 @@
+MOSFET
+SiC
+PSIM
+SSCB
+SSPC
+IGBT
+EMI
+WBG
+bandgap
+Wide
+bootstrap
+SOA
