@@ -1672,27 +1672,26 @@ La justificación de este semiconductor viene dada principalmente por los parám
     \item \textbf{Configuración de entrada \textit{Low-Side} local y salida Rail-to-Rail:} pese a realizar la medición en el lado de alta tensión (\textit{High-Side}), el acondicionamiento está referenciado de forma flotante a la masa de control. Esto provoca que la tensión de entrada se encuentre muy cercana a la masa local. La selección del \textit{OPA2836} soluciona lo mencionado gracias a la arquitectura de entrada \textit{Negative-Rail}, que permite amplificar señales incluso cercanas al raíl negativo de alimentación (0 voltios locales) y evitar que aparezcan zonas no amplificadas. 
 \end{itemize}
 \subsection{Alimentación flotante: TMA 1515S y L78L05CD13TR}
+La topología empleada, con un N-MOS como interruptor en \textit{high-side}, introduce una dificultad añadida para el lazo de control: la alimentación de los integrados. La fuente del transistor no se encuentra anclado a la masa del circuito como en las topologías tradicionales \textit{low-side} sino que varía siguiendo el valor del bus de potencia. Por tanto, son necesarios componentes capaces de elevar la tensión del bus en lo +15 V o +5 V necesarios por los integrados para alimentarse o el canal del transistor para conducir completamente. 
 
-La implementación de un MOSFET de canal N (NMOS) como interruptor de alta línea (*high-side switch*) en misiones de limitación de corriente introduce un desafío crítico en el circuito de disparo: el terminal de fuente (\textit{Source}) del transistor no está estático a la masa del sistema, sino que conmuta dinámicamente y se sitúa al potencial del bus de potencia ($100\text{ V}$) durante el estado de conducción. Para inyectar la tensión requerida de $V_{GS} = +15\text{ V}$ y garantizar la correcta saturación del canal, el circuito de control y el controlador de puerta (\textit{gate driver}) deben estar referenciados localmente a dicho nodo flotante. 
+Para resolver esta problemática se incluye una etapa de alimentación flotante mediante el uso de un convertidor DC/DC aislado \textit{TMA 1515S} de Traco Power \cite{traco_power_tma_nodate} y un regulador de voltaje lineal \textit{L78L05CD13TR} de STMicroelectronics \cite{stmicroelectronics_l78l05cd13tr_nodate}.
 
-Para resolver este desacoplo de potenciales y proporcionar los niveles de tensión necesarios a toda la electrónica analógica y lógica, se ha diseñado una etapa de alimentación flotante basada en el convertidor DC/DC aislado \textit{TMA 1515S} de Traco Power y el regulador lineal de tensión \textit{L78L05CD13TR} de STMicroelectronics.
+\subsubsection{Raíl de conmutación de $+15\text{ V}$}
 
-\subsubsection{Aislamiento galvánico y generación del raíl de conmutación de $+15\text{ V}$}
+El convertidor \textit{TMA 1515S}, con su aislamiento galvánico, es el encargado principal de la obtención de la alimentación flotante de $+15\text{ V}$. A partir de la alimentación de $+15\text{ V}$ del laboratorio, la cual está referenciada a la masa común del sistema, el dispositivo toma la señal de masa flotante y obtiene la salida con esa misma diferencia de potencial sobre el valor del bus.  
 
-El convertidor DC/DC \textit{TMA 1515S} actúa como el elemento central de transferencia de energía aislada. Alimentado desde el raíl de $+15\text{ V}$ primario de la instalación de laboratorio (referenciado a la masa común), este dispositivo proporciona un raíl de salida unipolar de $+15\text{ V}$ con un aislamiento galvánico de hasta $1000\text{ VDC}$. 
+El convertidor se encuentra conectado mediante su referencia negativa de salida a la fuente del MOSFET, obteniendo así la masa flotante. El convertidor se encarga de alimentar el \textit{driver} de la puerta del transistor, aportando la corriente necesaria para las conmutaciones del mismo, y es la entrada necesaria para que la salida del regulador lineal sea también flotante. 
 
-La justificación de su integración radica en su capacidad para "hacer flotar" su masa secundaria. Al conectar físicamente el terminal de referencia negativo de la salida del \textit{TMA 1515S} directamente a la fuente (\textit{Source}) del MOSFET de potencia, se consolida una masa flotante local ($GND_{flotante}$). De este modo, la salida de $+15\text{ V}$ aislada acompaña solidariamente las excursiones de tensión del nodo de potencia, manteniendo en todo momento una diferencia de potencial constante de $+15\text{ V}$ respecto a la fuente del transistor. Este raíl flotante de alta energía alimenta de forma directa al controlador de puerta \textit{UCC27511A-Q1}, suministrando los picos de corriente necesarios para las transiciones del interruptor sin perturbar la estabilidad del bus principal.
+\subsubsection{Raíl lógico de $+5\text{ V}$}
 
-\subsubsection{Regulación de precisión y generación del raíl lógico de $+5\text{ V}$}
+El controlador encargado de la conmutación del transistor precisa de una diferencia con respecto al bus de $+15\text{ V}$, pero este voltaje produciría la pérdida de los integrados de intentar alimentarlos con esta diferencia de tensión. Los componentes del lazo de control emplean tensiones lógicas de $+5\text{ V}$ por lo que es necesario contar con otro raíl de alimentación.
 
-Mientras que el controlador de puerta requiere $+15\text{ V}$ para conmutar eficientemente el MOSFET, los componentes integrados del lazo analógico y lógico (el amplificador operacional de sensado \textit{OPA2836} y los comparadores de ventana \textit{LM319} y \textit{LM393}) operan bajo tensiones lógicas de baja potencia, típicamente limitadas a un máximo de $+5\text{ V}$. 
+Para obtener este raíl auxiliar a partir de la tensión flotante se emplea un regulador lineal de tensión conectado como el \textit{L78L05CD13TR} conectado directamente a los $+15\text{ V}$ flotantes de salida del \textit{TMA 1515S} y compartiendo la masa de control. La salida será una tensión estable de $+5\text{ V}$ flotantes.
 
-Para obtener este segundo raíl auxiliar a partir de la etapa aislada sin añadir un segundo convertidor conmutado que inyectara ruido electromagnético adicional al lazo de histéresis, se introduce el regulador lineal de tensión tipo \textit{Low Dropout} (LDO) \textit{L78L05CD13TR} en encapsulado SO-8. 
-
-Este integrado se conecta directamente al raíl flotante de $+15\text{ V}$ y, al compartir la misma referencia flotante ($GND_{flotante}$), reduce y estabiliza la tensión hasta un valor preciso de $+5\text{ V}$ flotantes. La elección de este regulador lineal se justifica bajo los siguientes criterios de diseño:
+Las motivaciones para el empleo de este dispositivo son las siguientes:
 \begin{itemize}
-    \item \textbf{Atenuación de rizado y ruido:} Al tratarse de una regulación lineal, el \textit{L78L05} ofrece un elevado factor de rechazo a la fuente de alimentación (\textit{PSRR}), filtrando el posible ruido de conmutación residual proveniente del convertidor DC/DC y entregando una alimentación limpia y altamente estable a las etapas críticas de amplificación analógica.
-    \item \textbf{Compatibilidad lógica y protección:} Fija la tensión máxima de salida de las etapas analógicas a $+5\text{ V}$, garantizando una compatibilidad directa con las compuertas lógicas aguas abajo y protegiendo las entradas de los integrados sensibles frente a sobretensiones destructivas en caso de transitorios severos en el bucle de potencia.
+    \item \textbf{Atenuación del ruido:} por ser regulación lineal, el integrado entrega una alimentación estable y limpia que no se ve afectada en demasía por el ruido de conmutación del convertidor DC/DC aislado. La elección de un regulador lineal también se ve apoyada por la intención de evitar la inducción de ruido electromagnético innecesario que pueda, junto al convertidor ya presente, afectar a la etapa de control. 
+    \item \textbf{Compatibilidad y protección:} debido a la naturaleza del mismo, mientras la entrada del regulador puede variar la salida está anclada a los $+5\text{ V}$. Este factor es importante a la hora de proteger las entradas de alimentación de los integrados y protegerlos de los transitorios que se pueden provocar en el bus. 
 \end{itemize}
 
 \section{Simulación mediante PSIM con valores parásitos}
@@ -1867,8 +1866,13 @@ Hay que modificar la red RC para que esté adaptado a los valores de histéresis
 
 % Si tu trabajo incluye anexos, puedes descomentar las siguientes líneas
 \chapter* {Anexo 1}
-
+\begin{bloqueRevisar}
 BILL OF MATERIALS
+
+Revisar cuales son los componentes finales usados en la placa y preguntar que debería poner: lo que he usado para los cálculos o lo que al final se emplean realmente. 
+
+\end{bloqueRevisar}
+
 \pagenumbering{gobble} % Las páginas de los anexos no se numeran
 
 
