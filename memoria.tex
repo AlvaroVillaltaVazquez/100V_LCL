@@ -1510,7 +1510,7 @@ Habiendo obtenido este valor y sabiendo que la constante de tiempo de una red RC
 \subsubsection{Descarga del condensador}
 La red asimétrica se implementa con el objetivo de dotar al circuito temporizador de memoria para que, si dos sobrecorrientes de las cuales la primera es menor de $1,5\, ms$ se suceden en un muy corto periodo de tiempo, el temporizador tenga en cuenta que el transistor no ha tenido tiempo a enfriarse. De no implementarse este mecanismo, el permitir una segunda sobrecorriente que durase todo el tiempo de \textit{trip-off} podría excederse la temperatura máxima del N-MOS y perder el dispositivo. 
 
-A partir de la hoja de datos del fabricante para el N-MOS IRFP9240PBF \cite{noauthor_irfb4020pbfpmd_nodate}, podemos ver en la figura \ref{fig:Foster} la red térmica de Foster donde se muestran cada una de las capas internas que conforman el dispositivo. 
+A partir de la hoja de datos del fabricante para el N-MOS IRFB4020PBF \cite{noauthor_irfb4020pbfpmd_nodate}, podemos ver en la figura \ref{fig:Foster} la red térmica de Foster donde se muestran cada una de las capas internas que conforman el dispositivo. 
 
 \begin{figure}[H]
     \centering
@@ -1695,6 +1695,35 @@ Las motivaciones para el empleo de este dispositivo son las siguientes:
 \end{itemize}
 
 \section{Simulación mediante PSIM con valores parásitos}
+\begin{figure}[H]
+    \centering
+    % Forzamos 10pt para cumplir con la normativa de tu guía
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {
+        \caption[Titulo indice]{Vc timer vs ishunt muestra como, si hay un segundo corto en poco t, se protege habiendo menos tripoff. Red asimétrica}
+        \label{fig:VctimervsIshunt}
+    }
+    {
+        \includegraphics[width=1\textwidth]{IshuntvsVctimer.pdf}
+    }
+    
+    % Añadimos la fuente requerida por tu guía de TFG
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia a partir de los resultados obtenidos en PSIM. \par}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
 
 \chapter{Montaje en placa, respuesta en osciloscopio y discusión de resultados}
 \chapter{Metodología de Escalado del Diseño}
