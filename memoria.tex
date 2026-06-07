@@ -1695,19 +1695,21 @@ Las motivaciones para el empleo de este dispositivo son las siguientes:
 \end{itemize}
 
 \section{Diseño esquemático en KiCad y modelado de validación mediante simulación en PSIM}
-\begin{bloqueRevisar}
-Una vez dimensionados analíticamente los bloques del limitador LCL conmutado, este capítulo aborda la transición desde las ecuaciones teóricas hacia un diseño electrónico construible. En primer lugar, se detalla la arquitectura del circuito esquemático real implementada en KiCad mediante la selección de componentes comerciales específicos para entornos de alta velocidad. Posteriormente, con el fin de co-validar el comportamiento dinámico de dicho hardware antes de su fabricación física, se describe la equivalencia del circuito dentro del entorno de simulación PSIM, incorporando tanto los efectos parásitos de las líneas como los artificios conductuales necesarios para el correcto funcionamiento del solucionador matemático. Finalmente, se presentan y discuten los resultados temporales obtenidos.
 
+Una vez establecidos los componentes a emplear, esta sección detalla la arquitectura real del circuito implementado en KiCad con los componentes especificados en la sección anterior. Posteriormente se muestra el circuito equivalente incorporado en el entorno de simulación PSIM teniendo para ello en cuenta los efectos parásitos de los componentes y, por último, se discutirán los resultados de simulación obtenidos para este circuito.
 
 \subsection{Diseño esquemático en KiCad mediante componentes comerciales }
-
 Una vez validadas las ecuaciones de diseño y el comportamiento dinámico ideal del limitador de corriente conmutado (LCL), se procede a la traslación del circuito hacia una arquitectura física real. Para ello, se ha empleado el entorno CAD electrónico KiCad, seleccionando componentes comerciales específicos que cumplen con las restricciones de velocidad, ancho de banda y niveles lógicos del sistema. En este apartado se describe la implementación circuital detallada de cada uno de los bloques funcionales que conformarán la tarjeta de circuito impreso (PCB), cuyas referencias exactas y encapsulados se recopilan en la Lista de Materiales (BOM) del Anexo X.
 
 \subsubsection{Bloque del lazo de potencia y alimentación flotante}
+La etapa de potencia y el controlador de puerta del MOSFET son el núcleo del sistema y, por tanto, del diseño. Como se puede apreciar en la Figura \ref{fig:PotenciaAlimentacionKicad}, la placa recibe el voltaje del bus a través del conector de entrada J3 y la corriente fluye a través del bus principal hasta llegar a la carga situada en el conector de salida J2. 
 
-La etapa de potencia y su circuito de excitación física constituyen el núcleo de transferencia de energía del sistema y el punto de partida del diseño. La placa recibe la potencia del bus a través de los conectores de entrada J3 ($V_{bus} = 100\,\text{V}$) y distribuye la corriente hacia la carga mediante el conector de salida J2. Con el propósito de mitigar los transitorios severos de tensión provocados por la conmutación y el kickback inductivo, se disponen condensadores de filtrado masivo electrolíticos ($C_4 = 47\,\mu\text{F}$ y $C_7 = 47\,\mu\text{F}$) en paralelo con condensadores cerámicos de desacoplo rápido de alta tensión ($C_{f1} = 1\,\mu\text{F}$). El disparo físico del MOSFET principal Q1 (IRFB4020PBF) se realiza mediante el driver integrado de alta corriente UCC27511AQDBVRQ1 (IC1), cuya arquitectura de salida dividida permite sintonizar de forma independiente las velocidades de encendido y apagado a través de las resistencias de puerta de $R_6 = 4.7\,\Omega$ ($OUTH$) y $R_{10} = 10\,\Omega$ ($OUTL$), protegiendo el canal de Silicio contra efectos parásitos de dV/dt.
+Como se explica en el análisis teórico, para mitigar los transitorios de conmutación de alta frecuencia y estabilizar el bus se emplea un condensador cerámico de desacoplo ($C_\text{f1} = 1\,\mu\text{F}$) en paralelo con un condensador electrolítico de mayor capacidad ($C_\text{7} = 47\,\mu\text{F}$). El disparo del MOSFET Q1 se realiza con el driver UCC27511AQDBVRQ1 (IC1), el cual consta de una salida dividida que permite establecer velocidades diferentes de encendido y de apagado. 
+Para proteger al integrado del sobrevoltaje destructivo del apagado la resistencia de apagado es $R_{10} = 10\,\Omega$ ($OUTL$) mientras que la resistencia de encendido es de un valor menor, $R_6 = 4,7\,\Omega$ ($OUTH$), con el objetivo de llenar la carga de la puerta y reducir las pérdidas de conmutación. 
 
-Para posibilitar el disparo del transistor de canal N, cuyo terminal de fuente es dinámico y no está referenciado a masa, se requiere estructurar un bus de control completamente flotante referenciado al nodo $GNDREF$. Esto se logra introduciendo el módulo convertidor DC/DC aislado comercial TMA\_1515S (PS1), el cual toma la alimentación general de $15\,\text{V}$ del sistema (desacoplada por $C_{11} = 2.2\,\mu\text{F}$) y proporciona una salida aislada galvánicamente de $15\,\text{V\_flotantes}$. Este raíl flotante es filtrado por la combinación de $C_{12} = 10\,\mu\text{F}$ y $C_{13} = 100\,\text{nF}$ para alimentar directamente al driver IC1. A partir de este nodo de potencia flotante, el regulador lineal de tensión L78L05\_S08 (U4) reduce y estabilizes el voltaje para crear el raíl secundario de $5\,\text{V\_flotantes}$ encargado de suministrar energía a toda la lógica digital y comparadores analógicos de control, incorporando condensadores de filtrado interetapa ($C_{14} = 330\,\text{nF}$ y $C_{16} = 100\,\text{nF}$). Finalmente, los componentes NetTie (NT1 y NT2) se integran en el esquema para garantizar que el enrutamiento físico de las pistas de detección hacia el bloque de acondicionamiento se realice mediante una conexión Kelvin estricta sobre las almohadillas de la resistencia shunt de $22\,\text{m}\Omega$ ($R_{s1}$), independizándola de las caídas de tensión de las pistas de alta corriente.
+Por otro lado, debido a la topología en \textit{high-side} es necesario contar con un bus de control capaz de aportar una tensión entre puerta y fuente de $+15 V$, lo que en condiciones nominales supone obtener $115$ voltios respecto a la masa global del sistema. Como se explicó en la anterior sección, esto se loga empleando el convertidor DC/DC TMA1515S (PS1) el cual toma los 15 voltios que la placa recibe a través del conector de alimentación J1 y filtrados por los condensadores $C_{11}$ y $C_{7}$, y proporciona una salida aislada galvánicamente de $15\,\text{V\_flotantes}$ filtrada por los condensadores $C_{12}$ y $C_{13}$. Esta señal es la empleada para alimentar el \textit{driver} IC1 y la empleada por el regulador lineal (U4), el cual emplea los condensadores $C_{14}$ y $C_{16}$ recomendados por la hoja de datos \cite{stmicroelectronics_l78l05cd13tr_nodate} para generar el raíl de alimentación estable de 5 voltios. 
+
+Finalmente, los componentes NetTie (NT1 y NT2) especifican el uso de un conexionado Kelvin \cite{pcbsync_kelvin_2025} en el rutado de la PCB, lo que separa la ruta por la que circula la corriente de la ruta de detección de tensión y nos aportará una medida más exacta. 
 
 \begin{figure}[H]
     \centering
@@ -1721,10 +1723,16 @@ Para posibilitar el disparo del transistor de canal N, cuyo terminal de fuente e
 \end{figure}
 
 \subsubsection{Bloque de acondicionamiento de corriente}
+La conexión Kelvin es el punto desde el cual se obtiene la caída de tensión de la resistencia de medida proporcional a la corriente que fluye por ella. Esta señal $I_\text{meas}$ se amplifica ($G = 25\text{ V/V}$) a través de la red de resistencias de los operacionales (U2) que se aprecia en la Figura \ref{fig:Acondicionamiento_Kicad}. 
 
-Derivado directamente de la conexión Kelvin de la etapa de potencia previa, se procesa la señal diferencial de tensión proveniente del shunt $R_{s1}$ ($I_{meas}$). En el circuito integrado comercial, esta tarea se encomienda al amplificador operacional dual de precisión y bajo consumo OPA2836 (U2A y U2B). La etapa se configura como un amplificador de diferencia encargado de rechazar el modo común del bus y entregar una señal referenciada a la masa flotante de control ($GNDREF$).
+Con el objetivo de obtener estabilidad en el lazo de control y filtrar el ruido de alta frecuencia producido por la conmutación del N-MOS se emplean 3 filtros paso bajo en cascada.
+\begin{itemize}
+    \item \textbf{Filtro de entrada:} el filtro formado por $R_1$ y $C_1$ atenua los transitorios bruscos de alta frecuencia de la señal de la resistencia de medida, protegiendo el integrado con un coste en el comportamiento dinámico muy reducido.  
+    \item \textbf{Filtro de la primera etapa:} el filtro formado por $R_5$ y $C_2$ introduce un polo a aproximadamente $1,36\,\text{MHz}$, acotando el ancho de banda y mejorando la estabilidad del OPAMP.
+    \item \textbf{Filtro de la segunda etapa:} el filtro formado por $R_{11}$ y $C_5$ introduce un polo a aproximadamente $2,08\,\text{MHz}$, atenuando más la señal de la primera etapa y librando a la señal de ruido de alta frecuencia. 
+\end{itemize} 
 
-Para asegurar la estabilidad del lazo analógico y filtrar el ruido de conmutación de alta frecuencia antes de la etapa de comparación, se implementa una red de ganancia y filtrado activa mediante resistencias de precisión ($R_4 = 1\,\text{k}\Omega$, $R_9 = 1\,\text{k}\Omega$, $R_5 = 3.9\,\text{k}\Omega$ y $R_{11} = 5.1\,\text{k}\Omega$) asociadas a condensadores de compensación en el lazo de realimentación ($C_2 = 3\,\text{pF}$ y $C_5 = 15\,\text{pF}$). Asimismo, el tercer canal del integrado (U2C) se destina a la gestión de las líneas de alimentación locales de la etapa, incorporando condensadores de desacoplo de alta frecuencia ($C_8 = 100\,\text{nF}$) y de almacenamiento masivo ($C_9 = 10\,\mu\text{F}$) situados inmediatamente junto a los pines conectados al nodo de $5\,\text{V\_flotantes}$ para minimizar la impedancia de la fuente. La señal de salida resultante, denominada $Isense2$, representa de forma fidedigna la corriente instantánea del inductor libre de perturbaciones de alta frecuencia.
+La señal de salida ($I_\text{sense2}$), representa la corriente instantánea a través del bus de forma amplificada y libre de ruido. 
 
 \begin{figure}[H]
     \centering
@@ -1739,9 +1747,9 @@ Para asegurar la estabilidad del lazo analógico y filtrar el ruido de conmutaci
 
 \subsubsection{Bloque del lazo de histéresis y enclavamiento}
 
-La toma de decisiones de conmutación se realiza por medio de un circuito comparador de ventana que gobierna un biestable digital. Los umbrales superior e inferior de la banda de histéresis ($I_{sup}$ e $I_{inf}$) se establecen físicamente mediante los potenciómetros de ajuste fino RV1 y RV2, polarizados desde la referencia de $5\,\text{V\_flotantes}$ generada en la etapa de potencia y estabilizados por redes resistivas de $10\,\text{k}\Omega$ ($R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$) hacia la masa de control. La comparación de la señal acondicionada $Isense2$ frente a dichos umbrales dinámicos se ejecuta a través del comparador analógico dual de alta velocidad LM319 (U3A y U3B), el cual presenta un tiempo de respuesta en el orden de los nanosegundos, minimizando el retraso de propagación del lazo.
+La conmutación se realiza mediante el uso de dos comparadores que establecen el estado de un biestable como se puede observar en Figura \ref{fig:HisteresisKicad}. Para la comparación se establecen en los límites superior e inferior de la banda de histéresis ($I_\text{sup}$ e $I_\text{inf}$) el voltaje medible en la $R_\text{shunt}$ para el paso de la corriente definida, multiplicando el valor por la ganancia de acondicionamiento. De esta manera, las resistencias $R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$ establecen sendos divisores resistivos para obtener un valor intermedio de voltaje a partir de los 5 voltios flotantes el cual se ajusta a los límites deseados mediante los potenciómetros RV1 y RV2. 
 
-Debido a que el LM319 dispone de etapas de salida en colector abierto, se hace estrictamente necesaria la integración de resistencias de pull-up ($R_{18} = 1\,\text{k}\Omega$ y $R_{19} = 1\,\text{k}\Omega$) conectadas al raíl de $5\,\text{V\_flotantes}$. Esto garantiza que las señales de disparo $R$ y $S$ realicen transiciones nítidas entre $0\,\text{V}$ y $5\,\text{V}$. Estas señales digitales atacan directamente al integrado SN74LVC2G02DCUR (IC2), que contiene puertas NOR duales configuradas como un biestable RS asimétrico encargado de memorizar el estado de conmutación del limitador y entregar la señal lógica fundamental $Q$. Finalmente, la habilitación del disparo se supedita a la compuerta AND lógica de un solo canal 74LVC1G08QW5-7 (IC3), la cual combina la acción del biestable ($Q$) con la señal de salvaguarda del temporizador ($Shutdown$) para generar la señal maestra de excitación $Driver\_in$, encargada de comandar al driver de puerta. Todo el bloque lógico se desacopla localmente mediante el condensador $C_{15} = 100\,\text{nF}$.
+La comparación de la señal amplificada frente a los umbrales se realiza mediante el LM319 (U3A y U3B), el cual por tener salida en colector abierto requiere de las resistencias $R_\text{18}$ y $R_\text{19}$ para la transición entre el nivel bajo y el nivel alto que llega al SN74LVC2G02DCUR (IC2). Las puertas NOR se enrutan de modo que se configuren como biestable RS, memorizando el estado del limitador y teniendo como salida la señal Q. Esta es, junto a la salida del temporizador (la cual es normalmente 1), una de las entradas de la puerta \textit{AND} encargada de activar y desactivar el \textit{driver} que alimenta al transistor. 
 
 \begin{figure}[H]
     \centering
@@ -1753,8 +1761,8 @@ Debido a que el LM319 dispone de etapas de salida en colector abierto, se hace e
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
-
-\subsubsection{Bloque de la etapa de temporización}
+\begin{bloqueRevisar}
+\subsubsection{Bloque de temporización}
 
 La inteligencia térmica y la protección de enclavamiento definitivo (*latch-off*) ante sobrecorrientes prolongadas se concentran en el bloque del temporizador analógico de *trip-off*. La monitorización del estado de fallo se realiza mediante el comparador de bajo consumo dual LM393 (U1A), el cual supervisa constantemente el nivel de la señal de corriente filtrada $Isense2$. La red RC asimétrica que modela la memoria térmica del Silicio se implementa mediante la combinación del diodo dual Schottky en configuración de cátodo/ánodo común BAT54S (D3), la resistencia de carga rápida $R_7 = 26.1\,\text{k}\Omega$, la resistencia de descarga lenta $R_8 = 100\,\text{k}\Omega$ y el condensador de temporización $C_{t1} = 100\,\text{nF}$. Ante un fallo, la salida del comparador U1A se satura a nivel alto, forzando la carga del condensador a través de la constante de tiempo corta fijada por $R_7$, mientras que al cesar el fallo, el bloqueo del diodo obliga al condensador a descargarse lentamente a través de $R_8$, reteniendo el voltaje analógico que representa el calor residual acumulado.
 
@@ -1770,44 +1778,53 @@ El segundo canal del circuito integrado, el comparador U1B (LM393), se encarga d
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
-
-
-
-
 \end{bloqueRevisar}
-
-
-
-
-
-
-
-
-
-
-
 \subsection{Modelado equivalente en PSIM e integración de efectos parásitos}
+Una vez definido el esquema circuital real en KiCad, es indispensable trasladar dicha arquitectura al entorno de simulación PSIM para validar de forma virtual el comportamiento del sistema. Sin embargo, para obtener resultados realistas que coincidan con el comportamiento del prototipo físico, el modelo no puede ser puramente ideal. Por ello, se ha desarrollado un modelo equivalente conductual distribuido en tres bloques funcionales que integran los retardos de propagación reales de los integrados, el comportamiento no ideal de las etapas de potencia y acondicionamiento, y la emulación analógica de fallos mediante escalones de carga, tal y como se detalla a continuación.
+
+\subsubsection{Etapa de potencia, lógica de histéresis y bloques de retardo}
+
+El núcleo de transferencia de potencia y el lazo de decisión digital se han implementado siguiendo el modelo conductual expuesto en la Figura \ref{fig:Principal_psim}. El bus principal se alimenta mediante una fuente continua anclada a $100\,\text{V}$ ($V_{bus}$), estabilizada en la entrada por los modelos no ideales de los condensadores cerámico ($C_{bus\_ceramico} = 1\,\mu\text{F}$) y electrolítico ($C_{bus\_electrolitico} = 47\,\mu\text{F}$). El comportamiento del driver de puerta comercial UCC27511A se ha modelado de manera conductual mediante una fuente de tensión dependiente controlada por la lógica digital, asociada en serie a una resistencia de puerta equivalente de $10\,\Omega$. Esta red permite excitar la capacidad parásita de puerta del modelo del MOSFET comercial IRFB4020PBF, recreando con fidelidad las pendientes transitorias de tensión y corriente en el silicio.
+
+Para evaluar la capacidad de extinción de la protección ante anomalías severas, la carga del sistema se ha diseñado de forma dinámica. En operación nominal, el convertidor alimenta una resistencia convencional $R_{load1} = 40\,\Omega$. La transición instantánea hacia un estado de sobrecorriente se emula introduciendo una rama en paralelo compuesta por una resistencia de cortocircuito rígido de muy alta intensidad y baja impedancia ($R_{sc} = 0.1\,\Omega$) en serie con un interruptor ideal controlado por tiempo. Al cerrarse dicho interruptor en un instante parametrizado de la simulación, se provoca una caída abrupta de la impedancia de carga que induce la excursión masiva de la corriente a través del shunt de $22\,\text{m}\Omega$ y el inductor de $68\,\mu\text{H}$.
+
+Para garantizar la fidelidad matemática del lazo de histéresis, ha sido crítico incorporar bloques de retraso temporal (\textit{Time Delay}) que representan los tiempos de tránsito reales de los componentes físicos elegidos. En el hardware real, los integrados no conmutan instantáneamente; por ello, se han introducido retardos síncronos extraídos de las hojas de características: bloques de $80\,\text{ns}$ para el comparador de ventana de alta velocidad LM319, bloques de $10\,\text{ns}$ para el tiempo de tránsito combinado de las compuertas lógicas digitales de la familia 74LVC (puertas NOR del biestable y puerta AND de habilitación) y un bloque de $23\,\text{ns}$ para el retardo intrínseco del driver. La simulación de estos más de $110\,\text{ns}$ de retraso acumulado es vital: el desfase provoca que la corriente real continúe subiendo o bajando de forma residual una vez alcanzados los umbrales teóricos ($I_{sup}$ e $I_{inf}$). Modelar este retraso ha permitido ajustar con precisión la ventana de histéresis analógica en el software, evitando sobrepicos imprevistos en la PCB real que degraden la frecuencia de conmutación objetivo.
+
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
     \ffigbox[\FBwidth]
     {   \caption{Esquema de la etapa de potencia y del control por histéresis del limitador de corriente conmutado implementado en PSIM}
         \label{fig:Principal_psim}}
-    {\includegraphics[width=1\textwidth]{Principal_psim.pdf}}
+    {\includegraphics[width=0.8\textwidth]{Principal_psim.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
+
+\subsubsection{Bloque de acondicionamiento de señal interetapa}
+
+La lectura de la caída de tensión diferencial nacida en el shunt de potencia se procesa analógicamente en el subcircuito cerrado de la Figura \ref{fig:Acondicionamiento_psim}, encargado de replicar el comportamiento del integrado comercial OPA2836. En PSIM, esta etapa se ha resuelto conectando en cascada dos macromodelos de amplificadores operacionales de banda ancha (ADA4807) referenciados de manera local a la masa de control ($ControlGND$).
+
+La primera etapa no inversora cuenta con una resistencia de entrada de $1\,\text{k}\Omega$ asociada a una red de realimentación activa compuesta por una resistencia de $4\,\text{k}\Omega$ en paralelo con un condensador de compensación de $3\,\text{pF}$. Acto seguido, la señal se acopla a una segunda etapa inversora dotada de una resistencia de paso de $1\,\text{k}\Omega$ y un lazo de realimentación integrado por una resistencia de $5\,\text{k}\Omega$ y un condensador de $15\,\text{pF}$. Esta topología en cascada modela con exactitud la ganancia y los polos de los filtros paso bajo activos diseñados en KiCad, asegurando que la variable final de salida $Isense2$ llegue a los comparadores purgada del \textit{ringing} de alta frecuencia y de los ruidos electromagnéticos generados por las conmutaciones bruscas de la etapa de potencia.
 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
     \ffigbox[\FBwidth]
-    {   \caption[Circuito de acondicionamiento de corriente implementado en PSIM]{Etapa de acondicionamiento analógico de la caida de tensión en $R_\text{shunt}$, implementada mediante amplificadores operacionales ADA4807.}
+    {   \caption[Circuito de acondicionamiento de corriente implementado en PSIM]{Etapa de acondicionamiento analógico de la caída de tensión en $R_\text{shunt}$, implementada mediante amplificadores operacionales ADA4807.}
         \label{fig:Acondicionamiento_psim}}
     {\includegraphics[width=1\textwidth]{Acondicionamiento_psim.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
+
+\subsubsection{Emulación de colector abierto y lazo de enclavamiento del temporizador}
+
+El circuito analógico encargado de la protección por fatiga térmica acumulada se ha modelado en PSIM según la arquitectura detallada en la Figura \ref{fig:Timer_psim}, adaptando las restricciones físicas del comparador comercial LM393. Dado que este integrado real dispone de una etapa de salida en colector abierto, ha sido imperativo emular dicho comportamiento situando un transistor bipolar (BJT) configurado como un interruptor de descarga conectado directamente a la masa del temporizador ($ControlGND$), asistido por una resistencia de pull-up real ($R_{pullUP} = 26.1\,\text{k}\Omega$) vinculada al raíl de alimentación de $5\,\text{V}$.
+
+Cuando la señal de corriente acondicionada $Isense2$ opera dentro de los límites seguros, el comparador mantiene el BJT en estado de corte. Esto permite que la corriente del raíl inyecte energía de forma asimétrica y rápida en el condensador de temporización ($C_{timer} = 100\,\text{nF}$) a través del diodo BAT54\_B. En el momento en que el lazo de histéresis extingue la sobrecorriente y el peligro cesa, la conmutación fuerza al BJT a entrar en saturación, actuando como un sumidero que deriva la tensión del nodo de control a masa de forma inmediata; esto obliga al condensador a vaciarse lentamente y de manera controlada en exclusiva a través de la resistencia de descarga fija ($R_{descarga} = 100\,\text{k}\Omega$) acoplada al diodo BAT54\_A.
+
+Finalmente, la lógica de modificación dinámica del umbral de tensión de disparo ($V_{th\_tiempo}$) para evitar el destructivo modo hipo (\textit{hiccup mode}) requiere un tratamiento conductual especial en el software. Si se conectara analógicamente de forma directa la línea digital de salida $Shutdown$ de vuelta al nodo divisor inferior ($1.6\,\text{k}\Omega$ y $1.1\,\text{k}\Omega$), el solucionador numérico de PSIM caería en un bucle algebraico instantáneo infinito (\textit{algebraic loop}), provocando un error de convergencia por matriz singular. Para solventar este límite del programa, se ha implementado un artificio conductual consistente en un interruptor controlado por tensión gobernado por una puerta inversora (NOT) conectada a la señal digital $Shutdown$. Al activarse la protección ($Shutdown = 1$), la puerta NOT abre instantáneamente el interruptor, aislando físicamente la resistencia inferior de $1.6\,\text{k}\Omega$ de la masa de control ($ControlGND$). Esto altera el divisor elevando el potencial del nodo de referencia de forma inmediata, logrando el enclavamiento seguro de la simulación en perfecta consonancia con el comportamiento físico del circuito real de laboratorio.
 
 \begin{figure}[H]
     \centering
@@ -1819,6 +1836,7 @@ El segundo canal del circuito integrado, el comparador U1B (LM393), se encarga d
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
+
 
 \subsection{Análisis dinámico y discusión de resultados de la simulación}
 
@@ -1857,7 +1875,6 @@ El segundo canal del circuito integrado, el comparador U1B (LM393), se encarga d
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
-
 
 
 
