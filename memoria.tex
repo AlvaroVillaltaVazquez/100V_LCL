@@ -1022,12 +1022,7 @@ La lógica completa se puede ver en la Tabla \ref{table:logica_control_lcl}:
 \subsubsection{Histéresis}
 El bloque de histéresis es el encargado de mantener la corriente que atraviesa la carga dentro de los márgenes de las clases predefinidas durante la sobrecorriente. Como se comentó previamente, los buses de 100 V no tienen una regulación de clases como es el caso de los de 28 o 50 voltios por lo que es decisión nuestra seleccionar entre que valores estará la corriente. El valor seleccionado para el umbral superior ($V_\text{superior}$) será el equivalente a la caída de voltaje debido al paso de $4,5 A$ por la resistencia de sensado multiplicado por la ganancia de la etapa de sensado mientras el valor seleccionado para el umbral inferior ($V_\text{inferior}$) será la equivalente pero para el paso de $3,7 A$.
 
-\begin{bloqueRevisar}
-    EXPLICAR COMO FUNCIONA CON EL BIESTABLE, QEU PASA CUAND OESTÁ POR ENCIMA POR DEBAJO, COMO SE ENCLAVA EL VALOR DE Q Y POR ESO SIGUE SUBIENDO. PODRÍA SER UNA MÁQUINA DE ESTADOS QUE NO SE HA USADO O UNA SIMPLE TABLA 
-\end{bloqueRevisar}
-
 Cuando la corriente alcanza el límite superior, el biestable conmuta su salida a nivel bajo apagando el MOSFET. Debido a esto, la corriente empieza a decrecer hasta alcanzar el límite inferior, momento en el cual el biestable vuelve a conmutar a nivel alto encendiendo el MOSFET. Esta estrategia de control por conmutación reduce enormemente las pérdidas como se comentó en puntos anteriores. 
-
 
 \subsubsection{Temporizador}
 \label{subsec:temporizador}
@@ -1534,7 +1529,7 @@ En la imagen se especifica, para cada una de las capas del semiconductor, la con
 
 Para el análisis térmico transitorio consideramos el sistema de primer orden asumiendo, por tanto, que se consigue un enfriamiento prácticamente completo tras un intervalo de tiempo de 5 veces su constante de tiempo, es decir, tras al menos $36,955$ milisegundos. Siendo el estrés térmico el factor que más puede afectar a nuestro transistor se ha buscado ser conservador con el enfriamiento seleccionando una resistencia de $100\,k\Omega$. Con este valor, el tiempo disponible de memoria térmica del sistema vendrá dado por la siguiente ecuación:\begin{equation}
     \label{eq:tauDescarga}
-    \tau_\text{descarga} = 5\cdot C_\text{timer} \cdot (R_\text{3}+R_\text{dis})=5\cdot 100\cdot 10^{-9} \cdot (26,1 \cdot 10^{-3}+ 100\cdot 10^{-3}) = 63,05\, ms
+    t_\text{descarga} = 5\cdot C_\text{timer} \cdot (R_\text{3}+R_\text{dis})=5\cdot 100\cdot 10^{-9} \cdot (26,1 \cdot 10^{-3}+ 100\cdot 10^{-3}) = 63,05\, ms
 \end{equation}
 
 Este resultado indica que, durante los $63,05\, ms$ posteriores a una sobrecorriente que no termina en enclavamiento por no superar el tiempo máximo, el sistema asumirá que el transistor está enfriándose y protegerá su integridad disminuyendo el tiempo de limitación de corriente antes del enclavamiento. Cuanto menos espaciadas estén dos sobrecorrientes, mayor será el voltaje restante en el condensador y más cercano estará de superar el valor que hace que el sistema se enclave. 
@@ -1567,9 +1562,81 @@ La justificación teórica nos lleva a los valores descritos de $47\text{ }\mu F
 \end{equation}
 
 Un rizado de 31,3 mV supone únicamente un $0,031\%$ de la tensión nominal de $100\text{ V}$, estando a su vez lejos de la caída de voltaje propia del paso de $3,7\text{ A}$. Por tanto, con estos valores se garantiza un bus estable y seguro cumpliendo con los requisitos determinados a lo largo del capítulo. 
-\begin{bloqueRevisar}
 \section{Síntesis de los valores principales}   
-\end{bloqueRevisar}
+Una vez realizado todo el desarrollo analítico y matemático del capítulo, la síntesis del mismo busca integrar de forma sencilla los requisitos de la normativa ECSS junto a los límites de los componentes seleccionados. Como resultado del desarrollo analítico y matemático presentado en este capítulo, se propone una consolidación paramétrica que integra los requisitos normativos de la normativa ECSS adaptada con los límites físicos del. 
+
+Para entender correctamente el operatividad de un limitador conmutado en un bus de alta tensión de 100 V, es necesario realizar el estudio del comportamiento no únicamente individual de cada etapas, tanto de control como de potencia, sino que es preciso visualizarlo desde la perspectiva común que une cada una de ellas, es decir, la relación entre las constantes eléctricas, las frecuencias del sistema de control y los límites térmicos del semiconductor de potencia N-MOS. 
+
+Con el objetivo de facilitar la visualización, la Tabla \ref{table:ResumenTeoria} ofrece una estructuración de los valores numéricos definitivos y las reglas de decisión para las nueve áreas principales que regulan el sistema. Esta tabla incluye desde los requisitos de la carga hasta las condiciones dinámicas del bus asimétrico del temporizador y el filtro en dos fases de entrada. De esta manera, se asegura que el limitador tenga una base consistentepara enfrentarse a escenarios de cortocircuitosevero  y se proporciona un marco cuantitativo que actuará como punto de partida para los cálculos parásitos de la próxima fase numérica.
+
+\begin{table}[H]
+    \centering
+    \fontsize{10}{12}\selectfont
+    \ttabbox[\textwidth]
+    {\caption{SÍNTESIS DE LOS VALORES PRINCIPALES Y PARÁMETROS DE DISEÑO DEL LCL CONMUTADO (100 V)}}
+    {\begin{tabular}{|P{3.2cm}|P{3.5cm}|P{5.8cm}|}
+        \hline
+        \textbf{PARÁMETRO / CATEGORÍA} & \textbf{VALORES OBTENIDOS} & \textbf{CRITERIO DE SELECCIÓN} \\
+        \hline
+        Especificaciones del bus y de la carga & 
+        $V_\text{bus} = 100\text{ V}$ \newline 
+        $I_\text{lim} = 3,7\text{ A}$ \newline 
+        $t_\text{trip} = 1,5\text{ ms}$ & 
+        Límites del prototipo, empleando el tiempo de disparo más restrictivo de las clases de 28 V debido al incremento de potencia disipada. \\
+        \hline
+        Banda de histéresis de corriente & 
+        $I_\text{hys,sup} = 4,5\text{ A}$ \newline 
+        $I_\text{hys,inf} = 3,7\text{ A}$ \newline 
+        $\Delta i = 0,8\text{ A}$ & 
+        El límite inferior coincide con $I_\text{lim}$ para garantizar la corriente suficiente a la carga y el ancho de banda evita el solapamiento por retardos del sensado. \\
+        \hline
+        Etapa de sensado y acondicionamiento & 
+        $R_\text{shunt} = 22\text{ m}\Omega$ \newline 
+        $P_\text{shunt} = 0,3012\text{ W}$ \newline 
+        $G \approx -25\text{ V/V}$ \newline
+        $V_\text{sense} = 2,035\text{ V}$ & 
+        Minimización de pérdidas térmicas por efecto Joule asegurando una alta relación señal-ruido (SNR). \\
+        \hline
+        Límites térmicos del semiconductor & 
+        $T_\text{j,max} = 125\text{ }^\circ\text{C}$ \newline 
+        $P_\text{mos,max} = 10,07\text{ W}$ \newline 
+        $f_\text{sw,max} \le 2,253\text{ MHz}$ & 
+        Temperatura de seguridad fijada por la hoja de datos y potencia máxima obtenida mediante red térmica equivalente con disipador. \\
+        \hline
+        Dimensionado del inductor ($L$) & 
+        $L_\text{min1} = 3,116\text{ }\mu\text{H}$ \newline 
+        $L_\text{min2} = 1,7\text{ }\mu\text{H}$ \newline 
+        $L_\text{min3} = 42,85\text{ }\mu\text{H}$ \newline 
+        $L_\text{seleccionada} = 68\text{ }\mu\text{H}$ & 
+        Evaluación de las 3 condiciones de la ECSS adaptadas y ajuste a la más restrictiva mediante valor comercial. \\
+        \hline
+        Frecuencia operacional del lazo & 
+        $f_\text{sw} = 614,98\text{ kHz}$ & 
+        Frecuencia teórica resultante para el peor escenario operacional con ciclo de trabajo del 50\% ($V_\text{out} = 50\text{ V}$). \\
+        \hline
+        Parámetros del temporizador RC & 
+        $C_\text{timer} = 100\text{ nF}$ \newline 
+        $R_3 = 26,1\text{ k}\Omega$ \newline 
+        $\tau_\text{carga} = 2,61\cdot10^{-3}$ & 
+        Divisor resistivo fija el umbral de disparo en $V_\text{timON} = 2,035\text{ V}$. \\
+        \hline
+        Memoria térmica de descarga & 
+        $R_\text{dis} = 100\text{ k}\Omega$ 
+        \newline 
+        $t_\text{descarga} = 63,05\text{ ms}$ & 
+        Red asimétrica de descarga basada en la constante de tiempo térmica de la capa interna más lenta del NMOS. \\
+        \hline
+        Filtro de entrada del bus & 
+        $C_\text{bulk} = 47\text{ }\mu\text{F}$  \newline 
+        $C_\text{HF} = 1\text{ }\mu\text{F}$  \newline 
+        $\Delta V_\text{bus} = 31,3\text{ mV}$ & 
+        Configuración en paralelo que combina almacenamiento de energía bulk con baja ESL para alta frecuencia. \\
+        \hline
+        \multicolumn{3}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir de los modelos  analizados en el Capítulo 3.}
+        \label{table:ResumenTeoria}
+    \end{tabular}}
+\end{table}
+
 
 
 \chapter{Elección de componentes e implementación en psim con parásitas de los componentes seleccionados}
@@ -1747,7 +1814,7 @@ La señal de salida ($I_\text{sense2}$), representa la corriente instantánea a 
 
 \subsubsection{Bloque del lazo de histéresis y enclavamiento}
 
-La conmutación se realiza mediante el uso de dos comparadores que establecen el estado de un biestable como se puede observar en Figura \ref{fig:HisteresisKicad}. Para la comparación se establecen en los límites superior e inferior de la banda de histéresis ($I_\text{sup}$ e $I_\text{inf}$) el voltaje medible en la $R_\text{shunt}$ para el paso de la corriente definida, multiplicando el valor por la ganancia de acondicionamiento. De esta manera, las resistencias $R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$ establecen sendos divisores resistivos para obtener un valor intermedio de voltaje a partir de los 5 voltios flotantes el cual se ajusta a los límites deseados mediante los potenciómetros RV1 y RV2. 
+La conmutación se realiza mediante el uso de dos comparadores que establecen el estado de un biestable como se puede observar en la Figura \ref{fig:HisteresisKicad}. Para la comparación se establecen en los límites superior e inferior de la banda de histéresis ($I_\text{sup}$ e $I_\text{inf}$) el voltaje medible en la $R_\text{shunt}$ para el paso de la corriente definida, multiplicando el valor por la ganancia de acondicionamiento. De esta manera, las resistencias $R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$ establecen sendos divisores resistivos para obtener un valor intermedio de voltaje a partir de los 5 voltios flotantes el cual se ajusta a los límites deseados mediante los potenciómetros RV1 y RV2. 
 
 La comparación de la señal amplificada frente a los umbrales se realiza mediante el LM319 (U3A y U3B), el cual por tener salida en colector abierto requiere de las resistencias $R_\text{18}$ y $R_\text{19}$ para la transición entre el nivel bajo y el nivel alto que llega al SN74LVC2G02DCUR (IC2). Las puertas NOR se enrutan de modo que se configuren como biestable RS, memorizando el estado del limitador y teniendo como salida la señal Q. Esta es, junto a la salida del temporizador (la cual es normalmente 1), una de las entradas de la puerta \textit{AND} encargada de activar y desactivar el \textit{driver} que alimenta al transistor. 
 
@@ -1761,13 +1828,16 @@ La comparación de la señal amplificada frente a los umbrales se realiza median
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
-\begin{bloqueRevisar}
+
 \subsubsection{Bloque de temporización}
+La última etapa principal, el temporizador de la Figura \ref{fig:Temporizador_Kicad}, se encarga de contabilizar la duración de la sobrecorriente y, de sobrepasar el limite establecido, enviar la orden que provoca el enclavamiento. 
 
-La inteligencia térmica y la protección de enclavamiento definitivo (*latch-off*) ante sobrecorrientes prolongadas se concentran en el bloque del temporizador analógico de *trip-off*. La monitorización del estado de fallo se realiza mediante el comparador de bajo consumo dual LM393 (U1A), el cual supervisa constantemente el nivel de la señal de corriente filtrada $Isense2$. La red RC asimétrica que modela la memoria térmica del Silicio se implementa mediante la combinación del diodo dual Schottky en configuración de cátodo/ánodo común BAT54S (D3), la resistencia de carga rápida $R_7 = 26.1\,\text{k}\Omega$, la resistencia de descarga lenta $R_8 = 100\,\text{k}\Omega$ y el condensador de temporización $C_{t1} = 100\,\text{nF}$. Ante un fallo, la salida del comparador U1A se satura a nivel alto, forzando la carga del condensador a través de la constante de tiempo corta fijada por $R_7$, mientras que al cesar el fallo, el bloqueo del diodo obliga al condensador a descargarse lentamente a través de $R_8$, reteniendo el voltaje analógico que representa el calor residual acumulado.
+La monitorización se realiza mediante dos comparadores LM393 (U1) en cascada con dos propositos diferenciados. 
+El integrado U1A compara la caída de voltaje en la resistencia de medida tras su amplificación ($Isense2$) con una referencia de voltaje realizada mediante el divisor formado por $R_2$ y $R_3$, y la raíl flotante de 5 voltios. De esta manera se obtiene un voltaje proporcional a la caída de voltaje provocada por un paso de $3,7\,A$.
 
-El segundo canal del circuito integrado, el comparador U1B (LM393), se encarga de monitorizar la tensión instantánea del condensador $C_{t1}$ frente al umbral fijo de referencia del temporizador ($V_{th\_tiempo}$). Dicho umbral nominal se determina mediante un divisor de tensión preciso alimentado desde el raíl estable de $5\,\text{V\_flotantes}$ e integrado por las resistencias $R_2 = 1.6\,\text{k}\Omega$ y $R_3 = 1.1\,\text{k}\Omega$. En el instante preciso en que la rampa de voltaje del condensador colisiona y supera la referencia del divisor, la salida del comparador conmutada de forma abrupta, activando de manera permanente la señal de enclavamiento seguro $Shutdown$. Esta señal digital satura la lógica de la puerta AND (IC3) analizada con anterioridad, provocando la apertura indefinida del MOSFET de potencia y extinguiendo el fallo de forma segura. El integrado dispone de su propio condensador de desacoplo local de fuente de $C_{10} = 100\,\text{nF}$ conectado hacia la masa común flotante del sistema.
+Una vez se mide un voltaje mayor al límite establecido, el condensador se empiza a cargar a través de la resistencia $R_7$ y el paso por el ánodo del diodo D3. Para fallos menores al tiempo de \textit{trip-off}, el condensador se descarga a través de la resistencia de mayor valor $R_8$ y el mismo diodo, dotando al sistema de memoria térmica.
 
+La red RC ($R_7$ y $Ct_1$) se adapta para que el paso de $1,5$ ms equivala al establecido con el divisor resistivo, evitando el uso innecesario de resistencias extras. En caso de superar el tiempo de \textit{trip-off}, el voltaje almacenado en el condensador será mayor que el establecido mediante las $R_2$ y $R_3$ cambiando el nivel de salida del comparador,el cual en caso nominal es alto, a nivel bajo. El cambio de la señal provoca que haya un 0 lógico a la entrada de la puerta \textit{AND} y, por tanto, el MOSFET queda abierto y el fallo extinguido. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1778,35 +1848,36 @@ El segundo canal del circuito integrado, el comparador U1B (LM393), se encarga d
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
-\end{bloqueRevisar}
+
 \subsection{Modelado equivalente en PSIM e integración de efectos parásitos}
-Una vez definido el esquema circuital real en KiCad, es indispensable trasladar dicha arquitectura al entorno de simulación PSIM para validar de forma virtual el comportamiento del sistema. Sin embargo, para obtener resultados realistas que coincidan con el comportamiento del prototipo físico, el modelo no puede ser puramente ideal. Por ello, se ha desarrollado un modelo equivalente conductual distribuido en tres bloques funcionales que integran los retardos de propagación reales de los integrados, el comportamiento no ideal de las etapas de potencia y acondicionamiento, y la emulación analógica de fallos mediante escalones de carga, tal y como se detalla a continuación.
+Una vez definido el esquema del circuito real en KiCad, el siguiente paso en el análisis es trasladar la arquitectura al entorno de simulación PSIM para validar el comportamiento del sistema. Sin embargo, para obtener resultados realistas que coincidan con el comportamiento del prototipo físico, el modelo no puede ser ideal por las limitaciones que nos impone la herramienta. Es por ello por lo que se emplea un modelo de comportamiento equivalente distribuido en los 3 bloques principales, integrando los tiempos de ptopagación de los integrados, las características parásitas de los componentes y elementos para la emulación de fallos. 
 
 \subsubsection{Etapa de potencia, lógica de histéresis y bloques de retardo}
+El núcleo de potencia y el lazo de histéresis se ven implementados en el modelo conductual de la Figura \ref{fig:Principal_psim}. El bus se alimenta con una fuente continua de $100\,\text{V}$ ($V_{bus}$) con dos condensadores no ideales en paralelo, el cerámico de ($C_{bus\_ceramico} = 1\,\mu\text{F}$) y el electrolítico ($C_{bus\_electrolitico} = 47\,\mu\text{F}$). Debido a limitaciones al introducir el modelo del \textit{driver} UCC27511A en PSIM, se ha empleado una fuente de tensión dependiente controlada por la señal de salida del lazo de control (salida de la puerta \textit{AND}) y una resistencia de puerta para excitar la capacidad parásita de la puerta del IRFB4020PBF, transistor modelado con las características de su hoja de datos. 
 
-El núcleo de transferencia de potencia y el lazo de decisión digital se han implementado siguiendo el modelo conductual expuesto en la Figura \ref{fig:Principal_psim}. El bus principal se alimenta mediante una fuente continua anclada a $100\,\text{V}$ ($V_{bus}$), estabilizada en la entrada por los modelos no ideales de los condensadores cerámico ($C_{bus\_ceramico} = 1\,\mu\text{F}$) y electrolítico ($C_{bus\_electrolitico} = 47\,\mu\text{F}$). El comportamiento del driver de puerta comercial UCC27511A se ha modelado de manera conductual mediante una fuente de tensión dependiente controlada por la lógica digital, asociada en serie a una resistencia de puerta equivalente de $10\,\Omega$. Esta red permite excitar la capacidad parásita de puerta del modelo del MOSFET comercial IRFB4020PBF, recreando con fidelidad las pendientes transitorias de tensión y corriente en el silicio.
+La comprobación de la capacidad de protección del circuito se realiza mediante dos resistencias en paralelo. Durante la operación nominal, el convertidor alimenta una resistencia de $R_{load1} = 40\,\Omega$ supliéndola con aproximadamente $2,5 A$. Para comprobar el estado de sobrecorriente, la resistencia en paralelo $R_{sc}$ de $0.1\,\Omega$ se conecta a tierra mediante el interruptor controlado por voltaje, provocando una resistencia de carga equivalente muy inferior a la nominal e induciendo una corriente masiva a través de la resistencia \textit{shunt}.
 
-Para evaluar la capacidad de extinción de la protección ante anomalías severas, la carga del sistema se ha diseñado de forma dinámica. En operación nominal, el convertidor alimenta una resistencia convencional $R_{load1} = 40\,\Omega$. La transición instantánea hacia un estado de sobrecorriente se emula introduciendo una rama en paralelo compuesta por una resistencia de cortocircuito rígido de muy alta intensidad y baja impedancia ($R_{sc} = 0.1\,\Omega$) en serie con un interruptor ideal controlado por tiempo. Al cerrarse dicho interruptor en un instante parametrizado de la simulación, se provoca una caída abrupta de la impedancia de carga que induce la excursión masiva de la corriente a través del shunt de $22\,\text{m}\Omega$ y el inductor de $68\,\mu\text{H}$.
-
-Para garantizar la fidelidad matemática del lazo de histéresis, ha sido crítico incorporar bloques de retraso temporal (\textit{Time Delay}) que representan los tiempos de tránsito reales de los componentes físicos elegidos. En el hardware real, los integrados no conmutan instantáneamente; por ello, se han introducido retardos síncronos extraídos de las hojas de características: bloques de $80\,\text{ns}$ para el comparador de ventana de alta velocidad LM319, bloques de $10\,\text{ns}$ para el tiempo de tránsito combinado de las compuertas lógicas digitales de la familia 74LVC (puertas NOR del biestable y puerta AND de habilitación) y un bloque de $23\,\text{ns}$ para el retardo intrínseco del driver. La simulación de estos más de $110\,\text{ns}$ de retraso acumulado es vital: el desfase provoca que la corriente real continúe subiendo o bajando de forma residual una vez alcanzados los umbrales teóricos ($I_{sup}$ e $I_{inf}$). Modelar este retraso ha permitido ajustar con precisión la ventana de histéresis analógica en el software, evitando sobrepicos imprevistos en la PCB real que degraden la frecuencia de conmutación objetivo.
-
+En cuanto al lazo de histéresis, se ha tenido especial atención a la respuesta temporal mediante la inclusión de bloques de retrasos equivalentes a los tiempos de los componentes elegidos. Por no ser en la electrónica real instantánea la conmutación, se han incluido los siguientes bloques: 
+\begin{itemize}
+    \item \textbf{Comparador LM319:} bloques de $80\,\text{ns}$. 
+    \item \textbf{Puertas lógicas 74LVC:} bloques de $10\,\text{ns}$ para el tiempo combinado de ambas puertas.
+    \item \textbf{\textit{Driver} UCC27511A:} bloque de $23\,\text{ns}$.
+\end{itemize}
+La inclusión en la simulación de estos $113\,\text{ns}$ de retraso permiten realizar un ajuste de los límites de histéresis más adecuado ya que, por este retraso entre medida y cambio de estado del transistor, los límites $I_\text{sup,PCB}$ e $I_\text{inf,PCB}$ deben ser inferior y superior respectivamente a los teóricos buscados ($I_\text{sup} = 4,5\,A$ e $I_\text{inf} = 3,7\,A$).
+Dentro de la Figura \ref{fig:Principal_psim}, se emplean las características de la hoja de datos para el diodo, el inductor, los condensadores, el MOSFET, los comparadores LM319 y las puertas lógicas, además de la respuesta temporal del \textit{driver}.
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
     \ffigbox[\FBwidth]
     {   \caption{Esquema de la etapa de potencia y del control por histéresis del limitador de corriente conmutado implementado en PSIM}
         \label{fig:Principal_psim}}
-    {\includegraphics[width=0.8\textwidth]{Principal_psim.pdf}}
+    {\includegraphics[width=0.9\textwidth]{Principal_psim.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
 
-\subsubsection{Bloque de acondicionamiento de señal interetapa}
-
-La lectura de la caída de tensión diferencial nacida en el shunt de potencia se procesa analógicamente en el subcircuito cerrado de la Figura \ref{fig:Acondicionamiento_psim}, encargado de replicar el comportamiento del integrado comercial OPA2836. En PSIM, esta etapa se ha resuelto conectando en cascada dos macromodelos de amplificadores operacionales de banda ancha (ADA4807) referenciados de manera local a la masa de control ($ControlGND$).
-
-La primera etapa no inversora cuenta con una resistencia de entrada de $1\,\text{k}\Omega$ asociada a una red de realimentación activa compuesta por una resistencia de $4\,\text{k}\Omega$ en paralelo con un condensador de compensación de $3\,\text{pF}$. Acto seguido, la señal se acopla a una segunda etapa inversora dotada de una resistencia de paso de $1\,\text{k}\Omega$ y un lazo de realimentación integrado por una resistencia de $5\,\text{k}\Omega$ y un condensador de $15\,\text{pF}$. Esta topología en cascada modela con exactitud la ganancia y los polos de los filtros paso bajo activos diseñados en KiCad, asegurando que la variable final de salida $Isense2$ llegue a los comparadores purgada del \textit{ringing} de alta frecuencia y de los ruidos electromagnéticos generados por las conmutaciones bruscas de la etapa de potencia.
-
+\subsubsection{Bloque de acondicionamiento de señal}
+La etapa de acondicionamiento analógico en PSIM (Figura \ref{fig:Acondicionamiento_psim}) replica de forma directa la topología en cascada diseñada en KiCad, garantizando así una correspondencia exacta en ganancia y respuesta en frecuencia entre el circuito simulado y el hardware. Las características parásitas se emplean en el OPA2836 con el objetivo de obtener un resultado aproximado a la realidad y el filtro pasivo de entrada se omite debido a que, en la herramienta de simulación, el acoplamiento electromagnético debido a las señales de alta frecuencia no afecta a otros componentes. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1819,13 +1890,13 @@ La primera etapa no inversora cuenta con una resistencia de entrada de $1\,\text
 \end{figure}
 
 \subsubsection{Emulación de colector abierto y lazo de enclavamiento del temporizador}
+El circuito de temporización se ha modelado en PSIM según la arquitectura detallada en la Figura \ref{fig:Timer_psim} teniendo en cuenta las restricciones de los comparadores en PSIM. Por ser el LM393 un componente con salida en colector abierto, este comportamiento se emula mediante el empleo de un interruptor controlado por la tensión de salida de un comparador. Al cambiar el valor del comparador, la resistencia de \textit{pull-up} queda conectada a la masa de control, permitiendo la carga a través de esta resistencia y el raíl de alimentación de $5\,\text{V}$.
 
-El circuito analógico encargado de la protección por fatiga térmica acumulada se ha modelado en PSIM según la arquitectura detallada en la Figura \ref{fig:Timer_psim}, adaptando las restricciones físicas del comparador comercial LM393. Dado que este integrado real dispone de una etapa de salida en colector abierto, ha sido imperativo emular dicho comportamiento situando un transistor bipolar (BJT) configurado como un interruptor de descarga conectado directamente a la masa del temporizador ($ControlGND$), asistido por una resistencia de pull-up real ($R_{pullUP} = 26.1\,\text{k}\Omega$) vinculada al raíl de alimentación de $5\,\text{V}$.
+Cuando la señal de corriente se encuentra por debajo del límite establecido, el interruptor está abierto impidiendo la carga del condensador. Una vez la corriente es suficiente, el valor del comparador cambia cerrando el interruptor y conectando la resistencia a tierra, y en este instante comienza la carga a través del diodo (valores de la hoja de datos del BAT54). En caso de no mantenerse la sobrecorriente, el BJT que actúa como interruptor satura y deriva la tensión de control a masa, descargando el condensador a través de la resistencia de descarga. 
 
-Cuando la señal de corriente acondicionada $Isense2$ opera dentro de los límites seguros, el comparador mantiene el BJT en estado de corte. Esto permite que la corriente del raíl inyecte energía de forma asimétrica y rápida en el condensador de temporización ($C_{timer} = 100\,\text{nF}$) a través del diodo BAT54\_B. En el momento en que el lazo de histéresis extingue la sobrecorriente y el peligro cesa, la conmutación fuerza al BJT a entrar en saturación, actuando como un sumidero que deriva la tensión del nodo de control a masa de forma inmediata; esto obliga al condensador a vaciarse lentamente y de manera controlada en exclusiva a través de la resistencia de descarga fija ($R_{descarga} = 100\,\text{k}\Omega$) acoplada al diodo BAT54\_A.
+El mayor cambio respecto a la implementación real es el enclavamiento. Debido a ser dependientes entre si \textit{Shutdown} y $V_\text{th,tiempo}$, al apagarse el MOSFET y descargarse el condensador, el valor \textit{Shutdown} vuelve a su valor inicial (normalmente '1') y se entra enun bucle que no permite ni enfriarse al MOSFET ni el enclavamiento. Para solventar este problema se opta por forzar el enclavamiento en el momento del cambio de valor de la señal \textit{Shutdown}. Un interruptor controlado por el voltaje invertido de la salida se encuentra entre el valor de referencia y la masa de control, estando normalmente la masa aislada y siendo el valor en $V+$ el establecido por el divisor resistivo. En el instante de activación de la protección, la señal en el interruptor cambia y se conecta $V+$ a tierra, estableciendo en él pin un valor de $0$ voltios.
 
-Finalmente, la lógica de modificación dinámica del umbral de tensión de disparo ($V_{th\_tiempo}$) para evitar el destructivo modo hipo (\textit{hiccup mode}) requiere un tratamiento conductual especial en el software. Si se conectara analógicamente de forma directa la línea digital de salida $Shutdown$ de vuelta al nodo divisor inferior ($1.6\,\text{k}\Omega$ y $1.1\,\text{k}\Omega$), el solucionador numérico de PSIM caería en un bucle algebraico instantáneo infinito (\textit{algebraic loop}), provocando un error de convergencia por matriz singular. Para solventar este límite del programa, se ha implementado un artificio conductual consistente en un interruptor controlado por tensión gobernado por una puerta inversora (NOT) conectada a la señal digital $Shutdown$. Al activarse la protección ($Shutdown = 1$), la puerta NOT abre instantáneamente el interruptor, aislando físicamente la resistencia inferior de $1.6\,\text{k}\Omega$ de la masa de control ($ControlGND$). Esto altera el divisor elevando el potencial del nodo de referencia de forma inmediata, logrando el enclavamiento seguro de la simulación en perfecta consonancia con el comportamiento físico del circuito real de laboratorio.
-
+El valor de 0 voltios en la entrada del comparador provoca que el enclavamiento se mantenga una vez se cumpla el tiempo establecido, imitando de esta manera el comportamiento del circuito real.  
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
