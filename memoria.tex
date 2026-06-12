@@ -1905,20 +1905,21 @@ El valor de 0 voltios en la entrada del comparador provoca que el enclavamiento 
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
 
-\begin{bloqueRevisar}
+
 \subsection{Análisis dinámico y discusión de resultados de la simulación}
 \label{subsec:analisis_dinamico}
-A continuación se discuten los resultados obtenidos en el entorno de simulación PSIM tras someter al limitador de corriente conmutado (LCL) a diferentes escenarios de fallo por sobrecorriente, integrando las características parásitas y los retardos temporales de los componentes comerciales seleccionados.
-
+A partir de los modelos presentados, se discuten a continuación los resultados de simulación obtenidos tras someter al LCL a diferentes fallos por sobrecorriente, tanto de forma transitoria como permanente. 
 \subsubsection{Respuesta temporal ante cortocircuito permanente}
 \label{subsubsec:corto_permanente}
+La Figura~\ref{fig:Ishunt_fallo_permanente} muestra la corriente circulando por la resistencia de sensado $R_{\text{shunt}}$ al introducir un cortocircuito en el instante $t = 1~\text{ms}$. En condiciones nominales (sin fallo) el circuito suministra $2{,}5~\text{A}$ constantes a la carga hasta que se produce el suministro, realizado al conectar una resistencia paralela a la carga ($R_{\text{sc}} = 0{,}1~\Omega$).
 
-La Figura~\ref{fig:Ishunt_fallo_permanente} muestra la dinámica de la corriente circulando por la resistencia de sensado $R_{\text{shunt}}$ cuando se introduce un cortocircuito neto ($R_{\text{sc}} = 0{,}1~\Omega$) en el instante $t = 1~\text{ms}$. En condiciones nominales previas al fallo, el circuito suministra de forma estable una corriente de carga de aproximadamente $2{,}5~\text{A}$. 
+Tras el cortocircuito, la corriente sufre un pico ascendente de corriente y el lazo de control detecta el cortocircuito, comenzando así tanto la carga del temporizador como el control del lazo de histéresis. La imagen muestra perfectamente los dos parámetros claves del LCL: el tiempo de limitación y los límites de histéresis. 
 
-Tras la ocurrencia del cortocircuito, la corriente experimenta un transitorio abrupto ascendente, pero el lazo de histéresis analógico toma el control de forma inmediata. La simulación valida un funcionamiento conmutado continuo durante un intervalo temporal $\Delta t = 1{,}496~\text{ms}$, un valor que presenta una convergencia prácticamente exacta con el tiempo de \textit{trip-off} teórico de $1{,}5~\text{ms}$ fijado en las especificaciones de diseño. Transcurrido este tiempo de seguridad, la señal de \textit{Shutdown} cae a nivel bajo, provocando el enclavamiento definitivo del circuito y extinguiendo la corriente por completo de forma segura.
+Por un lado, la simulación valida el funcionamiento en conmutación del limitador durante un intervalo de tiempo $\Delta t = 1{,}496~\text{ms}$, valor prácticamente idéntico al valor teórico de \textit{trip-off} fijado en las especificaciones en $1{,}5~\text{ms}$. Transcurrido este tiempo durante el cual el circuito conmuta, la señal \textit{Shutdown} cambia a valor bajo como se verá en la Figura \ref{fig:IvsVgsvsEntradasAND} más adelante, y se produce el enclavamiento impidiendo el paso de corriente por la resistencia. 
 
-Asimismo, los umbrales de corriente medidos en la simulación se sitúan en $I_{\text{sup}} = 4{,}465~\text{A}$ e $I_{\text{inf}} = 3{,}708~\text{A}$. Estas pequeñas desviaciones respecto a los límites ideales de diseño ($4{,}5~\text{A}$ y $3{,}7~\text{A}$) están plenamente justificadas por el retardo de propagación total acumulado en el lazo físico de control ($t_{\text{sense}} = 171{,}4~\text{ns}$). Debido a este retraso, el transistor tarde un breve instante en reaccionar una vez que la señal analógica cruza los umbrales lógicos de los comparadores LM319. Con estos resultados se demuestra que el dimensionamiento de la inductancia crítica de $68~\mu\text{H}$ es el adecuado, ya que confina la corriente dentro de la banda de histéresis sin permitir que el \textit{overshoot} dinámico inicial alcance valores destructivos para el MOSFET.
+Por otro lado, la simulación también permite ver los límites de corriente entre los cuales actúa el limitador, siendo estos ($I_{\text{sup}} = 4{,}465~\text{A}$ e $I_{\text{inf}} = 3{,}708~\text{A}$) prácticamente idénticos a los límites teóricos del diseño ($4{,}5~\text{A}$ y $3{,}7~\text{A}$). La pequeña variación en los límites viene justificada por el retardo del lazo de control $t_{\text{sense}}$, lo cual provoca que los valores teóricos de las referencias de histéresis se tengan que adaptar para variar el estado del MOSFET de forma predictiva. Esto se puede ver por ejemplo en el límite superior de histéresis de la Figura \ref{fig:Principal_psim}, el cual corresponde a los $2{,}29~V$ debidos al paso de $4{,}16~A$ por la resistencia de medida. Una vez medido este valor, se da la orden de abrir el N-MOS y el retardo provoca que la transición se produzca al llegar la corriente a prácticamente los $4{,}5~\text{A}$ buscados. 
 
+Por ultimo, los resultados demuestran el correcto dimensionamiento de la inductancia al ser esta capaz de limitar la corriente en la banda de histéresis sin permitir un \textit{overshoot} destructivos para el MOSFET. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1931,15 +1932,15 @@ Asimismo, los umbrales de corriente medidos en la simulación se sitúan en $I_{
 \end{figure}
 
 
-\subsubsection{Validación de la memoria térmica ante fallos sucesivos}
+\subsubsection{Validación ante fallos sucesivos}
 \label{subsubsec:memoria_termica}
+Una vez vista la capacidad del limitador para proteger frente a un cortocircuito permanente, la Figura~\ref{fig:Ishunt_vs_Vctimer} muestra el comportamiento del circuito ante dos eventos cercanos en el tiempo. 
 
-Para comprobar la capacidad de protección del transistor frente a la acumulación de calor provocada por fallos intermitentes, la Figura~\ref{fig:Ishunt_vs_Vctimer} expone el comportamiento del circuito ante dos eventos de cortocircuito muy próximos en el tiempo.
+El primer fallo simula, por ejemplo, el encendido de un motor que provoca un pico de corriente de duración limitada. Durante el intervalo de la sobrecorriente, el condensador del temporizador se empieza a cargar a través de la resistencia de \textit{pull-up}, aumentando de esta manera el voltaje $V_{\text{Ctimer}}$ hasta aproximadamente  $1{,}6~\text{V}$. Una vez finaliza la sobrecorriente, la red RC asimétrica provoca que el condensador se descargue a través de la resistencia de descarga de alto valor, otorgando memoria térmica al sistema y asegurando un correcto enfriamiento del transistor. 
 
-El primer fallo simulado tiene una duración limitada, desconectándose de forma prematura antes de alcanzar el enclavamiento. Durante este intervalo, la tensión en el condensador del temporizador ($V_{\text{Ctimer}}$) asciende de forma lineal a través de la resistencia de \textit{pull-up} de carga ($R_7 = 26{,}1~\text{k}\Omega$) hasta alcanzar aproximadamente $1{,}6~\text{V}$. Al cesar provisionalmente la sobrecorriente, el transistor interno del comparador LM393 se satura a tierra. Sin embargo, debido al diseño asimétrico de la red RC, la descarga del condensador se ve obligada a realizarse a través de la resistencia de descarga de alto valor ($R_{\text{descarga}} = 100~\text{k}\Omega$).
+Debido a la red asimétrica, al provocarse el segundo cortocircuito en $t = 5{,}3~\text{ms}$ el condensador $C_{\text{timer}}$ no se ha descargado por completo (el transistor no se encuentra a temperatura nominal) y el voltaje que se mantiene el mismo será de entorno a $1{,}25~\text{V}$. Al empezar el cortocircuito antes de la descarga, el tiempo para que la tensión $V_{\text{Ctimer}}$ llegue al umbral de disparo ($V_{\text{th,tiempo}} = 2{,}035~\text{V}$ correspondiente a la carga del condensador durante $1{,}5~\text{ms}$) se reduce a $\Delta t = 1{,}081~\text{ms}$.
 
-Como consecuencia directa de esta asimetría, cuando el segundo cortocircuito impacta el sistema en el instante $t = 5{,}3~\text{ms}$, el condensador $C_{\text{timer}}$ no se ha descargado por completo y retiene un voltaje residual de $1{,}25~\text{V}$. Al partir de este nivel preexistente, el tiempo necesario para que la tensión de $V_{\text{Ctimer}}$ alcance el umbral crítico de disparo ($V_{\text{th,tiempo}} = 2{,}035~\text{V}$) se reduce drásticamente a únicamente $\Delta t = 1{,}081~\text{ms}$. Los resultados de la simulación corroboran el correcto modelado de la red térmica de Foster del MOSFET: el circuito posee ``memoria'' del estrés térmico previo, reduciendo el tiempo de exposición ante fallos repetitivos para evitar que el semiconductor supere su temperatura máxima de unión de $125~^{\circ}\text{C}$.
-
+Los resultados obtenidos corresponden a lo modelado y muestran quela memoria térmica del sistema, reduciendo el tiempo de limitación en caso de fallos consecutivos para evitar sobrepasar la temperatura máxima del semiconductor.
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1950,76 +1951,34 @@ Como consecuencia directa de esta asimetría, cuando el segundo cortocircuito im
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
-
-
-\subsubsection{Sincronización de la lógica de control}
-\label{subsubsec:logica_control}
-
-Finalmente, la Figura~\ref{fig:IvsVgsvsEntradasAND} valida la perfecta coordinación cronológica entre las señales de potencia y los estados de la lógica digital flotante referenciada a la masa de control.
-
-Se observa con claridad que mientras la corriente bascula en la banda de histéresis, la señal de salida del biestable ($Q$) alterna flancos lógicos rápidos en perfecta concordancia con los tiempos de conducción ($T_{\text{on}}$) y corte ($T_{\text{off}}$) del dispositivo. Durante esta etapa conmutada, el voltaje puerta-fuente ($V_{\text{GS}}$) del MOSFET IRFB4020PbF conmuta limpiamente entre $15~\text{V}$ (conducción óhmica total) y $0~\text{V}$ (corte absoluto). En el instante exacto en que la señal del temporizador cae a nivel bajo ($0~\text{V}$), la salida de la puerta AND bloquea de forma inmediata e irreversible la inyección de carga en la puerta del MOSFET, forzando a $V_{\text{GS}}$ a mantenerse permanentemente en $0~\text{V}$ a pesar de que el lazo de histéresis siga demandando conmutación. Este análisis gráfico confirma que la etapa de alimentación flotante mediante el convertidor aislado TMA 1515S y el regulador L78L05 opera de manera idónea, asegurando los niveles de tensión necesarios para el control del interruptor del lado de alta (\textit{high-side}).
-
-\begin{figure}[H]
-    \centering
-    \fontsize{10}{12}\selectfont 
-    \ffigbox[\FBwidth]
-    {   \caption[Simulación de lógica de control del LCL conmutado]{Comparativa de la corriente de potencia, la tensión de puerta ($V_\text{GS}$) y los niveles lógicos de control del sistema, las salidas del biestable y del temporizador.}
-        \label{fig:IvsVgsvsEntradasAND}}
-    {\includegraphics[width=1\textwidth]{IvsVgsvsEntradasAND.pdf}}
-    \vspace{2mm}
-    {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
-\end{figure}
-
-\subsubsection{Caracterización del temporizador mediante sobrecarga progresiva por rampa}
+\subsubsection{Caracterización del limitador mediante sobrecarga en rampa}
 \label{subsubsec:caracterizacion_temporizador}
+La Figura~\ref{fig:rampa_corriente} nos permite visualizar el valor de la corriente a partir del cual el circuito comienza a limitar la corriente de forma conmutada mediante el empleo de una fuente de corriente a modo de carga que incrementa de forma lineal la corriente drenada.
 
-Para verificar con precisión estática el comportamiento del circuito de protección y validar el modelo matemático del temporizador, se analizan los resultados del ensayo bajo una sobrecarga progresiva controlada por la acción conjunta de la fuente PWL y la VCCS. Este enfoque metodológico permite aislar de forma limpia la dinámica de la red RC de los transitorios inductivos severos o sobretensiones propias de un cortocircuito franco.
+El circuito opera incialmente de forma nominal, suministrando a la carga una corriente continua de $2{,}5~\text{A}$. Una vez pasados $2~\text{ms}$ se conecta la fuente de corriente lineal creciente, aumentando de esta manera la corriente por la resistencia de sensado $R_{\text{shunt}}$. Como se puede comprobar en la gráfica, al alcanzar la corriente los $3{,}696~\text{A}$ (valor muy similar a los $3{,}7~\text{A}$ teóricos) se supera el umbral de activación de la referencia de entrada del primer comparador del temporizador, dando inicio a la carga del condensador $C_{\text{timer}}$ y activándose el limitador, validando así el diseño. 
 
-Como se observa en la Figura~\ref{fig:rampa_corriente}, el circuito opera inicialmente en régimen estacionario nominal de forma estable, suministrando una corriente de carga de aproximadamente $2{,}5~\text{A}$. Al comenzar la rampa ascendente de sobrecarga, la corriente por la resistencia de sensado $R_{\text{shunt}}$ se incrementa de manera lineal. En el instante preciso en que la corriente alcanza los $3{,}696~\text{A}$, valor que presenta una convergencia prácticamente exacta con el umbral teórico de diseño de $3{,}7~\text{A}$ (error inferior al $0{,}1\%$), la señal acondicionada $V_{\text{sense}}$ iguala la referencia estática de activación de $2{,}035~\text{V}$ calculada en la Ecuación~(3.24). Como consecuencia directa de este cruce, el primer comparador del temporizador (U1A) conmuta su salida de colector abierto al estado inactivo, liberando el nodo de descarga y dando inicio inmediato al proceso de carga exponencial del condensador $C_{\text{timer}}$ a través de la resistencia $R_7$.
-
-Un aspecto fenomenológico fundamental de esta caracterización es que la evolución temporal de la corriente por $R_{\text{shunt}}$ no presenta el clásico rizado triangular característico del control por histéresis observado en el ensayo de cortocircuito. Este comportamiento está plenamente justificado por la naturaleza circuital del modelo de carga dinámica implementado. Al emplear una fuente de corriente controlada por tensión (VCCS) ideal actuando como sumidero, la corriente de la rama queda gobernada de forma extrínseca y obligada por la función lineal programada en la fuente PWL. Por consiguiente, aunque el lazo analógico detecte el sobrepaso de los límites e inyecte los correspondientes pulsos de conmutación en la puerta del MOSFET intentando modular el canal para restringir el paso de energía, la VCCS fuerza la continuidad del ascenso lineal de la corriente.
-
-Este desacoplamiento dinámico resulta metodológicamente muy ventajoso para la validación del sistema de seguridad. Al suprimir la modulación de alta frecuencia sobre la etapa de potencia, se demuestra visual y cuantitativamente que la activación de la protección responde de manera determinista al cruzar el umbral estático establecido, permitiendo registrar de forma unívoca el perfil de carga del temporizador analógico hasta el enclavamiento definitivo (*trip-off*) del limitador tras un intervalo temporal de $1{,}496~\text{ms}$.
-
+La falta de rizado de conmutación propia del control por histéresis en la señal de corriente se debe al modelado de la carga. Al emplear una fuente de corriente controlado por tensión ideal, la corriente que fluye por la resistencia está gobernada por la fuente de voltaje por tramos (\textit{Piece Wise Linear Voltage Source}), impidiendo la actuación del lazo analógico. El empleo anterior de otras figuras que muestran la correcta conmutación nos permiten centrarnos en la Figura~\ref{fig:rampa_corriente} en justificar la correcta determinación del umbral de limitación. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
     \ffigbox[\FBwidth]
-    {   \caption[Simulación de caracterización mediante rampa de sobrecarga progresiva]{Caracterización dinámica del limitador mediante rampa de corriente comandada por una fuente de tensión PWL y una VCCS, detallando el punto exacto de activación del temporizador ($I_{\text{lim}} = 3{,}696~\text{A}$) y la evolución de $V_{\text{Ctimer}}$.}
+    {   \caption[Simulación de caracterización mediante rampa de sobrecarga progresiva]{Caracterización dinámica del limitador mediante rampa de corriente comandada por una fuente de tensión PWL, detallando el punto exacto de activación del limitador}
         \label{fig:rampa_corriente}}
     {\includegraphics[width=1\textwidth]{rampa_corriente.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
 
+\subsubsection{Sincronización de la lógica de control}
+\label{subsubsec:logica_control}
+Finalmente, la Figura~\ref{fig:IvsVgsvsEntradasAND} muestra la coordinación entre la lógica digital (referenciada a masa de control), el voltaje de excitación del MOSFET y la presencia o ausencia de sobrecorriente por la resistencia de medida. 
 
-\begin{comment}
-
-
-\begin{figure}[H]
-    \centering
-    \fontsize{10}{12}\selectfont 
-    \ffigbox[\FBwidth]
-    {   \caption[Simulación de respuesta temporal ante fallo permanente]{Respuesta dinámica de la corriente por $R_\text{shunt}$ ante un cortocircuito permanente, mostrando el tiempo de operación conmutada previa al enclavamiento.}
-        \label{fig:Ishunt_fallo_permanente}}
-    {\includegraphics[width=1\textwidth]{Ishunt_fallo_permanente.pdf}}
-    \vspace{2mm}
-    {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \fontsize{10}{12}\selectfont 
-    \ffigbox[\FBwidth]
-    {   \caption[Simulación de la dinámica de $V_\text{Ctimer}$ frente a fallos sucesivos]{Análisis dinámico de la corriente por $R_\text{shunt}$ y la tensión acumulada en el condensador del temporizador ($V_\text{Ctimer}$), validando el diseño asimétrico de carga del temporizador.}
-        \label{fig:Ishunt_vs_Vctimer}}
-    {\includegraphics[width=1\textwidth]{IshuntvsVctimer.pdf}}
-    \vspace{2mm}
-    {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
-\end{figure}
-
-
-
+En la figura se observan tres etapas funcionales distinguibles: el funcionamiento nominal, la limitación de corriente y el enclavamiento. 
+\begin{itemize}
+    \item \textbf{Funcionamiento nominal ($\text{t}<1\text{ms}$ y $2{,}1\text{ ms}<\text{t}<4\text{ ms}$):} durante estos periodos de tiempo la corriente es menor del límite establecido ($3{,}696~\text{A}$) por lo que el condensador de temporización no está cargado (salida del temporizador alta) y la corriente no incumple los límites de histéresis (salida del biestable alta). Debido a esto, la salida de la puerta lógica \textit{AND} es un ``1'' lógico y, por tanto, el \textit{driver} hace que haya una tensión $V_{\text{GS}}\text{ de } 15 V$ que provoca que el el N-MOS conduzca.
+    \item \textbf{Limitación de corriente ($1\text{ ms}<\text{t}<2{,}1\text{ ms}$ y $4\text{ ms}<\text{t}<4{,}6\text{ ms}$):} durante estos periodos de tiempo la corriente se encuentra por encima del límite de $3{,}696~\text{A}$. Debido a que el tiempo de limitación es todavía menor al tiempo de \textit{trip-off}, el condensador no está cargado y la señal del temporizador se mantiene alta. Sin embargo, la señal de salida del biestable alterna ``1'' lógicos (aumento de corriente) y  ``0'' lógicos (caída de corriente) durante el tiempo de conducción ($T_{\text{on}}$) y corte ($T_{\text{off}}$) del MOSFET. De esta manera, la salida de la puerta lógica \textit{AND} es solo alta durante el aumento de corriente hasta el límite superior de histéresis y $V_{\text{GS}}$ solo será 15 voltios durante estos instantes.
+    \item \textbf{Enclavamiento ($\text{t}>4{,}6\text{ ms}$): }a partir de este instante, el voltaje en el condensador $C_{\text{timer}}$ es mayor a la referencia establecida para los $1{,}5~\text{ms}$ y la señal de salida del temporizador pasa a ser baja. Debido a esto, la salida de la puerta \textit{AND} será constantemente baja y el \textit{driver} dejará de suministrar $+ 15$ voltios flotantes a la puerta del transistor, impidiendo el paso de corriente y aislando la carga.
+\end{itemize}
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -2031,9 +1990,6 @@ Este desacoplamiento dinámico resulta metodológicamente muy ventajoso para la 
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
 
-\end{comment}
-    
-\end{bloqueRevisar}
 
 
 
