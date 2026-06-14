@@ -32,7 +32,7 @@
 %	CONFIGURACIÓN DEL DOCUMENTO
 %----------
 
-\documentclass[12pt,twoside,openright]{report} % fuente a 12pt
+\documentclass[12pt]{report} % fuente a 12pt
 \raggedbottom
 \usepackage{comment}
 % MÁRGENES: 2,5 cm sup. e inf.; 3 cm izdo. y dcho.
@@ -407,8 +407,10 @@ Como se ha presentado en los anteriores puntos, las topologías tradicionales de
 
 
 
-
-
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
 
 
 
@@ -647,7 +649,6 @@ Con el objetivo de concluir el análisis realizado en el capítulo, en esta últ
 \end{enumerate}
 
 En los siguientes capítulos se partirá de lo expuesto hasta el momento para desarrollar una solución viable que mejore las prestaciones de los sistemas lineales tradicionales. La propuesta se basará en el uso de un limitador de corriente de enclavamiento conmutado para proporcionar una protección eficiente, a altas frecuencias de conmutación y estable térmicamente.
-
 
 \chapter{Diseño teórico del LCL conmutado}
 
@@ -1634,7 +1635,10 @@ Con el objetivo de facilitar la visualización, la Tabla \ref{table:ResumenTeori
     \end{tabular}}
 \end{table}
 
-
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
 
 \chapter{Elección de componentes e implementación en psim con parásitas de los componentes seleccionados}
 Una vez realizado el dimensionamiento y análisis teórico del circuito debemos trasladar lo observado a la realidad de nuestra aplicación. En el anterior capítulo se presentaron ciertos valores parásitos de los componentes a usar sin justificar la elección de los mismos para no repetir los cálculos en el caso ideal y con elementos parásitos. 
@@ -1989,7 +1993,10 @@ En la figura se observan tres etapas funcionales distinguibles: el funcionamient
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
-
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
 \chapter{Montaje en placa, respuesta en osciloscopio y discusión de resultados}
 \label{ch:montaje_y_resultados}
 Tras el modelado, selección de componentes y validación con simulación en PSIM (empleando parámetros parásitos), este capítulo aborda el prototipado físico y la validación del limitador de enclavamiento conmutado mediante pruebas en el laboratorio.
@@ -2146,13 +2153,10 @@ Hay que modificar los divisores de tensión tanto superior como inferior para qu
 Además, para el cambio de cualquoiera de los parámetros debe tenerse en cuenta las especificaciones de los integrados y determinar si los nuevos valores no los rompen.
 \end{comment}
 \begin{bloqueRevisar}
-    
 
 \chapter{Metodología de Escalado del Diseño}
 
 Una vez validada la arquitectura del limitador de corriente de enclavamiento (LCL) conmutado en términos de eficiencia, respuesta transitoria y márgenes de estabilidad térmica para el punto de operación de consigna, el diseño se sistematiza como una plataforma modular. El objetivo de este capítulo es definir el procedimiento analítico para adaptar el circuito a diferentes escenarios operacionales, caracterizados por nuevas tensiones de bus ($V_{bus}$), corrientes de limitación ($I_{lim}$), límites de histéresis ($\Delta i$) y tiempos de disparo (\textit{trip-off time}, $t_{trip}$).
-
-Para automatizar este proceso, se ha desarrollado un script de cálculo sencillo(cuyo código fuente se adjunta en el Anexo) que recibe las especificaciones de la nueva carga y computa de forma secuencial tanto las restricciones mecánicas y magnéticas de la etapa de potencia como los componentes pasivos de la lógica analógica de control.
 
 \section{Dimensionado y Validación de la Etapa de Potencia}
 
@@ -2167,36 +2171,45 @@ El escalado del circuito no puede limitarse a la modificación de los umbrales d
     \end{equation}
 \end{itemize}
 
-\section{Modificaciones en el Bloque Temporizador de Seguridad}
+\section{Adaptación del Tiempo de Temporización (\textit{Trip-off Time})}
 
-El bloque de temporización requiere dos ajustes independientes para su correcto escalado:
+El tiempo de seguridad durante el cual el circuito permite la conmutación en modo de limitación antes del enclavamiento definitivo ($t_{trip}$) está gobernado por la constante de tiempo de una red RC asimétrica. Para escalar este parámetro manteniendo la flexibilidad del diseño, se fija el condensador de temporización en un valor comercial altamente estable ($C_{timer} = 100$~nF) y se sintoniza la resistencia de carga $R_3$.
 
-\begin{enumerate}
-    \item \textbf{Referencia de activación ($V_{TimON}$):} Para asegurar que el temporizador comience a acumular carga únicamente cuando la corriente supera el valor de limitación nominal $I_{lim}$, se debe recalcular el divisor resistivo ($R_1$ y $R_2$) alimentado a $5$~V que fija la tensión de referencia:
-    \begin{equation}
-        V_{TimON} = I_{lim} \cdot R_{shunt} \cdot G
-    \end{equation}
-    Donde $G = 25$~V/V es la ganancia de la etapa de acondicionamiento. A partir de $V_{TimON}$, la relación del divisor viene dada por:
-    \begin{equation}
-        \frac{R_1}{R_2} = \frac{5\,\text{V}}{V_{TimON}} - 1
-    \end{equation}
-    \item \textbf{Red RC de temporización asimétrica:} El tiempo de disparo (\textit{trip-off time}, $t_{trip}$) viene determinado por la constante de tiempo de carga $\tau_{carga} = R_3 \cdot C_{timer}$. Fijando el condensador en un valor comercial estable ($C_{timer} = 100$~nF), la resistencia de carga $R_3$ se calcula mediante la ecuación transitoria de carga considerando la caída del diodo ($V_F \approx 0.32$~V):
-    \begin{equation}
-        R_3 = \frac{-t_{trip}}{C_{timer} \cdot \ln\left(1 - \frac{V_{TimON}}{5\,\text{V} - V_F}\right)}
-    \end{equation}
-\end{enumerate}
+La tensión en el condensador sigue una curva de carga exponencial hacia el valor asintótico de alimentación deduciendo la caída en el diodo de bloqueo ($V_F \approx 0.32$~V). El disparo se ejecuta cuando dicha tensión alcanza el umbral de referencia $V_{TimON}$ (definido en la Sección siguiente). Despejando la resistencia de la respuesta transitoria del circuito, se obtiene la ecuación de escalado:
+\begin{equation}
+    R_3 = \frac{-t_{trip}}{C_{timer} \cdot \ln\left(1 - \frac{V_{TimON}}{5\,\text{V} - V_F}\right)}
+\end{equation}
 
-\section{Modificaciones en el Bloque de Histéresis}
+\textit{Restricción de diseño:} Desde el punto de vista analítico, existe una limitación física insalvable: la tensión de consigna $V_{TimON}$ debe ser estrictamente menor que la tensión máxima de carga ($5\,\text{V} - V_F$). Si el escalado de corriente eleva $V_{TimON}$ cerca de este umbral, el tiempo de carga tenderá a infinito, impidiendo el enclavamiento de seguridad.
 
-Para adaptar los límites de conmutación a la nueva banda permisible de la carga, se deben modificar las tensiones de referencia de los comparadores rápidos ($V_{superior}$ y $V_{inferior}$):
+\section{Adaptación de la Corriente de Limitación}
 
+Para modificar el punto de operación nominal en el que el circuito activa la protección por sobrecorriente ($I_{lim}$), es necesario adaptar la tensión de referencia de activación del temporizador ($V_{TimON}$). Esta tensión analógica representa el umbral que la etapa de potencia no debe rebasar en condiciones normales y se deriva de la ganancia del amplificador de corriente ($G = 25$~V/V) y el valor óhmico de la resistencia de sensado ($R_{shunt}$):
+\begin{equation}
+    V_{TimON} = I_{lim} \cdot R_{shunt} \cdot G
+\end{equation}
+
+Una vez calculada la tensión de consigna $V_{TimON}$, se debe modificar el divisor de tensión analógico alimentado por el bus de control de $5$~V. Asumiendo una configuración de divisor de tensión resistivo estándar donde $R_1$ actúa como resistencia de \textit{pull-up} (conectada a $5$~V) y $R_2$ como resistencia de \textit{pull-down} (conectada a tierra), la relación de escalado para estos componentes pasivos viene dada por:
+\begin{equation}
+    \frac{R_1}{R_2} = \frac{5\,\text{V}}{V_{TimON}} - 1
+\end{equation}
+Cualquier cambio en $I_{lim}$ obliga a recalcular este divisor para garantizar que el temporizador comience a acumular carga exactamente en el nuevo umbral crítico.
+
+\section{Adaptación de los Límites de Histéresis}
+
+El control por banda de histéresis exige definir con precisión los límites de conmutación superior ($I_{hys,sup}$) e inferior ($I_{hys,inf}$) alrededor de la corriente de defecto. Estos límites delimitan la ventana de oscilación de la corriente en la bobina durante el periodo de sobrecarga. Para adaptar el circuito a las tolerancias específicas de una nueva carga, se deben recalcular las tensiones de referencia de los comparadores analógicos rápidos:
 \begin{itemize}
-    \item \textbf{Umbral superior:} $V_{superior} = I_{hys,sup} \cdot R_{shunt} \cdot G$
-    \item \textbf{Umbral inferior:} $V_{inferior} = I_{hys,inf} \cdot R_{shunt} \cdot G$
+    \item \textbf{Umbral de tensión superior:} 
+    \begin{equation}
+        V_{superior} = I_{hys,sup} \cdot R_{shunt} \cdot G
+    \end{equation}
+    \item \textbf{Umbral de tensión inferior:} 
+    \begin{equation}
+        V_{inferior} = I_{hys,inf} \cdot R_{shunt} \cdot G
+    \end{equation}
 \end{itemize}
-Estas referencias flotantes se ajustan físicamente mediante la sintonización de los divisores potenciómetricos correspondientes del bloque de histéresis analógico, asegurando que la banda de histéresis $\Delta i = I_{hys,sup} - I_{hys,inf}$ mantenga una frecuencia operacional compatible con las pérdidas dinámicas admisibles del MOSFET y la velocidad de respuesta del lazo analógico.
 
-
+Físicamente, estas tensiones se sintonizan modificando los divisores potenciómetricos del bloque de histéresis. Es imperativo señalar que la amplitud de la ventana de histéresis ($\Delta i = I_{hys,sup} - I_{hys,inf}$) dicta de forma directa la frecuencia de conmutación del MOSFET de canal N. Una ventana excesivamente estrecha incrementará drásticamente las pérdidas dinámicas por conmutación ($P_{sw}$) en el NMOS y podría provocar disparos erráticos debido al ruido de alta frecuencia del lazo analógico.
 
 	% COMENZAR A ESCRIBIR la MEMORIA
 	
@@ -2316,7 +2329,7 @@ Estas referencias flotantes se ajustan físicamente mediante la sintonización d
 \clearpage
 \addcontentsline{toc}{chapter}{Bibliografía}
 \setquotestyle[english]{british} % Cambiamos el tipo de cita porque en el estilo IEEE se usan las comillas inglesas.
-\printbibliography
+\printbibliography 
 
 
 
@@ -2325,13 +2338,105 @@ Estas referencias flotantes se ajustan físicamente mediante la sintonización d
 %----------	
 
 % Si tu trabajo incluye anexos, puedes descomentar las siguientes líneas
-\chapter* {Anexo 1}
-\begin{bloqueRevisar}
-BILL OF MATERIALS
+\chapter* {Anexo 1: Lista de Materiales}
+\begin{table}[H]
+    \centering
+    \fontsize{10}{12}\selectfont
+    \captionsetup{width=\textwidth}
+    \ttabbox[\textwidth]
+    {\caption{LISTA DE MATERIALES (BOM) - PARTE I: ACONDICIONAMIENTO ANALÓGICO, ALIMENTACIÓN FLOTANTE Y CONECTORES.}\label{table:bom_parte1}}
+    {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
+        \hline
+        \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
+        \hline
+        % ACONDICIONAMIENTO ANALÓGICO
+        C1 & 10n & 80-C0805C103K1GECLR & Condensador cerámico MLCC 100V 0,01$\mu$F C0G 0805 10\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        C2 & 3p & 581-08055U3R0BAT2A & Condensador cerámico MLCC 50V 3pF C0G 0805 $\pm$0,1pF & Acondicionamiento Analógico \\ \hline
+        C5 & 15p & 581-08051U150FAT2A & Condensador cerámico MLCC 100V 15pF C0G 0805 1\% & Acondicionamiento Analógico \\ \hline
+        R1 & 100 & 754-RG2012P-101-B-T5 & Resistencia película fina SMD 1/8W 100 $\Omega$ 0,1\% 0805 25ppm & Acondicionamiento Analógico \\ \hline
+        R2 & 1.6k & 667-ERA-6AEB162V & Resistencia película fina SMD 0805 1/8W 1,6k$\Omega$ 0,1\% & Acondicionamiento Analógico \\ \hline
+        R3 & 1.1k & 667-ERA-6APB112V & Resistencia película fina SMD 0805 1,1k$\Omega$ 0,1\% 15ppm AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        R5 & 3.9k & 667-ERA-6VEB3901V & Resistencia película fina SMD 0805 3,9k$\Omega$ 0,1\% 25ppm & Acondicionamiento Analógico \\ \hline
+        R11 & 5.1k & 660-RN73R2ATD5101B25 & Resistencia película fina SMD 5,1k$\Omega$ 0,1\% 25ppm 0805 & Acondicionamiento Analógico \\ \hline
+        R13 & 5.6k & 667-ERJ-P06D5601V & Resistencia película gruesa SMD 0805 5,6k$\Omega$ 0,5W 0,5\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        U2 & OPA2836 & 595-OPA2836QDGKRQ1 & Amplificador operacional doble de bajo consumo y 180 MHz Rail-to-Rail & Acondicionamiento Analógico \\ \hline
+        
+        % ALIMENTACIÓN FLOTANTE
+        C7 & 47u & 80-A780EN476M1 HLAS50 & Condensador de aluminio con polímero orgánico 50V 47$\mu$F 20\% ESR=50 m$\Omega$ & Alimentación Flotante \\ \hline
+        C11 & 2.2u & 810-CGA4J7R2A225K125 & Condensador cerámico MLCC 0805 100V 2,2$\mu$F 10\% AEC-Q200 & Alimentación Flotante \\ \hline
+        C12 & 10u & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Alimentación Flotante \\ \hline
+        C13, C16 & 100n & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Alimentación Flotante \\ \hline
+        C14 & 330n & 80-C0805F334K5RACTU & Condensador cerámico MLCC 50V 0,33$\mu$F X7R 0805 10\% & Alimentación Flotante \\ \hline
+        PS1 & TMA 1515S & 495-TMA-1515S & Convertidor DC/DC aislado de montaje pasante 1W, encapsulado plástico & Alimentación Flotante \\ \hline
+        U4 & L78L05 SO8 & 511-L78L05CD-TR & Regulador de voltaje lineal positivo 5,0V 0,1A SO-8 & Alimentación Flotante \\ \hline
+        
+        % CONECTORES
+        J1, J2, J3 & 1715721 & 651-1715721 & Bloque de terminales fijos para PCB 2 polos 5,08mm 90$^\circ$ & Conectores \\ \hline
+        \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir del netlist de KiCad y Mouser Electronics.}
+    \end{tabular}}
+\end{table}
 
-Revisar cuales son los componentes finales usados en la placa y preguntar que debería poner: lo que he usado para los cálculos o lo que al final se emplean realmente. 
+\newpage % Forzamos salto limpio a la siguiente página
+\begin{table}[H]
+    \centering
+    \fontsize{10}{12}\selectfont
+    \captionsetup{width=\textwidth}
+    \ttabbox[\textwidth]
+    {\caption{LISTA DE MATERIALES (BOM) - PARTE II: ETAPA DE POTENCIA Y GATE DRIVER.}\label{table:bom_parte2}}
+    {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
+        \hline
+        \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
+        \hline
+        % ETAPA DE POTENCIA
+        - & 262-75ABE-01 & 567-262-75AB-01E & Disipador de calor de aluminio para TO-220, montaje horizontal/vertical & Etapa de Potencia \\ \hline
+        Cf1 & 1u & 581-1812VC105KAT2A & Condensador cerámico MLCC 250V 1$\mu$F X7R 1812 10\% & Etapa de Potencia \\ \hline
+        D2 & STPSC 6H065B - TR & 511-STPSC6H065B-TR & Diodo Schottky de SiC 650V Power Schottky 6A 10nC & Etapa de Potencia \\ \hline
+        L1 & 74435 586800 & 710-74435586800 & Inductor de potencia SMD WE-HCI 68$\mu$H 7,5A DCR=27,3m$\Omega$ & Etapa de Potencia \\ \hline
+        Q1 & IRFB 4020PBF & 942-IRFB4020PBF & MOSFET de potencia N-CH 200V 100m$\Omega$ 18A 18nC Qg & Etapa de Potencia \\ \hline
+        Rs1 & 22m & 71-WSL 2512R0220FEA18 & Resistencia Shunt de detección de corriente SMD 2W 0,022$\Omega$ 1\% & Etapa de Potencia \\ \hline
+        
+        % GATE DRIVER
+        C4 & 47u & 80-EDH476M250A9TAA & Condensador electrolítico de aluminio SMD 250V 47$\mu$F 20\% & Gate Driver \\ \hline
+        C8 & 100n & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Gate Driver \\ \hline
+        IC1 & UCC27511 AQDBVRQ1 & 595-UCC27511 AQDBVRQ1 & Controlador de puerta (\textit{Gate Driver}) monocanal de alta velocidad & Gate Driver \\ \hline
+        R6 & 4.7 & 71-CRCW12064R70 FKEAH & Resistencia película gruesa SMD 3/4W 4,7$\Omega$ 1\% High Power AEC-Q200 & Gate Driver \\ \hline
+        R10 & 10 & 71-CRCW120610R0 JNEAH & Resistencia película gruesa SMD 3/4W 10$\Omega$ 5\% High Power AEC-Q200 & Gate Driver \\ \hline
+        \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir del netlist de KiCad y Mouser Electronics.}
+    \end{tabular}}
+\end{table}
 
-\end{bloqueRevisar}
+\newpage % Forzamos un salto de página limpio para el último bloque
+\begin{table}[H]
+    \centering
+    \fontsize{10}{12}\selectfont
+    \captionsetup{width=\textwidth}
+    \ttabbox[\textwidth]
+    {\caption{LISTA DE MATERIALES (BOM) - PARTE III: LÓGICA Y CONTROL.}\label{table:bom_parte3}}
+    {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
+        \hline
+        \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
+        \hline
+        % LÓGICA Y CONTROL
+        C9 & 10u & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Lógica y Control \\ \hline
+        C10, C15 & 100n & 187-CL05B104KBD6PJC & Condensador cerámico MLCC 0402 100nF X7R 50V $\pm$10\% & Lógica y Control \\ \hline
+        Ct1 & 100n & 667-ECH-U1104JC9 & Condensador de película plástica PPS 0,1$\mu$F 100V 5\% 2820 & Lógica y Control \\ \hline
+        D3 & BAT54S & 637-BAT54S & Diodo Schottky de señal dual en serie, SOT-23, 30V, 0,2A & Lógica y Control \\ \hline
+        IC2 & SN74LVC 2G02DCUR & 595-SN74LVC2G02DCUR & Puertas lógicas NOR duales de 2 entradas positivas (Biestable RS) & Lógica y Control \\ \hline
+        IC3 & 74LVC 1G08QW5-7 & 621-74LVC1G08QW5-7 & Puerta lógica AND simple calificada para automoción SOT-25 & Lógica y Control \\ \hline
+        R4 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
+        R7 & 26.1k & 667-ERJ-P06F2612V & Resistencia película gruesa SMD 0805 26,1k$\Omega$ 0,5W 1\% AEC-Q200 & Lógica y Control \\ \hline
+        R8 & 100k & 603-AC0805JR-7W100KL & Resistencia película gruesa SMD Grado Automoción 0805 100k$\Omega$ 5\% & Lógica y Control \\ \hline
+        R9 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
+        R14, R15, R16, R17 & 10k & 660-RN73H2ATD1002B25 & Resistencia película fina SMD 10k$\Omega$ 0805 0,1\% 25ppm 125mW 100V & Lógica y Control \\ \hline
+        R18, R19 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% (Pull-Up RS) & Lógica y Control \\ \hline
+        RV1, RV2 & 10k & 652-3314G-1-103E & Potenciómetro ajustable SMD 10k$\Omega$ 20\% 4mm SQ SMT Single-Turn & Lógica y Control \\ \hline
+        U1 & LM393 & 595-LM393BIDR & Comparadores analógicos dobles de propósito general (Temporizador) & Lógica y Control \\ \hline
+        U3 & LM319 & 926-LM319AM/NOPB & Comparadores analógicos dobles de alta velocidad (Histéresis) & Lógica y Control \\ \hline
+        
+        \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir del netlist de KiCad y Mouser Electronics.}
+    \end{tabular}}
+\end{table}
+
 
 \pagenumbering{gobble} % Las páginas de los anexos no se numeran
 \end{bloqueRevisar}
