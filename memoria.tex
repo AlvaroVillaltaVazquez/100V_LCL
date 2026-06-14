@@ -1990,25 +1990,131 @@ En la figura se observan tres etapas funcionales distinguibles: el funcionamient
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
 
-
-
-
-
-
-
-
-
-
 \chapter{Montaje en placa, respuesta en osciloscopio y discusión de resultados}
-\chapter{Metodología de Escalado del Diseño}
+\label{ch:montaje_y_resultados}
+Tras el modelado, selección de componentes y validación con simulación en PSIM (empleando parámetros parásitos), este capítulo aborda el prototipado físico y la validación del limitador de enclavamiento conmutado mediante pruebas en el laboratorio.
+
+Entrados en esta fase, el comportamiento del sistema deja de estar gobernado únicamente por las ecuaciones ideales expuestas y pasa a estar condicionado por la geometría del sistema, como las inductancias parásitas de las trazas de  cobre, el acoplamiento de señales, los tiempos de retraso... por lo que es el objetivo de este capítulo demostrar la viabilidad del limitador diseñado, evaluando la robustez y tiempo de respuesta frente a sobrecorrientes en un entorno de laboratorio. 
+
+En un primer lugar se mostrará la distribución de los componentes en la placa, el uso de planos de masa... para posteriormente estudiar la respuesta en el osciloscopio de las ondas principales. Finalemente, se realizará un análisis de los resultados comparándolos con las simulaciones y justifiando las desviaciones respecto al modelo teórico. 
+\section{Diseño y montaje del circuito impreso (PCB)}
+
+El diseño de la placa de circuito impreso se ha realizado mediante la herramienta KiCad. Debido a la alta frecuencia de conmutación (en torno a los $600\text{ kHz}$) y los niveles de potencia significativos, el \textit{layout} no solo cumple con la función de conectar los componentes, sino que debe estar acortde al comportamiento dinámico y el ruido electromagnético que se pueda generar. 
+
+A continuación, se detallan los criterios de diseño aplicados para la distribución de componentes, dimensionamiento de pistas y separación de planos de masa.
+
+\subsection{Estrategia de distribución y agrupación}
+
+Con el objetivo de mitigar el acoplamiento del ruido desde la etapa de potencia a la etapa de acondicionamiento se ha tenido especial cuidado con la distribución espacial de la placa. Todo el lazo analógico (acondicionamiento, temporización e histéresis) se ha agrupado de forma compacta en una zona de la PCB, separando este bloque de la zona de alta corriente. 
+
+La agrupación del lazo se realiza por dos motivos principales causados por la zona de alta frecuencia:
+\begin{itemize}
+    \item \textbf{Minimización de pistas:} las trazas de entrada a los integrados actúan como antenas de los campos eléctricos ($dv/dt$) generados por la conmutación del N-MOS. Al reducir las distancias entre los componentes se reduce el acoplo de ruido y se mejoran las mediciones.
+    \item \textbf{Reducción del área de los bucles de señal:} los lazos de control se trazan de forma reducida para evitar en este caso el acoplamiento magnético por inducción ($di/dt$), provocando disparos indeseados del transisotr o distorisión en la lectura de corriente. 
+\end{itemize}
+
+% ==========================================
+% INSERCIÓN DE IMAGEN 1: VISTA GENERAL DEL LAYOUT
+% ==========================================
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    
+    % Inicio del bloque de subfiguras lado a lado
+    \begin{subfloatrow}
+        \ffigbox[\FBwidth]
+        {   \caption{Vista general 2D del diseño de la PCB en KiCad.}
+            \label{fig:PCB_dibujo}} % Etiqueta para citar la subfigura A
+        {\includegraphics[width=0.45\textwidth]{PCB_dibujoFallo.pdf}} % Cambiar por tu archivo
+        
+        \ffigbox[\FBwidth]
+        {   \caption{Vista general 3D del diseño de la PCB en KiCad (componentes comerciales).}
+            \label{fig:PCB_placa}} % Etiqueta para citar la subfigura B
+        {\includegraphics[width=0.45\textwidth]{PCB_POTENCIOMETRO.png}} % Cambiar por tu archivo
+    \end{subfloatrow}
+    % Fin del bloque de subfiguras
+    
+    \vspace{4mm} % Espaciado antes de la leyenda general
+    
+    % Leyenda general de todo el conjunto
+    \caption{Vista general del diseño de la PCB en KiCad, en 2D y 3D.}
+    \label{fig:PCB_dibujo} % Etiqueta para citar la figura completa
+    
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia en KICAD. \par}
+\end{figure}
+
+
+\begin{comment}
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption{Vista general del diseño de la PCB en KiCad (capas de cobre y distribución segregada de los bloques de potencia y control).}
+        \label{fig:PCB_dibujo}}
+    {\includegraphics[width=0.8\textwidth]{PCB_dibujoFallo.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia en KICAD. \par}
+\end{figure}
+\end{comment}
+\subsection{Segregación y distancia entre la masa flotante de potencia y la masa del sistema}
+
+La gestión de las masas en el circuito se realiza mediante dos planos: un plano de la masa global del sistema ($\approx0\text{ V}$) y un plano de la masa flotante del sistema (valor de la fuente del transitor), referencia que emplean los integrados como alimentación negativa. 
+
+Debido a la diferencia de voltaje entre ambos planos, la cual puede ser de hasta $100\text{ V}$, es necesario diseñarlos manteniendo una distancia (\textit{clearance}) entre ellos de al menos $1.5\text{ mm}$, valor justificado por los siguientes motivos:
+\begin{itemize}
+    \item \textbf{Inmunidad frente a transitorios comunes:} durante los cambios de voltaje del plano flotante en la conmutación se producen pendientes elevadas de voltaje. Debido a la presencia de dos planos en paralelo se produce una capacidad parásita ($C = \varepsilon \frac{A}{d}$) que provocaría una inyección de corriente que podría saturar o inestabilizar el sistema. Un valor de $1.5\text{ mm}$ es un \textit{trade-off} coherente entre la disminución de la capacitancia y un tamaño correcto de la placa. 
+    
+    \item \textbf{Margen dieléctrico por sobretensiones (\textit{Ringing}):} Aunque nominalmente la rigidez del aire para $100\text{ V}$ requiere apenas $0.6\text{ mm}$ según la norma IPC-2221C~\cite{ipc_association_connecting_electronics_industries_generic_nodate}, las inductancias de los componentes provocan picos que superan dicha tensión. La separación garantiza un margen de seguridad robusto contra arcos eléctricos en el laboratorio.
+\end{itemize}
+
+\subsection{Dimensionamiento y capacidad de corriente de las pistas de potencia}
+
+Las pistas conductoras, tanto de la etapa de potencia como de alimentación, se han dimensionado bajo los criterios de la norma IPC-2221C ~\cite{ipc_association_connecting_electronics_industries_generic_nodate} (\textit{Generic Standard on Printed Board Design}).
+La corriente por las pistas genera pérdidas térmicas por efecto Joule por lo que una densidad de corriente alta podría aumentar la temperatura de la placa excesivamente, dañando tanto los componentes como la placa en si. 
+
+Para mitigar este riesgo, se ha limitado la variación de temperatura a $\Delta T = 20^\circ\text{C}$ respecto al ambiente y se ha empleado el valor un valor estándar de $1\text{ oz}$ ($1{,}37\text{ mil}$) para calcular el ancho mínimo requerido para las pistas.
+% ==========================================
+% INSERCIÓN DE IMAGEN 2: DETALLE DE ANCHOS DE PISTA
+% ==========================================
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption{Dimensionamiento del ancho de las pistas de alta corriente para el cumplimiento de los márgenes térmicos de la norma IPC-2221.}
+    \label{fig:ancho_pistas}}
+    {\includegraphics[width=0.8\textwidth]{AnchoVias.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia a partir de la calculadora de anchos de vía de \textit{PCBWay} \cite{noauthor_calculadora_nodate}. \par}
+\end{figure}
+
+A partir de los resultados de la Figura~\ref{fig:ancho_pistas}, se han empleados anchos de $64\text{ mil}$ para las pistas de la etapa de potencia, y ancho de $25\text{ mil}$ para las alimentaciones de $15\text{ V}$ y las señales de control de mayor corriente como es el caso de la salida del \textit{driver}. Para las señales de control de baja corriente entre integrados se emplean pistas de $15\text{ mil}$.
+\subsection{Colocación estratégica de condensadores de desacoplo}
+Un aspecto a tener en cuenta en la distribución para la integridad de las señales y la estabilidad de las mismas es el posicionamiento de los condensadores de desacoplo cerámicos asocidados a los circuitos integrados y al transisor. 
+
+Tanto para los comparadores, el OPAMP, las puertas lógicas, el \textit{driver},... como para el drenador del transistor de potencia, los condensadores de desacoplo se han colocado próximos a los pines de alimentación ($V_{CC}$ y $GND$), minimizando la distancia física. 
+% ==========================================
+% INSERCIÓN DE IMAGEN 3 Y 4: DETALLES DE DESACOPLO / KICAD ROUTING
+% ==========================================
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption{Compactacion de la zona de control en la PCB.}
+    \label{fig:detalles}}
+    {\includegraphics[width=0.8\textwidth]{Regla.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia en KICAD.  \par}
+\end{figure}
+La justificación teórica de esta disposición (ilustrada en la Figura~\ref{fig:detalles}) se encuentra, al igual que anteriormente, en contrarrestar la inductancia parásita de las trazas de la PCB ($L_{traza} \approx 1\text{ nH/mm}$). A alta frecuencia de conmutación los milimetros de pista añaden impedancias que provocarían caídas de tensión locales, por lo que la cercanía de los condensadores permitiría suministrar los picos de corriente necesarios, filtrar el ruido de alta corriente y eliminar las caídas de tensión mencionadas. 
+\begin{comment}
 script o excel ??? 
+Valores necesarios para cambiar el trip-off time, la banda de histéresis y el valor de limitación
 -Divisor hist superior
 -Divisor hist inferior
 -Referencia TimON
 -Red RC temporización
--
 
-    
 
 Una vez tenemos una arquitectura correcta en cuanto a perdidas, limites de histéresis, a una frecuencia controlable pero que limite las pérdidas y hemos sido capaces de ajustar la limitación a nuestro tiempo buscado el siguiente objetivo debe ser encontrar una manera de adaptar nuestro circuito a distintos:
 -Corrientes de limitación: estamos limitando a 3.7 pero para otro proyecto podemos querer hacerlo a 5.1 o a 7.3
@@ -2018,12 +2124,12 @@ Una vez tenemos una arquitectura correcta en cuanto a perdidas, limites de hist�
 Una vez tenemos estos valores podemos modificar nuestro circuito. Manteniendo la topología podremos modificar ciertos valores para adaptar. 
 
 
-\textbf{CAMBIOS PARA EL TEMPORIZADOR:}
+\textbf{CAMBIOS PARA EL BLOQUE TEMPORIZADOR:}
 
 Hay dos partes importantes en el a la hora de adaptarlo a otros tiempos:
 - El condensador se empieza a cargar cuando V>Vshunt para la corriente determinado, es decir, si Ilim' = 5.7A empezará el temporizador cuando esté en la entrada 5.7*0.022*25 = 3.135V. Por tanto debemos cambiar el divisor de resistencias que hacen la referencia. Esto es necesario para el CAMBIO DE ILIM
 
-- A partir de la alimentación de 5V, la red RC es la que marca el tiempo de temporización de nuestro circuito. Por tanto, debemos cambiar el valor de la red RC ajustandolo al nuevo valor. Esto es necesario para el CAMBIO DE TRIP-OFF TIME
+- A partir de la alimentación de 5V, la red RC es la que marca el tiempo de temporización de nuestro circuito. Por tanto, debemos cambiar el valor de la red RC (R PULL UP Y CONDENSADOR DE CARGA) ajustandolo al nuevo valor. Esto es necesario para el CAMBIO DE TRIP-OFF TIME
 
 
 
@@ -2035,9 +2141,60 @@ Debido a que el único objetivo del mismo es la amplificación de la señal medi
 
 Hay dos partes: limite inferior y limite superior.
 
-Hay que modificar la red RC para que esté adaptado a los valores de histéresis que buscamos. 
+Hay que modificar los divisores de tensión tanto superior como inferior para que esté adaptado a los valores de histéresis que buscamos. Esto es necesario para el CAMBIO DE LÍMITES DE HISTÉRESIS
 
+Además, para el cambio de cualquoiera de los parámetros debe tenerse en cuenta las especificaciones de los integrados y determinar si los nuevos valores no los rompen.
+\end{comment}
+\begin{bloqueRevisar}
+    
 
+\chapter{Metodología de Escalado del Diseño}
+
+Una vez validada la arquitectura del limitador de corriente de enclavamiento (LCL) conmutado en términos de eficiencia, respuesta transitoria y márgenes de estabilidad térmica para el punto de operación de consigna, el diseño se sistematiza como una plataforma modular. El objetivo de este capítulo es definir el procedimiento analítico para adaptar el circuito a diferentes escenarios operacionales, caracterizados por nuevas tensiones de bus ($V_{bus}$), corrientes de limitación ($I_{lim}$), límites de histéresis ($\Delta i$) y tiempos de disparo (\textit{trip-off time}, $t_{trip}$).
+
+Para automatizar este proceso, se ha desarrollado un script de cálculo sencillo(cuyo código fuente se adjunta en el Anexo) que recibe las especificaciones de la nueva carga y computa de forma secuencial tanto las restricciones mecánicas y magnéticas de la etapa de potencia como los componentes pasivos de la lógica analógica de control.
+
+\section{Dimensionado y Validación de la Etapa de Potencia}
+
+El escalado del circuito no puede limitarse a la modificación de los umbrales de control; un cambio en las especificaciones modifica el estrés térmico y magnético de los componentes de potencia:
+
+\begin{itemize}
+    \item \textbf{Resistencia de sensado ($R_{shunt}$):} La potencia disipada por efecto Joule en régimen nominal viene dada por $P_{shunt} = I_{nom}^2 \cdot R_{shunt}$. Al elevar la corriente nominal del proyecto, se debe verificar que $P_{shunt}$ no supere la potencia nominal del componente físico (fijada en $0.5$~W en el prototipo actual). En caso de excederse, la metodología exige disminuir el valor óhmico de $R_{shunt}$ o seleccionar un encapsulado de mayor disipación, teniendo en cuenta que cualquier modificación en $R_{shunt}$ altera la tensión acondicionada según la relación $V_{sense} = I_L \cdot R_{shunt} \cdot G$.
+    \item \textbf{Saturación de la inductancia ($L$):} Se debe asegurar que la corriente máxima del ciclo de histéresis ($I_{hys,sup}$) junto al sobrepaso dinámico inicial (\textit{overshoot}) no alcancen la corriente de saturación ($I_{sat}$) del núcleo magnético seleccionado, evitando la pérdida de linealidad y un crecimiento exponencial de la corriente.
+    \item \textbf{Estrés térmico del MOSFET:} Las pérdidas por conducción del transistor ($P_{cond} = R_{DS,ON} \cdot I_{rms}^2$) crecen de forma cuadrática con la corriente. Utilizando el modelo térmico equivalente del sistema, el script valida que la temperatura de la unión no exceda el límite de seguridad establecido ($T_{j,max} = 125^\circ$C):
+    \begin{equation}
+        T_j = T_a + (P_{cond} + P_{sw}) \cdot (R_{\theta,JC} + R_{\theta,CS} + R_{\theta,SA}) \le 125^\circ\text{C}
+    \end{equation}
+\end{itemize}
+
+\section{Modificaciones en el Bloque Temporizador de Seguridad}
+
+El bloque de temporización requiere dos ajustes independientes para su correcto escalado:
+
+\begin{enumerate}
+    \item \textbf{Referencia de activación ($V_{TimON}$):} Para asegurar que el temporizador comience a acumular carga únicamente cuando la corriente supera el valor de limitación nominal $I_{lim}$, se debe recalcular el divisor resistivo ($R_1$ y $R_2$) alimentado a $5$~V que fija la tensión de referencia:
+    \begin{equation}
+        V_{TimON} = I_{lim} \cdot R_{shunt} \cdot G
+    \end{equation}
+    Donde $G = 25$~V/V es la ganancia de la etapa de acondicionamiento. A partir de $V_{TimON}$, la relación del divisor viene dada por:
+    \begin{equation}
+        \frac{R_1}{R_2} = \frac{5\,\text{V}}{V_{TimON}} - 1
+    \end{equation}
+    \item \textbf{Red RC de temporización asimétrica:} El tiempo de disparo (\textit{trip-off time}, $t_{trip}$) viene determinado por la constante de tiempo de carga $\tau_{carga} = R_3 \cdot C_{timer}$. Fijando el condensador en un valor comercial estable ($C_{timer} = 100$~nF), la resistencia de carga $R_3$ se calcula mediante la ecuación transitoria de carga considerando la caída del diodo ($V_F \approx 0.32$~V):
+    \begin{equation}
+        R_3 = \frac{-t_{trip}}{C_{timer} \cdot \ln\left(1 - \frac{V_{TimON}}{5\,\text{V} - V_F}\right)}
+    \end{equation}
+\end{enumerate}
+
+\section{Modificaciones en el Bloque de Histéresis}
+
+Para adaptar los límites de conmutación a la nueva banda permisible de la carga, se deben modificar las tensiones de referencia de los comparadores rápidos ($V_{superior}$ y $V_{inferior}$):
+
+\begin{itemize}
+    \item \textbf{Umbral superior:} $V_{superior} = I_{hys,sup} \cdot R_{shunt} \cdot G$
+    \item \textbf{Umbral inferior:} $V_{inferior} = I_{hys,inf} \cdot R_{shunt} \cdot G$
+\end{itemize}
+Estas referencias flotantes se ajustan físicamente mediante la sintonización de los divisores potenciómetricos correspondientes del bloque de histéresis analógico, asegurando que la banda de histéresis $\Delta i = I_{hys,sup} - I_{hys,inf}$ mantenga una frecuencia operacional compatible con las pérdidas dinámicas admisibles del MOSFET y la velocidad de respuesta del lazo analógico.
 
 
 
@@ -2177,7 +2334,7 @@ Revisar cuales son los componentes finales usados en la placa y preguntar que de
 \end{bloqueRevisar}
 
 \pagenumbering{gobble} % Las páginas de los anexos no se numeran
-
+\end{bloqueRevisar}
 
 
 \end{document}
