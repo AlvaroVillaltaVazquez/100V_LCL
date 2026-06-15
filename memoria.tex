@@ -2155,20 +2155,15 @@ Además, para el cambio de cualquoiera de los parámetros debe tenerse en cuenta
 \begin{bloqueRevisar}
 
 \chapter{Metodología de Escalado del Diseño}
+Una vez validado el prototipo del limitador de corriente de enclavamiento en conmutación es interesante centrarnos en la posibilidad de adaptar el mismo para distintos casos de uso. 
 
-Una vez validada la arquitectura del limitador de corriente de enclavamiento (LCL) conmutado en términos de eficiencia, respuesta transitoria y márgenes de estabilidad térmica para el punto de operación de consigna, el diseño se sistematiza como una plataforma modular. El objetivo de este capítulo es definir el procedimiento analítico para adaptar el circuito a diferentes escenarios operacionales, caracterizados por nuevas tensiones de bus ($V_{bus}$), corrientes de limitación ($I_{lim}$), límites de histéresis ($\Delta i$) y tiempos de disparo (\textit{trip-off time}, $t_{trip}$).
-
+El objetivo de este capítulo será definir el procedimitento para adaptar el circuito a diferentes especificaciones: nuevas tensiones de bus ($V_{bus}$), corrientes de limitación ($I_{lim}$), límites de histéresis ($\Delta i$) y tiempos de disparo (\textit{trip-off time}, $t_{trip}$).
 \section{Dimensionado y Validación de la Etapa de Potencia}
-
-El escalado del circuito no puede limitarse a la modificación de los umbrales de control; un cambio en las especificaciones modifica el estrés térmico y magnético de los componentes de potencia:
-
+El escalado del circuito requiere no solo de la modificación de los umbrales sino también de la revisión de los componentes empleados:
 \begin{itemize}
-    \item \textbf{Resistencia de sensado ($R_{shunt}$):} La potencia disipada por efecto Joule en régimen nominal viene dada por $P_{shunt} = I_{nom}^2 \cdot R_{shunt}$. Al elevar la corriente nominal del proyecto, se debe verificar que $P_{shunt}$ no supere la potencia nominal del componente físico (fijada en $0.5$~W en el prototipo actual). En caso de excederse, la metodología exige disminuir el valor óhmico de $R_{shunt}$ o seleccionar un encapsulado de mayor disipación, teniendo en cuenta que cualquier modificación en $R_{shunt}$ altera la tensión acondicionada según la relación $V_{sense} = I_L \cdot R_{shunt} \cdot G$.
-    \item \textbf{Saturación de la inductancia ($L$):} Se debe asegurar que la corriente máxima del ciclo de histéresis ($I_{hys,sup}$) junto al sobrepaso dinámico inicial (\textit{overshoot}) no alcancen la corriente de saturación ($I_{sat}$) del núcleo magnético seleccionado, evitando la pérdida de linealidad y un crecimiento exponencial de la corriente.
-    \item \textbf{Estrés térmico del MOSFET:} Las pérdidas por conducción del transistor ($P_{cond} = R_{DS,ON} \cdot I_{rms}^2$) crecen de forma cuadrática con la corriente. Utilizando el modelo térmico equivalente del sistema, el script valida que la temperatura de la unión no exceda el límite de seguridad establecido ($T_{j,max} = 125^\circ$C):
-    \begin{equation}
-        T_j = T_a + (P_{cond} + P_{sw}) \cdot (R_{\theta,JC} + R_{\theta,CS} + R_{\theta,SA}) \le 125^\circ\text{C}
-    \end{equation}
+    \item \textbf{Resistencia de sensado ($R_{shunt}$):} la potencia disipada durante la conducción viene dada por la ecuación $P_\text{shunt} = I_\text{nom}^2 \cdot R_\text{shunt}$. Un cambio en la corriente nominal debe ser verificada para comprobar que la nueva potencia disipada no excede los límites del empaquetado. En caso de ser la disipación excesiva, el valor de la resistencia $R\text_{shunt}$ debe reducirse (el nuevo valor debe tenerse en cuenta para el cálculo de $V_\text{sense} $) o debe emplearse una resistencia con una capacidad de disipación de potencia mayor que los $0{,}5$ W de la empleada en el prototipo. 
+    \item \textbf{Saturación de la inductancia ($L$):} el inductor debe tener una corriente de saturación ($I_\text{sat}$) suficiente como para que la corriente máxima obtenida por el \textit{overshoot} de la primera carga durante la histéresis no sature el núcleo magnético empleado, lo que provocaría un aumento de la corriente y una respuesta no lineal. 
+    \item \textbf{Estrés térmico del MOSFET:} las pérdidas por conducción y conmutación del transistor no deben ser capaces de provocar que el mismo exceda el límite de temperatura de seguridad, establecido como $T_{j,max} = 125^\circ$C. De excederse, debe elegirse otra frecuencia de conmutación que limite las pérdidas u otro transistor con mayor \textit{rating} térmico. 
 \end{itemize}
 
 \section{Adaptación del Tiempo de Temporización (\textit{Trip-off Time})}
