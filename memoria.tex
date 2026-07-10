@@ -287,11 +287,15 @@ hmargin=3cm
 \renewcommand\abstractname{\large\bfseries\filcenter\uppercase{Resumen}}
 \begin{abstract}
 \thispagestyle{plain}
-\setcounter{page}{3}
-	
-	% ESCRIBIR EL RESUMEN AQUÍ
-	
-	\textbf{Palabras clave:}
+\setcounter{page}{3}% ESCRIBIR EL RESUMEN AQUÍ
+
+La presente Memoria corresponde al diseño, modelado analítico y validación experimental de un Limitador de Corriente de Enclavamiento en conmutación basado en tecnología de transistores de efecto de campo de canal N, optimizado para operar en buses de distribución de potencia de alta tensión a $100\,\mathrm{V}$. El estudio aborda las severas restricciones de disipación térmica y escalabilidad que sufren las topologías tradicionales basadas en canal P cuando operan en región lineal durante condiciones de cortocircuito o sobrecarga. El objetivo principal de este trabajo es implementar una alternativa conmutada eficiente que mitigue el estrés térmico en el semiconductor de potencia y permita la desconexión segura de cargas críticas.
+
+La metodología adoptada comprende, en primer lugar, el dimensionamiento matemático de la inductancia crítica y de las pérdidas energéticas basándose en las recomendaciones del estándar aeroespacial europeo. En segundo lugar, se desarrolla un lazo de control analógico por banda de histéresis complementado con un bloque de temporización asimétrico que provee al sistema de memoria térmica frente a fallos transitorios sucesivos. El comportamiento dinámico del sistema se valida inicialmente mediante simulaciones conductuales en un entorno de software de simulación de circuitos de potencia, integrando los efectos parásitos de los componentes comerciales seleccionados. Finalmente, se describe el diseño físico y la manufactura de un prototipo en placa de circuito impreso bajo directrices estandarizadas, el cual ha sido sometido a una caracterización experimental exhaustiva en el laboratorio.Los resultados más relevantes obtenidos, tanto en el modelo de simulación como en los ensayos físicos de laboratorio, demuestran una respuesta temporal precisa y una excelente correlación entre ambos entornos. El limitador confina de forma segura la corriente de defecto dentro de los márgenes previstos de $3.7\,\mathrm{A}$ a $4.5\,\mathrm{A}$ y se verifica empíricamente un tiempo de disparo antes del enclavamiento definitivo de $1.5\,\mathrm{ms}$. 
+
+Las mediciones reales obtenidas con la instrumentación confirman el comportamiento esperado del hardware, manifestando únicamente las variaciones y tolerancias típicas intrínsecas de una prueba de laboratorio de potencia. Como conclusión, la topología conmutada con transistores de canal N demuestra una eficiencia térmica sustancialmente superior a los esquemas lineales clásicos, validando experimentalmente una metodología de escalado sistemática aplicable a sistemas de potencia industriales o de laboratorio que demanden una alta tolerancia a fallos.
+
+\textbf{Palabras clave:} Limitador de corriente de enclavamiento, MOSFET de canal N, electrónica de potencia, topología conmutada, control por histéresis, temporizador asimétrico, gestión térmica, validación en laboratorio.
 	% Escribir las palabras clave aquí
 	
 	\vfill
@@ -2205,7 +2209,54 @@ El control por banda de histéresis exige definir con precisión los límites de
 \end{itemize}
 
 Físicamente, estas tensiones se sintonizan modificando los divisores potenciómetricos del bloque de histéresis. Es imperativo señalar que la amplitud de la ventana de histéresis ($\Delta i = I_{hys,sup} - I_{hys,inf}$) dicta de forma directa la frecuencia de conmutación del MOSFET de canal N. Una ventana excesivamente estrecha incrementará drásticamente las pérdidas dinámicas por conmutación ($P_{sw}$) en el NMOS y podría provocar disparos erráticos debido al ruido de alta frecuencia del lazo analógico.
+    
 
+\chapter{Conclusiones y Trabajo Futuro}
+\label{ch:conclusiones}
+
+Este capítulo final aborda el compendio de las conclusiones técnicas, analíticas y metodológicas derivadas de todo el proceso de investigación, diseño, modelado, simulación e implementación experimental del limitador de corriente de enclavamiento conmutado. A través de las secciones expuestas a continuación, se sintetizan de forma estructurada los logros alcanzados en relación con los objetivos iniciales planteados, se discute de manera crítica la correlación empírica existente entre los modelos conductuales de simulación y los resultados físicos obtenidos en el laboratorio, y se define la proyección futura de este desarrollo hacia el ámbito de la tecnología con certificación aeroespacial.
+
+\section{Síntesis de los Logros Técnicos y Objetivos Alcanzados}
+\label{sec:sintesis_logros}
+
+El propósito fundamental de este Trabajo de Fin de Grado ha sido abordar y resolver las limitaciones intrínsecas de gestión térmica y escalabilidad que presentan las topologías clásicas de Limitadores de Corriente de Enclavamiento (LCL) basadas en regulación lineal con transistores de canal P. Mediante el diseño, modelado analítico y la posterior construcción de un prototipo físico, se ha validado con éxito una arquitectura conmutada basada en un MOSFET de canal N operando en configuración \textit{high-side}. Esta aproximación ha permitido diseñar un dispositivo capaz de proteger de forma segura y eficiente un bus de distribución de potencia de alta tensión nominal de $100\text{ V}$, un rango en el que las soluciones lineales convencionales resultan térmicamente inviables debido a las pérdidas masivas por conducción y disipación instantánea durante el régimen de fallo.
+
+Desde el punto de vista del diseño teórico, se ha consolidado una metodología robusta para la personalización de las especificaciones del limitador, adaptando las recomendaciones de las agencias espaciales para buses de menor tensión a las exigencias térmicas y eléctricas de un bus de $100\text{ V}$. Se ha alcanzado un compromiso óptimo entre la frecuencia operativa del lazo y las restricciones impuestas por el dimensionado físico, estableciendo una corriente de limitación nominal de $3{,}7\text{ A}$ con una banda de histéresis analógica de $0{,}8\text{ A}$ acotada superiormente en $4{,}5\text{ A}$. Asimismo, el dimensionamiento de una red RC asimétrica ha permitido dotar al lazo de control de un tiempo de disparo o \textit{trip-off time} restrictivo de $1{,}5\text{ ms}$, incorporando de manera exitosa un mecanismo de memoria térmica transitoria que ajusta dinámicamente el tiempo de actuación ante fallos repetitivos y consecutivos, protegiendo así de forma proactiva la integridad de la unión del semiconductor de potencia.
+
+\section{Validación Experimental en Laboratorio y Correlación con el Modelo de Simulación}
+\label{sec:validacion_experimental}
+
+La fase de validación experimental ha constituido el núcleo empírico de la investigación, permitiendo contrastar las predicciones del modelo conductual parametrizado en PSIM con la respuesta física del hardware real. El circuito impreso (PCB), diseñado en KiCad e implementado mediante componentes comerciales seleccionados por sus características dinámicas ---como el transistor de silicio IRFB4020PbF, el diodo Schottky de carburo de silicio STPSC6H065B-TR y el controlador de puerta de alta velocidad UCC27511A---, fue sometido a ensayos estresantes bajo escenarios de sobrecarga en rampa y cortocircuitos francos permanentes en el laboratorio.
+
+Las capturas y mediciones obtenidas mediante instrumentación de laboratorio y el osciloscopio confirman el correcto funcionamiento global del dispositivo y la perfecta viabilidad de la topología conmutada. El limitador activó de forma precisa la modulación por ancho de pulso (PWM) al alcanzarse el umbral crítico de corriente, confinando de forma segura el rizado dentro de la banda de histéresis y ejecutando el aislamiento galvánico definitivo tras expirar el tiempo de temporización de $1{,}5\text{ ms}$. Los valores medidos en las ondas experimentales concuerdan con extraordinaria fidelidad con las simulaciones teóricas y analíticas previas.
+
+Es necesario destacar que las desviaciones cuantitativas registradas entre las curvas de simulación y las trazas empíricas del osciloscopio se mantuvieron en todo momento dentro de los márgenes y variaciones típicas de una prueba de laboratorio de electrónica de potencia de alta frecuencia. Estas fluctuaciones marginales ---visibles principalmente en pequeños fenómenos de sobretensión (\textit{ringing}) durante los flancos de apagado y sutiles variaciones en la frecuencia real de conmutación--- se encuentran plenamente justificadas por factores prácticos inevitables en un prototipo experimental:
+
+\begin{itemize}
+    \item Las tolerancias nominales intrínsecas de los componentes pasivos empleados (resistencias de película fina y condensadores de instrumentación).
+    \item La deriva térmica de los comparadores analógicos y amplificadores operacionales durante la conducción continua.
+    \item El impacto de los elementos parásitos distribuidos de la geometría del \textit{layout} (inductancias parásitas de las trazas de cobre estimadas en torno a $1\text{ nH/mm}$ y las capacidades parásitas entre los planos de masa segregados).
+    \item El acoplamiento electromagnético residual inducido por las transiciones severas de voltaje ($\frac{dv}{dt}$) y corriente ($\frac{di}{dt}$) de la etapa de potencia sobre las líneas de sensado Kelvin, a pesar de las estrategias de compactación y desacoplo local aplicadas.
+\end{itemize}
+
+\section{Discusión sobre el Impacto Térmico y la Eficiencia}
+\label{sec:discusion_termica}
+
+Los resultados experimentales ratifican que la estrategia de control por conmutación reduce de manera drástica el estrés térmico al que se somete al transistor de potencia en comparación con los esquemas de limitación lineal. Al alternar rápidamente entre los estados de saturación y corte, la potencia media disipada por el semiconductor se mantuvo muy por debajo de los límites críticos del encapsulado, garantizando que la temperatura de la unión ($T_j$) no rebasase el umbral de seguridad de $125\,^\circ\text{C}$ establecido en el diseño térmico con disipador pasivo. 
+
+Esta drástica optimización energética valida la hipótesis inicial del trabajo: es posible prescindir de voluminosos y masivos sistemas de gestión térmica pasiva, lo que se traduce directamente en un incremento sustancial de la densidad de potencia y en una notable optimización del peso y volumen del sistema de protección, variables críticas en cualquier plataforma de distribución móvil o espacial.
+
+\section{Líneas de Trabajo Futuro y Hoja de Ruta Aeroespacial}
+\label{sec:trabajo_futuro}
+
+A pesar de que el prototipo manufacturado cumple con creces los objetivos de validación conceptual y funcional en un entorno controlado de laboratorio, la traslación de esta topología hacia un modelo de vuelo aplicable a misiones aeroespaciales reales exige abrir nuevas líneas de investigación y desarrollo tecnológico a corto y medio plazo:
+
+\begin{enumerate}
+    \item \textbf{Cumplimiento de restricciones mecánicas y de espacio:} El diseño actual de la PCB debe ser sometido a un proceso de optimización geométrica y encapsulado estructural. El trabajo futuro debe enfocarse en la minimización de la superficie de la placa, el uso de tecnologías de montaje superficial avanzadas y la integración del conjunto en módulos compactos que cumplan con las severas restricciones de masa, volumen y resistencia a vibraciones mecánicas que imponen los chasis de lanzamiento de los satélites contemporáneos.
+    \item \textbf{Transición a componentes con certificación espacial (EEE):} Para que el dispositivo sea operativo en un entorno orbital, es mandatorio sustituir los componentes comerciales de grado industrial por semiconductores dotados de certificación espacial y cualificación EEE (\textit{Electrical, Electronic, and Electromechanical}). Esto implica la selección de componentes con alta resistencia a los fenómenos de radiación ionizante en el espacio, garantizando la inmunidad contra Efectos de Evento Único (SEE, como \textit{Single Event Burnout} o \textit{Single Event Latch-up}) y degradación por Dosis Ionizante Total (TID). En este sentido, la investigación futura evaluará la sustitución del MOSFET de silicio actual por un transistor de Carburo de Silicio (SiC) o Nitruro de Galio (GaN) con calificación \textit{rad-hard}, explotando las ventajas de los materiales de banda prohibida ancha en entornos espaciales hostiles.
+    \item \textbf{Certificación y ensayos normativos de la ECSS:} El diseño final deberá ser adaptado y ensayado de forma estricta bajo los estándares de la Cooperación Europea para la Estandarización Espacial (específicamente la norma ECSS-E-ST-20-20C). Será necesario implementar de forma nativa los mecanismos de telemetría, diagnóstico analógico y reconfiguración digital mediante lógica programable (FPGA espacial), permitiendo modificar remotamente los parámetros de la clase de LCL a través de telecomandos e implementando curvas de discriminación de fallos más complejas basadas en algoritmos de integración de energía.
+\end{enumerate}
+\end{bloqueRevisar}
 	% COMENZAR A ESCRIBIR la MEMORIA
 	
 	% IMPORTANTE: en LaTeX hay una serie de caracteres especiales, que son: # $ % & \ ^ _ { } ~. Si aparecen en el texto, tendrás un error al compilar. La mayoría se pueden escapar escribiendo \ delante. Para \ utiliza \textbackslash ; para ^ \textasciitilde y para ~ \textasciicircum.
@@ -2345,23 +2396,23 @@ Físicamente, estas tensiones se sintonizan modificando los divisores potencióm
         \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
         \hline
         % ACONDICIONAMIENTO ANALÓGICO
-        C1 & 10n & 80-C0805C103K1GECLR & Condensador cerámico MLCC 100V 0,01$\mu$F C0G 0805 10\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
-        C2 & 3p & 581-08055U3R0BAT2A & Condensador cerámico MLCC 50V 3pF C0G 0805 $\pm$0,1pF & Acondicionamiento Analógico \\ \hline
-        C5 & 15p & 581-08051U150FAT2A & Condensador cerámico MLCC 100V 15pF C0G 0805 1\% & Acondicionamiento Analógico \\ \hline
-        R1 & 100 & 754-RG2012P-101-B-T5 & Resistencia película fina SMD 1/8W 100 $\Omega$ 0,1\% 0805 25ppm & Acondicionamiento Analógico \\ \hline
-        R2 & 1.6k & 667-ERA-6AEB162V & Resistencia película fina SMD 0805 1/8W 1,6k$\Omega$ 0,1\% & Acondicionamiento Analógico \\ \hline
-        R3 & 1.1k & 667-ERA-6APB112V & Resistencia película fina SMD 0805 1,1k$\Omega$ 0,1\% 15ppm AEC-Q200 & Acondicionamiento Analógico \\ \hline
-        R5 & 3.9k & 667-ERA-6VEB3901V & Resistencia película fina SMD 0805 3,9k$\Omega$ 0,1\% 25ppm & Acondicionamiento Analógico \\ \hline
-        R11 & 5.1k & 660-RN73R2ATD5101B25 & Resistencia película fina SMD 5,1k$\Omega$ 0,1\% 25ppm 0805 & Acondicionamiento Analógico \\ \hline
-        R13 & 5.6k & 667-ERJ-P06D5601V & Resistencia película gruesa SMD 0805 5,6k$\Omega$ 0,5W 0,5\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        C1 & 10 nF & 80-C0805C103K1GECLR & Condensador cerámico MLCC 100V 0,01$\mu$F C0G 0805 10\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        C2 & 3 pF & 581-08055U3R0BAT2A & Condensador cerámico MLCC 50V 3pF C0G 0805 $\pm$0,1pF & Acondicionamiento Analógico \\ \hline
+        C5 & 15 pF & 581-08051U150FAT2A & Condensador cerámico MLCC 100V 15pF C0G 0805 1\% & Acondicionamiento Analógico \\ \hline
+        R1 & 100 $\Omega$ & 754-RG2012P-101-B-T5 & Resistencia película fina SMD 1/8W 100 $\Omega$ 0,1\% 0805 25ppm & Acondicionamiento Analógico \\ \hline
+        R2 & 1{,}6 k$\Omega$ & 667-ERA-6AEB162V & Resistencia película fina SMD 0805 1/8W 1,6k$\Omega$ 0,1\% & Acondicionamiento Analógico \\ \hline
+        R3 & 1{,}1 k$\Omega$ & 667-ERA-6APB112V & Resistencia película fina SMD 0805 1,1k$\Omega$ 0,1\% 15ppm AEC-Q200 & Acondicionamiento Analógico \\ \hline
+        R5 & 3{,}9 k$\Omega$ & 667-ERA-6VEB3901V & Resistencia película fina SMD 0805 3,9k$\Omega$ 0,1\% 25ppm & Acondicionamiento Analógico \\ \hline
+        R11 & 5{,}1 k$\Omega$ & 660-RN73R2ATD5101B25 & Resistencia película fina SMD 5,1k$\Omega$ 0,1\% 25ppm 0805 & Acondicionamiento Analógico \\ \hline
+        R13 & 5{,}6 k$\Omega$ & 667-ERJ-P06D5601V & Resistencia película gruesa SMD 0805 5,6k$\Omega$ 0,5W 0,5\% AEC-Q200 & Acondicionamiento Analógico \\ \hline
         U2 & OPA2836 & 595-OPA2836QDGKRQ1 & Amplificador operacional doble de bajo consumo y 180 MHz Rail-to-Rail & Acondicionamiento Analógico \\ \hline
         
         % ALIMENTACIÓN FLOTANTE
-        C7 & 47u & 80-A780EN476M1 HLAS50 & Condensador de aluminio con polímero orgánico 50V 47$\mu$F 20\% ESR=50 m$\Omega$ & Alimentación Flotante \\ \hline
-        C11 & 2.2u & 810-CGA4J7R2A225K125 & Condensador cerámico MLCC 0805 100V 2,2$\mu$F 10\% AEC-Q200 & Alimentación Flotante \\ \hline
-        C12 & 10u & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Alimentación Flotante \\ \hline
-        C13, C16 & 100n & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Alimentación Flotante \\ \hline
-        C14 & 330n & 80-C0805F334K5RACTU & Condensador cerámico MLCC 50V 0,33$\mu$F X7R 0805 10\% & Alimentación Flotante \\ \hline
+        C7 & 47 $\mu$F & 80-A780EN476M1 HLAS50 & Condensador de aluminio con polímero orgánico 50V 47$\mu$F 20\% ESR=50 m$\Omega$ & Alimentación Flotante \\ \hline
+        C11 & 2{,}2 $\mu$F & 810-CGA4J7R2A225K125 & Condensador cerámico MLCC 0805 100V 2,2$\mu$F 10\% AEC-Q200 & Alimentación Flotante \\ \hline
+        C12 & 10 $\mu$F & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Alimentación Flotante \\ \hline
+        C13, C16 & 100 nF & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Alimentación Flotante \\ \hline
+        C14 & 330 nF & 80-C0805F334K5RACTU & Condensador cerámico MLCC 50V 0,33$\mu$F X7R 0805 10\% & Alimentación Flotante \\ \hline
         PS1 & TMA 1515S & 495-TMA-1515S & Convertidor DC/DC aislado de montaje pasante 1W, encapsulado plástico & Alimentación Flotante \\ \hline
         U4 & L78L05 SO8 & 511-L78L05CD-TR & Regulador de voltaje lineal positivo 5,0V 0,1A SO-8 & Alimentación Flotante \\ \hline
         
@@ -2384,18 +2435,18 @@ Físicamente, estas tensiones se sintonizan modificando los divisores potencióm
         \hline
         % ETAPA DE POTENCIA
         - & 262-75ABE-01 & 567-262-75AB-01E & Disipador de calor de aluminio para TO-220, montaje horizontal/vertical & Etapa de Potencia \\ \hline
-        Cf1 & 1u & 581-1812VC105KAT2A & Condensador cerámico MLCC 250V 1$\mu$F X7R 1812 10\% & Etapa de Potencia \\ \hline
+        Cf1 & 1 $\mu$F & 581-1812VC105KAT2A & Condensador cerámico MLCC 250V 1$\mu$F X7R 1812 10\% & Etapa de Potencia \\ \hline
         D2 & STPSC 6H065B - TR & 511-STPSC6H065B-TR & Diodo Schottky de SiC 650V Power Schottky 6A 10nC & Etapa de Potencia \\ \hline
-        L1 & 74435 586800 & 710-74435586800 & Inductor de potencia SMD WE-HCI 68$\mu$H 7,5A DCR=27,3m$\Omega$ & Etapa de Potencia \\ \hline
+        L1 & 68 $\mu$H & 710-74435586800 & Inductor de potencia SMD WE-HCI 68$\mu$H 7,5A DCR=27,3m$\Omega$ & Etapa de Potencia \\ \hline
         Q1 & IRFB 4020PBF & 942-IRFB4020PBF & MOSFET de potencia N-CH 200V 100m$\Omega$ 18A 18nC Qg & Etapa de Potencia \\ \hline
-        Rs1 & 22m & 71-WSL 2512R0220FEA18 & Resistencia Shunt de detección de corriente SMD 2W 0,022$\Omega$ 1\% & Etapa de Potencia \\ \hline
+        Rs1 & 22 m$\Omega$ & 71-WSL 2512R0220FEA18 & Resistencia Shunt de detección de corriente SMD 2W 0,022$\Omega$ 1\% & Etapa de Potencia \\ \hline
         
         % GATE DRIVER
-        C4 & 47u & 80-EDH476M250A9TAA & Condensador electrolítico de aluminio SMD 250V 47$\mu$F 20\% & Gate Driver \\ \hline
-        C8 & 100n & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Gate Driver \\ \hline
+        C4 & 47 $\mu$F & 80-EDH476M250A9TAA & Condensador electrolítico de aluminio SMD 250V 47$\mu$F 20\% & Gate Driver \\ \hline
+        C8 & 100 nF & 581-KAF21BR71H104JM & Condensador cerámico MLCC Automotive 0805 100nF 5\% X7R 50V & Gate Driver \\ \hline
         IC1 & UCC27511 AQDBVRQ1 & 595-UCC27511 AQDBVRQ1 & Controlador de puerta (\textit{Gate Driver}) monocanal de alta velocidad & Gate Driver \\ \hline
-        R6 & 4.7 & 71-CRCW12064R70 FKEAH & Resistencia película gruesa SMD 3/4W 4,7$\Omega$ 1\% High Power AEC-Q200 & Gate Driver \\ \hline
-        R10 & 10 & 71-CRCW120610R0 JNEAH & Resistencia película gruesa SMD 3/4W 10$\Omega$ 5\% High Power AEC-Q200 & Gate Driver \\ \hline
+        R6 & 4{,}7 $\Omega$ & 71-CRCW12064R70 FKEAH & Resistencia película gruesa SMD 3/4W 4,7$\Omega$ 1\% High Power AEC-Q200 & Gate Driver \\ \hline
+        R10 & 10 $\Omega$ & 71-CRCW120610R0 JNEAH & Resistencia película gruesa SMD 3/4W 10$\Omega$ 5\% High Power AEC-Q200 & Gate Driver \\ \hline
         \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir del netlist de KiCad y Mouser Electronics.}
     \end{tabular}}
 \end{table}
@@ -2412,19 +2463,19 @@ Físicamente, estas tensiones se sintonizan modificando los divisores potencióm
         \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
         \hline
         % LÓGICA Y CONTROL
-        C9 & 10u & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Lógica y Control \\ \hline
-        C10, C15 & 100n & 187-CL05B104KBD6PJC & Condensador cerámico MLCC 0402 100nF X7R 50V $\pm$10\% & Lógica y Control \\ \hline
-        Ct1 & 100n & 667-ECH-U1104JC9 & Condensador de película plástica PPS 0,1$\mu$F 100V 5\% 2820 & Lógica y Control \\ \hline
+        C9 & 10 $\mu$F & 74-293D106X0035D2TE3 & Condensador de tantalio SMD sólido 10$\mu$F 35V 20\% D-case & Lógica y Control \\ \hline
+        C10, C15 & 100 nF & 187-CL05B104KBD6PJC & Condensador cerámico MLCC 0402 100nF X7R 50V $\pm$10\% & Lógica y Control \\ \hline
+        Ct1 & 100 nF & 667-ECH-U1104JC9 & Condensador de película plástica PPS 0,1$\mu$F 100V 5\% 2820 & Lógica y Control \\ \hline
         D3 & BAT54S & 637-BAT54S & Diodo Schottky de señal dual en serie, SOT-23, 30V, 0,2A & Lógica y Control \\ \hline
         IC2 & SN74LVC 2G02DCUR & 595-SN74LVC2G02DCUR & Puertas lógicas NOR duales de 2 entradas positivas (Biestable RS) & Lógica y Control \\ \hline
         IC3 & 74LVC 1G08QW5-7 & 621-74LVC1G08QW5-7 & Puerta lógica AND simple calificada para automoción SOT-25 & Lógica y Control \\ \hline
-        R4 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
-        R7 & 26.1k & 667-ERJ-P06F2612V & Resistencia película gruesa SMD 0805 26,1k$\Omega$ 0,5W 1\% AEC-Q200 & Lógica y Control \\ \hline
-        R8 & 100k & 603-AC0805JR-7W100KL & Resistencia película gruesa SMD Grado Automoción 0805 100k$\Omega$ 5\% & Lógica y Control \\ \hline
-        R9 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
-        R14, R15, R16, R17 & 10k & 660-RN73H2ATD1002B25 & Resistencia película fina SMD 10k$\Omega$ 0805 0,1\% 25ppm 125mW 100V & Lógica y Control \\ \hline
-        R18, R19 & 1k & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% (Pull-Up RS) & Lógica y Control \\ \hline
-        RV1, RV2 & 10k & 652-3314G-1-103E & Potenciómetro ajustable SMD 10k$\Omega$ 20\% 4mm SQ SMT Single-Turn & Lógica y Control \\ \hline
+        R4 & 1 k$\Omega$ & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
+        R7 & 26{,}1 k$\Omega$ & 667-ERJ-P06F2612V & Resistencia película gruesa SMD 0805 26,1k$\Omega$ 0,5W 1\% AEC-Q200 & Lógica y Control \\ \hline
+        R8 & 100 k$\Omega$ & 603-AC0805JR-7W100KL & Resistencia película gruesa SMD Grado Automoción 0805 100k$\Omega$ 5\% & Lógica y Control \\ \hline
+        R9 & 1 k$\Omega$ & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% Anti-Surge AEC-Q200 & Lógica y Control \\ \hline
+        R14, R15, R16, R17 & 10 k$\Omega$ & 660-RN73H2ATD1002B25 & Resistencia película fina SMD 10k$\Omega$ 0805 0,1\% 25ppm 125mW 100V & Lógica y Control \\ \hline
+        R18, R19 & 1 k$\Omega$ & 755-ESR10EZPD1001 & Resistencia película gruesa SMD 0805 1k$\Omega$ 0,50\% (Pull-Up RS) & Lógica y Control \\ \hline
+        RV1, RV2 & 10 k$\Omega$ & 652-3314G-1-103E & Potenciómetro ajustable SMD 10k$\Omega$ 20\% 4mm SQ SMT Single-Turn & Lógica y Control \\ \hline
         U1 & LM393 & 595-LM393BIDR & Comparadores analógicos dobles de propósito general (Temporizador) & Lógica y Control \\ \hline
         U3 & LM319 & 926-LM319AM/NOPB & Comparadores analógicos dobles de alta velocidad (Histéresis) & Lógica y Control \\ \hline
         
@@ -2434,7 +2485,7 @@ Físicamente, estas tensiones se sintonizan modificando los divisores potencióm
 
 
 \pagenumbering{gobble} % Las páginas de los anexos no se numeran
-\end{bloqueRevisar}
+
 
 
 \end{document}
