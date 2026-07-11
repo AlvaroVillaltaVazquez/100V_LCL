@@ -1,0 +1,6 @@
+{
+    "ltex.enabled": true,
+    "ltex.language": "es-ES",
+    "ltex.checkFrequency": "onType",
+    "ltex.statusBarItem": "on"
+}
