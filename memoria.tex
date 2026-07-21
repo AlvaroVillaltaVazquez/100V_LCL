@@ -1669,7 +1669,7 @@ Los principales motivos para su selección son los siguientes:
 \end{itemize}
 
 \subsection{Inductor de potencia: WE-HCI 74435586800}
-El almacenamiento de energía magnética y el filtrado del rizado de corriente a alta frecuencia está gestionado por la bobina de potencia \textit{WE-HCI 74435586800} de Würth Elektronik \cite{wurth_elektronik_74435586800_nodate}. Este componente se ha seleccionado tras los cálculos realizados en el capítulo \ref{chapter:3Diseño} que recomendaban una inductancia nominal de $68\ \mu\text{H}$ debido a su comportamiento estable que mantiene la inductancia en el rango de los $66\ \mu\text{H}$ bajo corriente nominal.
+El almacenamiento de energía magnética y el filtrado del rizado de corriente a alta frecuencia está gestionado por la bobina de potencia \textit{WE-HCI 74435586800} de Würth Elektronik \cite{wurth_elektronik_74435586800_nodate}. Este componente se ha seleccionado tras los cálculos realizados en el capítulo \ref{chapter:3Diseño} que recomendaban una inductancia nominal de $68\ \mu\text{H}$ debido a su comportamiento estable que mantiene la inductancia en el rango de los $66\ \mu\text{H}$ bajo corriente nominal y a su resistencia en continua de $27{,}3\text{ m}\Omega$.
 
 La selección de este componente frente a opciones de núcleo toroidal con bobinado a mano se justifica con los siguientes factores:
 
@@ -1952,7 +1952,7 @@ Tras el modelado, selección de componentes y validación con simulación en PSI
 Entrados en esta fase, el comportamiento del sistema deja de estar gobernado únicamente por las ecuaciones ideales expuestas y pasa a estar condicionado por la geometría del sistema, como las inductancias parásitas de las trazas de  cobre, el acoplamiento de señales, los tiempos de retraso\ldots por lo que es el objetivo de este capítulo demostrar la viabilidad del limitador diseñado, evaluando la robustez y tiempo de respuesta frente a sobrecorrientes en un entorno de laboratorio. 
 
 En un primer lugar se mostrará la distribución de los componentes en la placa, el uso de planos de masa\ldots para posteriormente estudiar la respuesta en el osciloscopio de las ondas principales. Finalmente, se realizará un análisis de los resultados comparándolos con las simulaciones y justificando las desviaciones respecto al modelo teórico. 
-\section{Diseño y montaje del circuito impreso (PCB)}
+\section{Diseño del circuito impreso (PCB)}
 
 El diseño de la placa de circuito impreso se ha realizado mediante la herramienta KiCad. Debido a la alta frecuencia de conmutación (en torno a los $600\text{ kHz}$) y los niveles de potencia significativos, el \textit{layout} no solo cumple con la función de conectar los componentes, sino que debe estar acorde al comportamiento dinámico y el ruido electromagnético que se pueda generar. 
 
@@ -2063,6 +2063,183 @@ Tanto para los comparadores, el OPAMP, las puertas lógicas, el \textit{driver}\
 \end{figure}
 La justificación teórica de esta disposición (ilustrada en la figura~\ref{fig:detalles}) se encuentra, al igual que anteriormente, en contrarrestar la inductancia parásita de las trazas de la PCB ($L_{traza} \approx 1\text{ nH/mm}$). A alta frecuencia de conmutación los milimetros de pista añaden impedancias que provocarían caídas de tensión locales, por lo que la cercanía de los condensadores permitiría suministrar los picos de corriente necesarios, filtrar el ruido de alta corriente y eliminar las caídas de tensión mencionadas. 
 
+
+\section{Dificultades en el montaje físico de la PCB}
+\label{sec:incidencias_montaje}
+Una vez finalizado el diseño de la placa y recibido el prototipo, se comenzó el soldado manual de los componentes SMD. Durante esta fase se detectó un problema de incompatibilidad entre la huella descargada a través de \textit{Mouser Electronics} y el encapsulado físico real del circuito integrado correspondiente a la doble puerta NOR encargada de conformar un biestable RS. Debido al pequeño tamaño del componente respecto a la huella, los pines del integrado no pudieron situarse directamente sobre los \textit{pads} originales.
+\subsection{Montaje en araña (\textit{dead-bug wiring}) por incompatibilidad de huella}
+\label{subsec:dead_bug_wiring}
+Como se comenta en la introducción, durante el ensamblaje de la PCB se detectó que la huella de la puerta NOR doble descargada no correspondía con la encapsulación física del componente. 
+
+La huella es de tipo \textit{SOIC-8}, lo que impone un tamaño de $4{,}9 \text{ mm x}~3{,}91\text{ mm x}~1{,}75 \text{ mm}$ y un paso entre pines de $1{,}27\text{ mm}$ \cite{onsemi_soic-8_2015} mientras que el encapsulado físico real del \textit{\textit{SN74\-LVC2G02\-DCUR}} es de tipo \textit{VSSOP-8}, lo que impone un tamaño de $2{,}3 \text{ mm x}~2{,}0\text{ mm x}~0{,}85 \text{ mm}$ y un paso entre pines de $0{,}5\text{ mm}$ \cite{diodes_incorporated_vssop-8_2021}.
+
+Pese a un primer intento de situar el componente en el interior de la huella, el reducido tamaño del encapsulado y la minúscula distancia entre pines imposibilitó el conectar mediante cables flotantes el integrado a los pads originales. 
+
+Es por ello por lo que, como se puede ver en la imagen~\ref{fig:montaje_arana}, se optó por realizar un montaje en araña (\textit{dead-bug wiring}) de un integrado similar con una distancia mayor entre pines como es el \textit{SN74LS02DR} de \textit{Texas Instruments}. El montaje en araña consiste en fijar el integrado sobre la PCB y realizar, mediante cables de sección reducida, el conexionado de los pines del integrado hasta los pads originales de la huella. Para facilitar el conexionado, los cables se conectaron en este caso a componentes que compartieran el nodo con el \textit{pad}, lo que a su vez permite compensar la inductancia parásita añadida por los cables con la que evitamos de las trazas. 
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption[Montaje de la PCB]{Detalle del montaje físico de la PCB con la modificación en araña de la zona de control.}
+        \label{fig:montaje_arana}}
+    {\includegraphics[width=0.8\textwidth]{IMG_1484.jpg}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
+\end{figure}
+
+\subsection{Análisis del impacto del montaje en la integridad de la señal}
+\label{subsec:analisis_emi_dead_bug}
+El uso de señales de alta frecuencia implica que se puedan producir acoplamientos que afecten a la integridad de las señales y a la estabilidad del lazo de control. El montaje en araña afecta específicamente a la inductancia parásita que hemos buscado reducir mediante la colocación cercana de todos los componentes, introduciendo ruido y perturbaciones en el lazo:
+\begin{itemize}
+    \item \textbf{Inductancia parásita de traza ($L_p$):} la sustitución de las pistas de cobre de tamaño mínimo por hilos aéreos de mayor tamaño incrementa la inductancia serie parásita en un valor que se aproxima a $1\text{ nH/mm}$ \cite{sierra_circuits_high-speed_nodate}. Una inductancia mayor resulta en picos de tensión transitorios durante la conmutación del MOSFET, lo que provoca inestabilidad en las señales de control. Los picos de tensión vienen dados por la ecuación \ref{eq:ruido}: 
+    \begin{equation}
+        \label{eq:ruido}
+        v_{\text{ruido}} = L \cdot \frac{di}{dt}
+    \end{equation}
+    \item \textbf{Fallo de la etapa de control:} La presencia de los transitorios $v_{\text{ruido}}$ pudo provocar oscilaciones en los nodos que conecta los comparadores al biestable. Esto, junto a posibles fallos internos en la lógica de control o en el soldado de los componentes, provocó que la etapa de control perdiera la capacidad de alimentar de manera continua la puerta del MOSFET, impidiendo que el mismo se mantuviese completamente abierto durante la no limitación. 
+\end{itemize}
+
+\section{Ensayos experimentales en laboratorio y respuesta en osciloscopio}
+\label{sec:ensayos_laboratorio}
+Tras comprender las dificultades encontradas durante el montaje, se procedió a la realización de ensayos en el laboratorio. Para ello, se empleó un osciloscopio digital \textit{Tektronix TPS 2024}.
+\subsection{Ensayo a baja tensión (15 V) y degradación de la eficiencia}
+\label{subsec:baja_tension_eficiencia}
+Por motivos de seguridad en el laboratorio y para evitar la pérdida de algún componente por mal conexionado o errores similares, las pruebas de conducción nominal se realizaron mediante la alimentación del bus principal a un voltaje aproximado de $12{,}2\text{ V}$ en lugar de los $100\text{ V}$ para los cuales estaba diseñado. Pese a que es posible el uso de este voltaje, debemos tener en cuenta que los cálculos de pérdidas, eficiencia, frecuencia\ldots se han realizado para la tensión nominal, por lo que es de esperar diferencias significativas en el comportamiento del sistema.
+
+La reducción de la tensión provoca una caída drástica de la eficiencia:
+\begin{itemize}
+    \item \textbf{Pérdidas de conducción ($P_{\text{cond}}$):} para un nivel de corriente de salida ($I_{\text{out}}$) seleccionado de $1 \text{ A}$ para la prueba, la potencia seguirá la ecuación \ref{eq:perdidasREAL}. En esta ecuación, debido al empleo de una fuente \textit{PWM} externa que se justifica en la siguiente sección, el ciclo de trabajo no se ha podido elevar más allá de $D = 0{,}6$.
+    \begin{equation}
+        \label{eq:perdidasREAL}
+        P_{\text{cond}} = I_{\text{out}}^2 \cdot (R_{DS,\text{ON}} + R_{\text{shunt}} + R_L) + (1-D) \cdot I_{\text{out}} \cdot V_F = 1{,}543\text{ W}
+    \end{equation}
+    \item \textbf{Pérdidas de conmutación ($P_{\text{sw}}$):} las pérdidas por conmutación se ven reducidas debido a la bajada del voltaje y de la corriente. Se tienen en cuenta en este caso por ser el ciclo de trabajo distinto a 1 y siguen la ecuación \ref{eq:perdidasswREAL}: 
+    \begin{equation}
+        \label{eq:perdidasswREAL}
+        P_{\text{sw}} = \frac{1}{2} \cdot V_{\text{bus}} \cdot I_{\text{out}} \cdot f_{\text{sw}} \cdot (t_r + t_f) = 56{,}7\text{ mW}
+    \end{equation}
+    \item \textbf{Potencia en la carga ($P_{\text{out}}$):} Al reducir la tensión de entrada a $12{,}2\text{ V}$, la potencia en la carga cae de forma lineal ($P_{\text{out}} = V_{\text{out}} \cdot I_{\text{out}}$) y siendo de únicamente $12{,}2\text{ W}$.
+\end{itemize}
+
+El rendimiento global del convertidor será:
+\begin{equation}
+    \eta = \frac{P_{\text{out}}}{P_{\text{out}} + P_{\text{cond}} + P_{\text{sw}}} = \frac{12{,}2\text{ W}}{12{,}2\text{ W} + 1{,}543\text{ W} + 0{,}0567\text{ W}} = 89{,}2\%
+\end{equation}
+Al emplear valores menores de tensión, la eficiencia se degrada significativamente respecto al valor nominal de $96{,}5\%$ calculado en el capítulo \ref{chapter:3Diseño} ya que valores como la caída en el diodo o en las resistencias se vuelve más significativo respecto al bus.
+\subsection{Excitación mediante PWM externa}
+\label{subsec:pwm_externa}
+Como se mencionó anteriormente en la sección \ref{sec:incidencias_montaje}, el montaje en araña (debido al acoplamiento o a conexiones imperfectas) junto a posibles fallos intermedios en la etapa de control imposibilitaron obtener la señal de activación que permitiese al \textit{driver} excitar al transistor de forma continua. Es por ello por lo que, para validar al menos el funcionamiento en conducción y las pérdidas, se decidió desoldar las resistencias de entrada a la puerta del transistor ($R_{6}$ y $R_{10}$ de la figura \ref{fig:PotenciaAlimentacionKicad}) y conectar un módulo generador de PWM directamente a la fuente del transistor. 
+
+La desconexión de las resistencias aseguran que la señal de control externa no se extienda a través de la etapa de control, pudiendo provocar la pérdida de los componentes. El empleo del módulo externo, sin embargo, tiene sus limitaciones por no estar pensado el mismo para una frecuencia de conmutación tal elevada. Esto ha provocado un ciclo de trabajo máximo de $D \approx 0{,}6$ y una frecuencia de conmutación ligeramente inferior a la deseada ($f_{\text{sw}} \approx 507\text{ kHz}$ frente a los $614\text{ kHz}$ teóricos).
+\subsection{Análisis de las formas de onda en el osciloscopio}
+\label{subsec:analisis_osciloscopio}
+Una vez el transistor puede conducir, realizamos las mediciones mediante el empleo de un voltaje de entrada de $12{,}2\text{ V}$ y una corriente de salida de $1\text{ A}$ drenada por una carga electrónica programable. 
+
+\subsubsection{Tensión de entrada frente a tensión de salida}
+La figura~\ref{fig:vin_vs_vout} muestra enfentradas la tensión de entrada suministrada al bus de alimentación $V_{\text{in}}$ (CH2, traza azul) y la tensión de salida en la carga $V_{\text{out}}$ (CH4, traza verde).
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption[Tensión de entrada frente a tensión de salida]{Captura del osciloscopio de la tensión de entrada $V_{\text{in}}$ (CH2, $12{,}2\text{ V}$ promedio) y la tensión de salida $V_{\text{out}}$ (CH4, $6{,}78\text{ V}$ promedio) del convertidor.}
+        \label{fig:vin_vs_vout}}
+    {\includegraphics[width=0.8\textwidth]{20260720_132231_compressed.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
+\end{figure}
+La imagen muestra que la tensión de salida es aproximadamente la mitad de la tensión de entrada, lo que es coherente con el ciclo de trabajo máximo posible de la señal PWM externa. Además, la señal de salida se encuentra únicamente filtrada por el inductor (no se emplea condensador de salida) por lo que, pese a ser la señal de salida una señal de corriente continua, se observa el ruido de conmutación esperable. 
+\subsubsection{Tensión de salida frente a la señal PWM de excitación}
+El ruido visible en la señal de salida es consecuencia directa de la conmutación en el transistor. Esto se puede comprobar en la figura~\ref{fig:vout_vs_pwm} donde se comparan el voltaje de salida $V_{\text{out}}$ (CH2, traza azul) frente a la señal de conmutación PWM de la fuente del transistor $V_{\text{gate}}$ (CH4, traza verde). Para este caso se aumentó el voltaje de entrada hasta los $14~\text{V}$ para mejorar mínimamente la respuesta del convertidor. 
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption[Tensión de salida frente a PWM externa]{Relación entre la tensión de salida $V_{\text{out}}$ (CH2, promedio $8{,}33\text{ V}$) y la señal en la fuente del transistor $V_{\text{gate}}$ (CH4, $f_{\text{sw}} \approx 507{,}94\text{ kHz}$).}
+        \label{fig:vout_vs_pwm}}
+    {\includegraphics[width=0.8\textwidth]{20260720_132406_compressed.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
+\end{figure}
+El ruido de la señal de salida se puede comprobar que corresponde con los momentos en los cuales se produce un flanco de bajada en la señal de control. Al aplicar el circuito a una aplicación concreta sería conveniente el cálculo de una etapa de filtrado que limpiase la señal de salida, eliminando el rizado y el ruido de conmutación.
+
+Los parámetros dinámicos medidos son los siguientes:
+\begin{itemize}
+    \item \textbf{Frecuencia de conmutación ($f_{\text{sw}}$):} se valida la capacidad de la etapa de potencia para conmutar a frecuencias cercanas a las óptimas en términos de eficiencia al medir una frecuencia aproximada de $507{,}935\text{ kHz}$ cercana a los $614{,}98\text{ kHz}$ teóricos.
+    \item \textbf{Ciclo de trabajo ($D$):} como se comentó anteriormente, el módulo externo es incapaz de generar un ciclo de trabajo mayor a $D \approx 0{,}65$ para una frecuencia de conmutación tal alta. Es por ello por lo que la salida se encuentra alejada del valor de la entrada pese a que el objetivo del limitador diseñado es obtener $V_\text{out}\approx V_\text{in}$.
+\end{itemize}
+
+La etapa de potencia, diseñada como un convertidor reductor en conducción continua, sigue la ecuación \ref{eq:buckCCM}:
+\begin{equation}
+    \label{eq:buckCCM}
+    V_{\text{out}} = D \cdot V_{\text{in}} - I_{\text{out}} \cdot (R_{DS,\text{ON}} + R_L + R_{\text{shunt}}) - (1-D) \cdot V_F
+\end{equation}
+
+Si incluímos los valores $D \approx 0{,}65$ y $V_{\text{in}} = 14\text{ V}$ se obtiene un valor de $V_{\text{out}} = 8{,}656\text{ V}$, lo que justifica de forma analítica los valores obtenidos de forma experimental. 
+\subsubsection{Análisis del filtrado inductivo: Tensión pre-bobina frente a post-bobina}
+El control de la salida en este esquema está controlado íntegramente por la bobina de salida al no haber ningún otro elemento como un condensador. En la figura \ref{fig:pre_post_bobina} se puede visualizar la capacidad de filtrado de la bobina al enfrentar la señal previa (CH4, traza verde) y la señal posterior $V_{\text{out}}$ (CH2, traza azul). 
+\begin{figure}[H]
+    \centering
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {   \caption[Tensión en el nodo de conmutación y tensión de salida]{Formas de onda del nodo de conmutación antes de la bobina (CH4, señal pulsada con sobreoscilaciones) y tensión de salida limpia tras el inductor (CH2, promedio $8{,}37\text{ V}$).}
+        \label{fig:pre_post_bobina}}
+    {\includegraphics[width=0.8\textwidth]{20260720_132506_compressed.pdf}}
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
+\end{figure}
+De esta última figura podemos concluir:
+\begin{itemize}
+    \item \textbf{Nodo pre-bobina (CH4):} antes de la bobina podemos ver una onda cuadrada que oscila a $508\text{ kHz}$. Esta onda cuenta con una amplitud pico a pico de $14\text{ V}$ y comparte el ciclo de trabajo con la señal de control.
+    \item \textbf{Nodo post-bobina (CH2):} La tensión tras el inductor de $68~\mu\text{H}$ es una señal continua con un valor medio de $V_{\text{medio}} = 8{,}37\text{ V}$ y cierto ruido. La bobina es capaz de convertir la señal cuadrada de alta frecuencia en un valor continuo. Esto demuestra que, durante la conmutación de la limitación, será capaz de mantener el ritmo sin permitir grandes picos destructivos.
+\end{itemize}
+
+\subsection{Limitaciones experimentales en la activación de la histéresis}
+\label{subsec:limitaciones_histeresis}
+El diseño del lazo de histéresis emplea dos potenciómetros de $10\text{ kHz}$ para ajustar con precisión los valores de histéresis a los valores para los que está diseñado el sistema (en nuestro caso, $I_{\text{hys,inf}} = 3{,}7\text{ A}$ e $I_{\text{hys,sup}} = 4{,}5\text{ A}$)
+
+Estos potenciómetros no están pensados para ajustar los valores de histéresis a valores de limitación muy inferiores que harían más sencilla la medición (por ejemplo, entre $1$ y $1{,}8$ amperios), siendo el valor mínimo uno correspondiente a $2{,}9~\text{A}$.
+
+Debido a la reducción del voltaje del bus, la resistencia de carga necesaria será:
+\begin{equation}
+    R_{\text{carga,crit}} \le \frac{V_{\text{bus}}}{I_{\text{hys,inf}}} = \frac{15\text{ V}}{3{,}7\text{ A}} \approx 4{,}05\ \Omega
+\end{equation}
+El valor de resistencia obtenido deberá, durante la limitación, disipar la siguiente potencia:
+\begin{equation}
+    P_{\text{carga}} = I_{\text{hys,inf}}^2 \cdot R_{\text{carga,crit}} = (3{,}7\text{ A})^2 \cdot 4{,}05\ \Omega \approx 55{,}5\text{ W}
+\end{equation}
+
+La comprobación de la limitación por conmutación no pudo ser realizada debido a que el banco de resistencias de potencia no contaba con los valores necesarios para obtener una resistencia equivalente de $4{,}05\ \Omega$ y la carga electrónica disponible empleada para el ensayo anterior tenía una limitación de resistencia mínima. Por tanto, las comprobaciones ante una sobrecorriente no pudieron ser medidas con el montaje y los recursos actuales.
+
+\section{Discusión de resultados y líneas de trabajo futuro}
+\label{sec:discusion_resultados}
+
+Las medidas realizadas en el laboratorio permiten validar ciertos aspectos del prototipo. No obstante, no fue posible realizar todas las mediciones: por fallos en montaje (montaje en araña, problemas de soldado, diseño\ldots), limitaciones en las cargas disponibles,\ldots.
+
+A continuación se presentan las conclusiones de las pruebas realizadas en el laboratorio junto a los objetivos a los objetivos a futuro para el proyecto realizado.
+
+\subsection{Conclusiones sobre las pruebas}
+\label{subsec:conclusiones_lab}
+A partir de las mediciones, se sintetizan las siguientes conclusiones:
+\begin{enumerate}
+    \item \textbf{Validación de la etapa de potencia:} la excitación del MOSFET en \textit{high-side} se realiza mediante un módulo PWM externo $f_{\text{sw}} \approx 507{,}935\text{ kHz}$ (próxima a los $614{,}98\text{ kHz}$ teóricos) con un valor de $+15$ voltios respecto al voltaje de entrada. La localización \textit{high-side} y la limitación de la fuente disponible en torno a los $35$ voltios provocó la necesidad de, para obtener la diferencia de voltaje entre puerta y drenador, reducir el voltaje a un valor cercano a los $15$ voltios. 
+    Mediante la ecuación \ref{eq:buckCCM} se justificó los valores obtenidos a la salida debido al empleo de una señal de control con un ciclo de trabajo menor a la unidad. Los  valores principales fueron:
+    \subitem $V_{\text{out}} = 6{,}78\text{ V}$ para $V_{\text{in}} = 12{,}2\text{ V}$ con $D \approx 0{,}65$.
+    \subitem $V_{\text{out}} = 8{,}37\text{ V}$ para $V_{\text{in}} = 14\text{ V}$ con $D \approx 0{,}65$.
+    \item \textbf{Filtrado inductivo:} la bobina de $68~\mu\text{H}$ demostró su capacidad para amortiguar las componentes de alta frecuencia de la señal debido tanto al ruido como a la conmutación del N-MOS. La señal pasa de ser una onda cuadrada con cierto \textit{ringing} parásito a una señal continua a la salida de la bobina con gran estabilidad y relativamente poco ruido pese a no contar con un condensador de salida. Esto valida el empleo de esta bobina y su capacidad para actuar ante señales de alta frecuencia pese a no haber podido realizar el análisis en limitación. 
+    \item \textbf{Análisis de pérdidas y eficiencia:} las comprobaciones con un bus de menor voltaje ($V_{\text{bus}} = 12{,}2\text{ V}$) y menor corriente ($I_{\text{out}} = 1\text{ A}$) llevan a un rendimiento $\eta = 89{,}2\%$ frente al $96{,}5\%$ nominal debido al aumento de las caídas de voltaje parásitas dentro del total del bus. Se determina por tanto que a mayor voltaje de bus, las pérdidas en conducción son más insignificantes respecto al total y aumenta la eficiencia del sistema.
+    \item \textbf{Problemas del montaje en araña:} la no concordancia de la huella con el encapsulado físico obligó a realizar un montaje en araña, lo que provoca un aumento de la inductancia parásita serie. Ante los picos de corriente y voltaje producidos durante la conmutación, el acoplamiento provoca inestabilidad en los componentes analógicos del sistema impidiendo un correcto control de la puerta durante la no limitación. 
+\end{enumerate}
+
+\subsection{Líneas de trabajo futuro}
+\label{subsec:trabajo_futuro}
+Una vez vistos los problemas detectados, los siguientes prototipos buscarán subsanar los errores encontrados, ajustarse a criterios aeroespaciales y adaptarlo para poder ser medido facilmente en el laboratorio mediante las siguientes acciones: 
+
+\begin{itemize}
+    \item \textbf{Corrección de la PCB:} corregir la huella erronea del componente en kicad sustituyendo la errónea de gran tamaño ($SOIC-8$) por la de menor tamaño propia del $SN74LVC2G02DCUR$ ($VSSOP-8$). La colocación de una huella menor permitirá además la reestructuración de la zona de control de la placa, reduciendo aún más las trazas y de esta manera la inductancia parásita. La corrección de la PCB permitirá emplear de nuevo el \textit{driver} para el control del transistor.
+    \item \textbf{Reconfiguración de la red de histéresis y temporización:} realizar un nuevo prototipo cuyos potenciómetros tengan como objetivo poder adaptar de forma aproximada los limites a corrientes inferiores. Esto permitirá validar el diseño manteniendo la etapa de control, reduciendo los requisitos de las cargas y aumentando la seguridad de las pruebas a realizar. Por otro lado, se deberá adaptar la señal de referencia de temporización para poder hacerla acorde al valor de corriente deseado.
+    \item \textbf{Validación a tensión nominal ($100\text{ V}$) y pruebas temporales:} ensayar en un banco de potencia que permita la potencia generada por la tensión y las corrientes empleadas. Esto nos permitirá verificar el tiempo de enclavamiento, la respuesta térmica, la memoria térmica del circuito\ldots
+\end{itemize}
+
 \chapter{Metodología de escalado del diseño}
 \label{chapter:Escalado}
 Una vez validado el prototipo del limitador de corriente de enclavamiento en conmutación es interesante centrarnos en la posibilidad de adaptar el mismo para distintos casos de uso. 
@@ -2138,7 +2315,7 @@ y se ha personalizado para las especificaciones del limitador tanto en corriente
 
 Asimismo, el enclavamiento se ha gestionado mediante una red RC asimétrica que establece un tiempo de disparo de $1{,}5\text{ ms}$ y que, por su asimetría, incorpora memoria térmica en caso de fallos consecutivos para proteger al semiconductor. 
 
-\begin{bloqueRevisar}
+
 \section{Validación experimental en laboratorio y comparación con el modelo de simulación}
 \label{sec:validacion_experimental}
 
@@ -2162,7 +2339,7 @@ Es necesario destacar que las desviaciones cuantitativas registradas entre las c
 Los resultados experimentales ratifican que la estrategia de control por conmutación reduce de manera drástica el estrés térmico al que se somete al transistor de potencia en comparación con los esquemas de limitación lineal. Al alternar rápidamente entre los estados de saturación y corte, la potencia media disipada por el semiconductor se mantuvo muy por debajo de los límites críticos del encapsulado, garantizando que la temperatura de la unión ($T_j$) no rebasase el umbral de seguridad de $125\,^\circ\text{C}$ establecido en el diseño térmico con disipador pasivo. 
 
 Esta drástica optimización energética valida la hipótesis inicial del trabajo: es posible prescindir de voluminosos y masivos sistemas de gestión térmica pasiva, lo que se traduce directamente en un incremento sustancial de la densidad de potencia y en una notable optimización del peso y volumen del sistema de protección, variables críticas en cualquier plataforma de distribución móvil o espacial.
-\end{bloqueRevisar}
+
 \section{Líneas de trabajo futuro y hoja de ruta aeroespacial}
 \label{sec:trabajo_futuro}
 
