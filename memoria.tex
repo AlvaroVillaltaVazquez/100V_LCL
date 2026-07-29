@@ -290,19 +290,38 @@ hmargin=3cm
 \thispagestyle{plain}
 \setcounter{page}{3}% ESCRIBIR EL RESUMEN AQUÍ
 \begin{bloqueRevisar}
-El siguiente trabajo de fin de grado 
+La presente Memoria aborda el diseño, modelado analítico y validación experimental de un Limitador de Corriente de Enclavamiento (LCL) en conmutación con MOSFET de canal N, para buses de potencia aeroespaciales de 100~V. Frente a las topologías clásicas con MOSFET de canal P en región lineal, cuya disipación térmica crece con la tensión del bus y limita su escalabilidad, el objetivo es diseñar y validar una arquitectura que limite la corriente mediante conmutación en alta frecuencia, reduciendo el estrés térmico del semiconductor.
 
-La presente Memoria corresponde al diseño, modelado analítico y validación experimental de un Limitador de Corriente de Enclavamiento en conmutación basado en tecnología de transistores de efecto de campo de canal N, optimizado para operar en buses de distribución de potencia de alta tensión a $100\,\mathrm{V}$. El estudio aborda las severas restricciones de disipación térmica y escalabilidad que sufren las topologías tradicionales basadas en canal P cuando operan en región lineal durante condiciones de cortocircuito o sobrecarga. El objetivo principal de este trabajo es implementar una alternativa conmutada eficiente que mitigue el estrés térmico en el semiconductor de potencia y permita la desconexión segura de cargas críticas.
+La metodología dimensiona matemáticamente los parámetros críticos del sistema (inductancia, resistencia de sensado, frecuencia de conmutación, umbrales de control) según criterios adaptados de la normativa ECSS, implementa un control por histéresis con temporizador asimétrico que aporta memoria térmica ante fallos sucesivos, valida el diseño mediante simulación en PSIM con parásitos reales, y fabrica un prototipo en placa de circuito impreso caracterizado en laboratorio.
 
-La metodología adoptada comprende, en primer lugar, el dimensionamiento matemático de la inductancia crítica y de las pérdidas energéticas basándose en las recomendaciones del estándar aeroespacial europeo. En segundo lugar, se desarrolla un lazo de control analógico por banda de histéresis complementado con un bloque de temporización asimétrico que provee al sistema de memoria térmica frente a fallos transitorios sucesivos. El comportamiento dinámico del sistema se valida inicialmente mediante simulaciones conductuales en un entorno de software de simulación de circuitos de potencia, integrando los efectos parásitos de los componentes comerciales seleccionados. Finalmente, se describe el diseño físico y la manufactura de un prototipo en placa de circuito impreso bajo directrices estandarizadas, el cual ha sido sometido a una caracterización experimental exhaustiva en el laboratorio.Los resultados más relevantes obtenidos, tanto en el modelo de simulación como en los ensayos físicos de laboratorio, demuestran una respuesta temporal precisa y una excelente correlación entre ambos entornos. El limitador confina de forma segura la corriente de defecto dentro de los márgenes previstos de $3.7\,\mathrm{A}$ a $4.5\,\mathrm{A}$ y se verifica empíricamente un tiempo de disparo antes del enclavamiento definitivo de $1.5\,\mathrm{ms}$. 
+La simulación confirma el diseño teórico: el limitador conmuta entre 3,7 y 4,5~A y enclava a 1,496~ms, prácticamente igual al valor teórico de 1,5~ms. La validación experimental, en cambio, se vio limitada por un fallo de huella en un integrado que obligó a un montaje manual, generando inestabilidad en el lazo de control e impidiendo excitar el MOSFET con su propia lógica; la limitación conmutada y el enclavamiento no pudieron comprobarse en laboratorio. Empleando PWM externo sí se validó la etapa de potencia y el filtrado de la bobina, con una eficiencia del 89,2\,\% a tensión reducida (12,2~V) frente al 96,5\,\% teórico a 100~V.
 
-Las mediciones reales obtenidas con la instrumentación confirman el comportamiento esperado del hardware, manifestando únicamente las variaciones y tolerancias típicas intrínsecas de una prueba de laboratorio de potencia. Como conclusión, la topología conmutada con transistores de canal N demuestra una eficiencia térmica sustancialmente superior a los esquemas lineales clásicos, validando experimentalmente una metodología de escalado sistemática aplicable a sistemas de potencia industriales o de laboratorio que demanden una alta tolerancia a fallos.
+En conclusión, la topología N-MOS conmutada demuestra una eficiencia térmica muy superior a los esquemas lineales, si bien su validación experimental completa, en particular la función de limitación, queda como principal línea de trabajo futuro.
 
-\textbf{Palabras clave:} Limitador de corriente de enclavamiento, MOSFET de canal N, electrónica de potencia, topología conmutada, control por histéresis, temporizador asimétrico, gestión térmica, validación en laboratorio.
-	% Escribir las palabras clave aquí
+\noindent\textbf{Palabras clave:} Limitador de corriente de enclavamiento, MOSFET de canal N, electrónica de potencia, topología conmutada, control por histéresis, temporizador asimétrico, gestión térmica, normativa ECSS.
 \end{bloqueRevisar}	
 	\vfill
 \end{abstract}
+\clearpage
+
+\renewcommand\abstractname{\large\bfseries\filcenter\uppercase{Abstract}}
+\begin{abstract}
+    \thispagestyle{plain}
+    \begin{bloqueRevisar}
+This thesis addresses the design, analytical modelling and experimental validation of a Latch-Up Current Limiter (LCL) using N-channel MOSFETs, for 100~V aerospace power buses. In contrast to conventional topologies using P-channel MOSFETs in the linear region, where heat dissipation increases with bus voltage and limits scalability, the aim is to design and validate an architecture that limits current through high-frequency switching, thereby reducing thermal stress on the semiconductor.
+
+The methodology mathematically determines the critical system parameters (inductance, sensing resistance, switching frequency, control thresholds) according to criteria adapted from the ECSS standard, implements hysteresis control with an asymmetric timer that provides thermal memory in the event of successive faults, validates the design through simulation in PSIM with real parasitic components, and manufactures a prototype on a printed circuit board characterised in the laboratory.
+
+The simulation confirms the theoretical design: the limiter switches between 3.7 and 4.5~A and locks in at 1.496~ms, practically identical to the theoretical value of 1.5~ms. Experimental validation, however, was limited by a footprint error in an integrated circuit, which necessitated manual assembly, causing instability in the control loop and preventing the MOSFET from being driven by its own logic; the switched limitation and latching could not be verified in the laboratory. Using external PWM, the power stage and coil filtering were validated, with an efficiency of 89.2\,\% at reduced voltage (12.2~V) compared to the theoretical 96.5\,\% at 100~V.
+
+In conclusion, the switched N-MOS topology demonstrates significantly higher thermal efficiency than linear circuits, although its full experimental validation—in particular the limiting function—remains the main area for future work.
+
+\noindent\textbf{Keywords:} Latching current limiter, N-channel MOSFET, power electronics, switched topology, hysteresis control, asymmetric timer, thermal management, ECSS regulations.
+    \end{bloqueRevisar}
+\vfill
+\end{abstract}
+
+
 	\newpage % página en blanco o de cortesía
 	\thispagestyle{empty}
 	\mbox{}
@@ -313,7 +332,7 @@ Las mediciones reales obtenidas con la instrumentación confirman el comportamie
 %----------	
 \chapter*{Dedicatoria} % \chapter* evita que aparezca en el índice
 
-\setcounter{page}{5}
+\setcounter{page}{6}
 	
 	% ESCRIBIR LA DEDICATORIA AQUÍ	
 		
@@ -407,11 +426,35 @@ Como se ha presentado en los anteriores puntos, las topologías tradicionales de
     \end{itemize}
 \end{itemize}
 
+\begin{bloqueRevisar}
+\section{Marco regulador aplicable}
 
+El desarrollo del presente trabajo se apoya en normativa aeroespacial europea,
+empleada como referencia técnica para el dimensionamiento y la validación del
+prototipo. En concreto:
 
+\begin{itemize}
+  \item La norma \textbf{ECSS-E-ST-20-20C} \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016}, sobre requisitos de
+  diseño eléctrico e interfaz para sistemas de alimentación de potencia, se
+  emplea como criterio de referencia para el cálculo de la inductancia crítica
+  (sección 3.3.3) y para justificar los criterios de dimensionado recogidos en
+  el "Factor de requerimientos" de la sección 3.3, pese a no existir aún
+  clases estandarizadas para buses de 100 V.
+  \item La norma \textbf{ECSS-E-ST-20C} \cite{european_cooperation_for_space_standardization_ecss_space_2022}, junto con la definición
+  funcional del LCL recogida en el glosario ECSS \cite{european_cooperation_for_space_standardization_ecss_latching_nodate}, sustenta el
+  marco conceptual presentado en el capítulo 2.
+  \item La norma \textbf{IPC-2221C} \cite{ipc_association_connecting_electronics_industries_generic_nodate} (\textit{Generic Standard on
+  Printed Board Design}) se utiliza para el dimensionamiento del ancho de las
+  pistas de potencia (sección 5.1.3) y para establecer las distancias de
+  aislamiento (\textit{clearance}) entre planos de tensión distinta en el
+  diseño de la PCB (sección 5.1.2).
+\end{itemize}
 
-
-
+El cumplimiento de estos estándares, propios de aplicaciones críticas
+aeroespaciales, garantiza que el prototipo sea coherente con las prácticas de
+ingeniería exigidas para una futura cualificación en entornos espaciales, tal
+y como se detalla en las líneas de trabajo futuro (sección 7.4).
+\end{bloqueRevisar}
 
 \chapter{Situación actual}
 \label{chapter: 2Situacionactual}
@@ -510,7 +553,7 @@ No obstante, durante la limitación de corriente en el modo lineal se produce un
 \begin{equation}P_\text{lineal} = V_\text{DS} \cdot I_\text{lim} \approx \vbus \cdot I_\text{lim}\label{eq:potencia_instantanea_lineal}
 \end{equation}
 
-Como vemos, el interés por aumentar el voltaje de los buses en satélites hasta los 100 V choca directamente con esta situación debido al gran aumento de las pérdidas instantáneas en los transistores lineales al aumentar el voltaje. La disipación en forma de calor afecta a su vez a las condiciones de funcionamiento del transistor, ya que en todas las aplicaciones, pero en especial en las aeroespaciales, es imprescindible que el dispositivo se mantenga en el Área de Operación Segura (en adelante, SOA, por sus siglas en inglés Safe Operation Area) \cite{texas_instruments_using_2023}, pues con las combinaciones de corriente y voltaje situadas en ese área, el fabricante nos asegura un correcto funcionamiento y que el dispositivo no se va a dañar. Un ejemplo de SOA de un transistor se puede observar en la figura \ref{fig:soa_mosfet}. En este caso se obtiene a partir de la hoja de datos del fabricante Vishay para el MOSFET de potencia IRFP9240, transistor con canal tipo P, $V_{\text{DS}}$ máxima de $-200~V $ y corriente máxima a través del drenador de $-12~A$ \cite{vishay_semiconductors_irfp9240pbfmosfet_nodate}.
+Como vemos, el interés por aumentar el voltaje de los buses en satélites hasta los 100 V choca directamente con esta situación debido al gran aumento de las pérdidas instantáneas en los transistores lineales al aumentar el voltaje. La disipación en forma de calor afecta a su vez a las condiciones de funcionamiento del transistor, ya que en todas las aplicaciones, pero en especial en las aeroespaciales, es imprescindible que el dispositivo se mantenga en el Área de Operación Segura (en adelante, SOA, por sus siglas en inglés Safe Operating Area) \cite{texas_instruments_using_2023}, pues con las combinaciones de corriente y voltaje situadas en ese área, el fabricante nos asegura un correcto funcionamiento y que el dispositivo no se va a dañar. Un ejemplo de SOA de un transistor se puede observar en la figura \ref{fig:soa_mosfet}. En este caso se obtiene a partir de la hoja de datos del fabricante Vishay para el MOSFET de potencia IRFP9240, transistor con canal tipo P, $V_{\text{DS}}$ máxima de $-200~V $ y corriente máxima a través del drenador de $-12~A$ \cite{vishay_semiconductors_irfp9240pbfmosfet_nodate}.
 
 \begin{figure}[H]
     \centering
@@ -673,7 +716,7 @@ En el ámbito aeroespacial, sector en el que se sigue la normativa ECSS-E-ST-20C
         \hline
         10 & 10 & $11\text{--}14$ & $1{,}5\text{--}3$ \\
         \hline
-        \multicolumn{4}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir de la ECSS-E-ST-20-20CSA \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016} }
+        \multicolumn{4}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir de la ECSS-E-ST-20-20C \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016} }
     \label{table:EstandarLCL}
 \end{tabular}}
 \end{table}
@@ -1072,7 +1115,7 @@ Partiendo de las hojas de datos podemos obtener los siguientes datos:
     \item \textbf{Rango de temperaturas en la unión ($T_\text{j}$):} Los valores especificados por el fabricante para el transistor están en el rango entre $-55$ °C y $175$ °C. Para no llevar al extremo el dispositivo, establecemos un límite superior menor que exija menos al semiconductor. Por tanto, la temperatura máxima en la unión ($T_\text{j,max}$) será de $125$ °C.
     \item \textbf{Resistencia térmica unión-ambiente:} La resistencia térmica entre la unión y el ambiente ($R_{\theta,\text{JA}}$) es de $62$ °C/W. Como se puede ver, sin el uso de un disipador el aumento de temperatura por watio es muy elevada. 
     \item \textbf{Resistencia térmica unión-caja:} La resistencia térmica entre la unión y la caja ($R_{\theta,\text{JC}}$) es de $1{,}43$ °C/W.
-    \item \textbf{Resistencia térmica caja-disipador:} La resistencia térmica entre la caja y el disipador ($R_{\theta,\text{CS}}$) es de $0{,}5$ °C/W. Esta resistencia térmica equivaldría a la pasta térmica o a un \textit{pad} de transmisión térmica entre transistor y disipador, siendo un material con alta conductividad térmica y facilidad de dispación.
+    \item \textbf{Resistencia térmica caja-disipador:} La resistencia térmica entre la caja y el disipador ($R_{\theta,\text{CS}}$) es de $0{,}5$ °C/W. Esta resistencia térmica equivaldría a la pasta térmica o a un \textit{pad} de transmisión térmica entre transistor y disipador, siendo un material con alta conductividad térmica y facilidad de disipación.
     \item \textbf{Resistencia térmica disipador-ambiente:} Se emplea un valor para un disipador térmico o \textit{heatsink} genérico. El valor de la resistencia térmica entre el disipador y el ambiente ($R_{\theta,\text{CS}}$) es de $8$ °C/W. 
 \end{itemize}
 
@@ -1240,7 +1283,7 @@ Para los valores dados, el requisito 5.4.1.1.1e establece una $\Lmin$ de $1{,}7\
 
 
 \subsubsection{Requisito 5.2.3.1a}
-El último requisito determina que, tras el \textit{overshoot} incial, la bobina no puede permitir un pico de corriente que exceda los límites de la clase. En nuestro caso, las clases no están definidas por lo que el límite será determinado por nosotros. Con un límite superio de histéresis ($\IhistSup$) de $4{,}5~A$, permitiremos que la corriente sobrepase esta corriente hasta un máximo de $4{,}7~A$.
+El último requisito determina que, tras el \textit{overshoot} inicial, la bobina no puede permitir un pico de corriente que exceda los límites de la clase. En nuestro caso, las clases no están definidas por lo que el límite será determinado por nosotros. Con un límite superio de histéresis ($\IhistSup$) de $4{,}5~A$, permitiremos que la corriente sobrepase esta corriente hasta un máximo de $4{,}7~A$.
 Partiendo como anteriormente de la ecuación \ref{eq:Vdelta_inductancia}, en este caso emplearemos el voltaje de salida menos óptimo calculado en la sección anterior. Obtenemos de esta manera una $\Lmin$ de $42{,}85\, \mu H$:
 \begin{equation}
     \Lmin = (\vbus-\vout)\cdot\frac{t_\text{sense}}{\Imax - \IhistSup}= (100-50)\cdot\frac{171{,}4\cdot 10^{-9}}{4{,}7-4{,}5}=42{,}85 \, \mu H
@@ -1484,7 +1527,7 @@ A partir de la hoja de datos del fabricante para el N-MOS IRFB4020PBF \cite{noau
     
     % Añadimos la fuente requerida por tu guía de TFG
     \vspace{2mm}
-    {\raggedleft \textbf{Fuente:} Extraído de la hoja de datos de Infineon para el IRFP9240PBF\cite{noauthor_irfb4020pbfpmd_nodate}. \par}
+    {\raggedleft \textbf{Fuente:} Extraído de la hoja de datos de Infineon para el IRFP4020PBF\cite{noauthor_irfb4020pbfpmd_nodate}. \par}
 \end{figure}
 
 En la imagen se especifica, para cada una de las capas del semiconductor, la constante de tiempo asociada, siendo la más grande $\tau_\text{4}$ con un valor de $0{,}007391$ segundos. Por ser la más restrictiva será en la que nos basaremos para calcular cuanto tardará el transistor en enfriarse. 
@@ -1525,7 +1568,7 @@ La justificación teórica nos lleva a los valores descritos de $47\text{ }\mu F
 
 Un rizado de 31,3 mV supone únicamente un $0{,}031\%$ de la tensión nominal de $100\text{ V}$, estando a su vez lejos de la caída de voltaje propia del paso de $3{,}7\text{ A}$. Por tanto, con estos valores se garantiza un bus estable y seguro cumpliendo con los requisitos determinados a lo largo del capítulo. 
 \section{Síntesis de los valores principales}
-Con el objetivo de facilitar la visualización, la tabla \ref{table:ResumenTeoria} ofrece una estructuración de los valores numéricos definitivos y las reglas de decisión para las nueve áreas principales que regulan el sistema. Esta tabla incluye desde los requisitos de la carga hasta las condiciones dinámicas del bus asimétrico del temporizador y el filtro en dos fases de entrada. De esta manera, se asegura que el limitador tenga una base consistentepara enfrentarse a escenarios de cortocircuitosevero y se proporciona un marco cuantitativo que actuará como punto de partida para los cálculos parásitos de la próxima fase numérica.
+Con el objetivo de facilitar la visualización, la tabla \ref{table:ResumenTeoria} ofrece una estructuración de los valores numéricos definitivos y las reglas de decisión para las nueve áreas principales que regulan el sistema. Esta tabla incluye desde los requisitos de la carga hasta las condiciones dinámicas del bus asimétrico del temporizador y el filtro en dos fases de entrada. De esta manera, se asegura que el limitador tenga una base consistente para enfrentarse a escenarios de cortocircuito severo y se proporciona un marco cuantitativo que actuará como punto de partida para los cálculos parásitos de la próxima fase numérica.
 
 \begin{table}[H]
     \centering
@@ -1621,8 +1664,8 @@ Este dispositivo, fabricado en Silicio, presenta las principales característica
 Al compararlo con distintos transistores de Silicio, el \textit{IRFB4020PbF} presenta una ventaja principal que justifica su selección para el lazo de conmutación de alta frecuencia. Los distintos transistores disponibles no contaban con una relación entre pérdidas por conducción y pérdidas por conmutación tan óptima para la aplicación al estar principalmente ideados para la conducción. 
 Estas opciones cuentan con una resistencia en conducción mucho menor, pero sus pérdidas de conmutación se disparan enormemente. Teniendo en cuenta la corriente que fluye de forma nominal por el circuito, las pérdidas por conducción son gestionables por el transistor sin sufrir estrés térmico excesivo, y la caída de voltaje es nimia en un bus de 100 voltios. 
 
-Por otro lado, a pesar de habernos centrado durante el capítulo \ref{chapter: 2Situacionactual} en las propiedades físicas de los materiales de banda prohibida ancha como el Carburo de Silicio o el Nitruro de Galio, por la aplicación concreta y al ser un prototipo incial se ha considerado que la selección de un transistor convencional de Silicio cumple con los requerimientos. 
-Debido a normativas o requisitos técnicos, el margen del $100\%$ respecto a la tensión del bus nominal puede no ser suficiente por lo que emplear un transistor de Carburo de Silicio puede ser necesario, pero estos requisitos no influyen en las pruebas iniciales en el laboratorio. Además, el precio de estos transistores es elevado para un prototipado incial y la circuitería necesaria para disparar estos transistores más compleja (necesidad de alimentación simétrica), dificultando la fuente flotante de la PCB. 
+Por otro lado, a pesar de habernos centrado durante el capítulo \ref{chapter: 2Situacionactual} en las propiedades físicas de los materiales de banda prohibida ancha como el Carburo de Silicio o el Nitruro de Galio, por la aplicación concreta y al ser un prototipo inicial se ha considerado que la selección de un transistor convencional de Silicio cumple con los requerimientos. 
+Debido a normativas o requisitos técnicos, el margen del $100\%$ respecto a la tensión del bus nominal puede no ser suficiente por lo que emplear un transistor de Carburo de Silicio puede ser necesario, pero estos requisitos no influyen en las pruebas iniciales en el laboratorio. Además, el precio de estos transistores es elevado para un prototipado inicial y la circuitería necesaria para disparar estos transistores más compleja (necesidad de alimentación simétrica), dificultando la fuente flotante de la PCB. 
 
 \subsection{Controlador de puerta: UCC27511AQDBVRQ1}
 La alta frecuencia de conmutación del MOSFET seleccionada para el prototipo requiere una inyección y extracción rapida en la puerta del mismo. Pese a manejar la lógica del sistema correctamente, las etapas analógicas implementadas no son capaces de aportar la corriente necesaria para el transistor al ritmo deseado. Es por ello por lo que se implementa el controlador de puerta de alta velocidad \textit{UCC27511AQDBVRQ1} de Texas Instruments \cite{texas_instruments_ucc27511a_nodate}.
@@ -1909,7 +1952,7 @@ Los resultados obtenidos corresponden a lo modelado y muestran la memoria térmi
 \label{subsubsec:caracterizacion_temporizador}
 La figura~\ref{fig:rampa_corriente} nos permite visualizar el valor de la corriente a partir del cual el circuito comienza a limitar la corriente de forma conmutada. Para ello se emplea una fuente de corriente a modo de carga que incrementa de forma lineal la corriente drenada.
 
-El circuito opera incialmente de forma nominal, suministrando a la carga una corriente continua de $2{,}5~\text{A}$. Una vez pasados $2~\text{ms}$ se conecta la fuente de corriente lineal creciente, aumentando de esta manera la corriente por la resistencia de sensado $R_{\text{shunt}}$. Como se puede comprobar en la gráfica, al alcanzar la corriente los $3{,}696~\text{A}$ (valor muy similar a los $3{,}7~\text{A}$ teóricos) se supera el umbral de activación de la referencia de entrada del primer comparador del temporizador, dando inicio a la carga del condensador $C_{\text{timer}}$ y activándose el limitador, validando así el diseño. 
+El circuito opera inicialmente de forma nominal, suministrando a la carga una corriente continua de $2{,}5~\text{A}$. Una vez pasados $2~\text{ms}$ se conecta la fuente de corriente lineal creciente, aumentando de esta manera la corriente por la resistencia de sensado $R_{\text{shunt}}$. Como se puede comprobar en la gráfica, al alcanzar la corriente los $3{,}696~\text{A}$ (valor muy similar a los $3{,}7~\text{A}$ teóricos) se supera el umbral de activación de la referencia de entrada del primer comparador del temporizador, dando inicio a la carga del condensador $C_{\text{timer}}$ y activándose el limitador, validando así el diseño. 
 
 La falta de rizado de conmutación propia del control por histéresis en la señal de corriente se debe al modelado de la carga. Al emplear una fuente de corriente controlado por tensión ideal, la corriente que fluye por la resistencia está gobernada por la fuente de voltaje por tramos (\textit{Piece Wise Linear Voltage Source}), impidiendo la actuación del lazo analógico. El empleo anterior de otras figuras que muestran la correcta conmutación nos permiten centrarnos en la figura~\ref{fig:rampa_corriente} en justificar la correcta determinación del umbral de limitación. 
 \begin{figure}[H]
@@ -1929,7 +1972,7 @@ Finalmente, la figura~\ref{fig:IvsVgsvsEntradasAND} muestra la coordinación ent
 
 En la figura se observan tres etapas funcionales distinguibles: el funcionamiento nominal, la limitación de corriente y el enclavamiento. 
 \begin{itemize}
-    \item \textbf{Funcionamiento nominal ($\text{t}<1\text{ms}$ y $2{,}1\text{ ms}<\text{t}<4\text{ ms}$):} durante estos periodos de tiempo la corriente es menor del límite establecido ($3{,}696~\text{A}$) por lo que el condensador de temporización no está cargado (salida del temporizador alta) y la corriente no incumple los límites de histéresis (salida alta del biestable). Debido a esto, la salida de la puerta lógica \textit{AND} es un ``1'' lógico y, por tanto, el \textit{driver} hace que haya una tensión $V_{\text{GS}}\text{ de } 15 V$ que provoca que el el N-MOS conduzca.
+    \item \textbf{Funcionamiento nominal ($\text{t}<1\text{ms}$ y $2{,}1\text{ ms}<\text{t}<4\text{ ms}$):} durante estos periodos de tiempo la corriente es menor del límite establecido ($3{,}696~\text{A}$) por lo que el condensador de temporización no está cargado (salida del temporizador alta) y la corriente no incumple los límites de histéresis (salida alta del biestable). Debido a esto, la salida de la puerta lógica \textit{AND} es un ``1'' lógico y, por tanto, el \textit{driver} hace que haya una tensión $V_{\text{GS}}\text{ de } 15 V$ que provoca que el N-MOS conduzca.
     \item \textbf{Limitación de corriente ($1\text{ ms}<\text{t}<2{,}1\text{ ms}$ y $4\text{ ms}<\text{t}<4{,}6\text{ ms}$):} durante estos periodos de tiempo la corriente se encuentra por encima del límite de $3{,}696~\text{A}$. Debido a que el tiempo de limitación es todavía menor al tiempo de \textit{trip-off}, el condensador no está cargado y la señal del temporizador se mantiene alta. Sin embargo, la señal de salida del biestable alterna ``1'' lógicos (aumento de corriente) y ``0'' lógicos (caída de corriente) durante el tiempo de conducción ($T_{\text{on}}$) y corte ($T_{\text{off}}$) del MOSFET. De esta manera, la salida de la puerta lógica \textit{AND} es solo alta durante el aumento de corriente hasta el límite superior de histéresis y $V_{\text{GS}}$ solo será 15 voltios durante estos instantes.
     \item \textbf{Enclavamiento ($\text{t}>4{,}6\text{ ms}$): }a partir de este instante, el voltaje en el condensador $C_{\text{timer}}$ es mayor a la referencia establecida para los $1{,}5~\text{ms}$ y la señal de salida del temporizador pasa a ser baja. Debido a esto, la salida de la puerta \textit{AND} será constantemente baja y el \textit{driver} dejará de suministrar $+ 15$ voltios flotantes a la puerta del transistor, impidiendo el paso de corriente y aislando la carga.
 \end{itemize}
@@ -2043,7 +2086,7 @@ Para mitigar este riesgo, se ha limitado la variación de temperatura a $\Delta 
 
 A partir de los resultados de la figura~\ref{fig:ancho_pistas}, se han empleado anchos de $64\text{ mil}$ para las pistas de la etapa de potencia, y anchos de $25\text{ mil}$ para las alimentaciones de $15\text{ V}$ y las señales de control de mayor corriente como es el caso de la salida del \textit{driver}. Para las señales de control de baja corriente entre integrados se emplean pistas estándar de $15\text{ mil}$.
 \subsection{Colocación estratégica de condensadores de desacoplo}
-Un aspecto a tener en cuenta en la distribución para la integridad de las señales y la estabilidad de las mismas es el posicionamiento de los condensadores de desacoplo cerámicos asocidados a los circuitos integrados y al transisor. 
+Un aspecto a tener en cuenta en la distribución para la integridad de las señales y la estabilidad de las mismas es el posicionamiento de los condensadores de desacoplo cerámicos asociados a los circuitos integrados y al transistor. 
 
 Tanto para los comparadores, el OPAMP, las puertas lógicas, el \textit{driver}\dots como para el drenador del transistor de potencia, los condensadores de desacoplo se han colocado próximos a los pines de alimentación ($V_{CC}$ y $GND$), minimizando la distancia física. 
 % ==========================================
@@ -2213,7 +2256,7 @@ La comprobación de la limitación por conmutación no pudo ser realizada debido
 
 Las medidas realizadas en el laboratorio permiten validar ciertos aspectos del prototipo. No obstante, no fue posible realizar todas las mediciones: por fallos en montaje (montaje en araña, problemas de soldado, diseño\dots), limitaciones en las cargas disponibles,\dots.
 
-A continuación se presentan las conclusiones de las pruebas realizadas en el laboratorio junto a los objetivos a los objetivos a futuro para el proyecto realizado.
+A continuación se presentan las conclusiones de las pruebas realizadas en el laboratorio junto a los objetivos a futuro para el proyecto realizado.
 
 \subsection{Conclusiones sobre las pruebas}
 \label{subsec:conclusiones_lab}
@@ -2338,6 +2381,9 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
     \item \textbf{Optimización de la PCB:} la PCB actual debe optimizarse tanto geométricamente como en cuanto a los encapsulados de los componentes empleados, además de resolver aquellos errores como la huella equivocada que han surgido. Deben revisarse los valores de \textit{clearence}, anchos de vías\dots para que se cumplan los requisitos de las autoridades certificadoras. Además, deben tenerse en cuenta factores como las intensas vibraciones mecánicas durante el lanzamiento al espacio a la hora de seleccionar la técnica de anclado o soldado de los componentes.  
     \item \textbf{Elección de componentes con certificación espacial (EEE):} para poder emplear el dispositivo en entornos espaciales debe ser capaz de soportar factores como radiación ionizante, degradación por dosis ionizante total\dots ,es decir, sustituir los componentes actuales por sus equivalentes con certificación espacial. En este momento entra en escena el empleo de un transistor de SiC, capaz de soportar altísimas tensiones y con posibilidades de tener calificación \textit{rad-hard}.
 \end{enumerate}
+\begin{bloqueRevisar}
+El presupuesto estimado de elaboración de este TFG, así como el análisis de impacto socioeconómico derivado del mismo, se recogen en el Anexo~\ref{anexo:presupuesto}, dada su relevancia para la viabilidad futura del proyecto fuera del ámbito puramente técnico.
+\end{bloqueRevisar}
 
 	% COMENZAR A ESCRIBIR la MEMORIA
 	
@@ -2468,12 +2514,14 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
 % Si tu trabajo incluye anexos, puedes descomentar las siguientes líneas
 \chapter* {Anexo 1: Lista de Materiales}
 \label{anexo:BOM}
+\renewcommand{\thetable}{A1.\arabic{table}}
+\setcounter{table}{0}
 \begin{table}[H]
     \centering
     \fontsize{10}{12}\selectfont
     \captionsetup{width=\textwidth}
     \ttabbox[\textwidth]
-    {\caption{LISTA DE MATERIALES (BOM) - PARTE I: ACONDICIONAMIENTO ANALÓGICO, ALIMENTACIÓN FLOTANTE Y CONECTORES.}\label{table:bom_parte1}}
+    {\caption[]{LISTA DE MATERIALES (BOM) - PARTE I: ACONDICIONAMIENTO ANALÓGICO, ALIMENTACIÓN FLOTANTE Y CONECTORES.}\label{table:bom_parte1}}
     {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
         \hline
         \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
@@ -2504,6 +2552,7 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
         \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir de la netlist de KiCad y Mouser Electronics.}
     \end{tabular}}
 \end{table}
+\pagenumbering{gobble} 
 
 \newpage % Forzamos salto limpio a la siguiente página
 \begin{table}[H]
@@ -2511,7 +2560,7 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
     \fontsize{10}{12}\selectfont
     \captionsetup{width=\textwidth}
     \ttabbox[\textwidth]
-    {\caption{LISTA DE MATERIALES (BOM) - PARTE II: ETAPA DE POTENCIA Y GATE DRIVER.}\label{table:bom_parte2}}
+    {\caption[]{LISTA DE MATERIALES (BOM) - PARTE II: ETAPA DE POTENCIA Y GATE DRIVER.}\label{table:bom_parte2}}
     {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
         \hline
         \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
@@ -2534,13 +2583,15 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
     \end{tabular}}
 \end{table}
 
+\pagenumbering{gobble} 
+
 \newpage % Forzamos un salto de página limpio para el último bloque
 \begin{table}[H]
     \centering
     \fontsize{10}{12}\selectfont
     \captionsetup{width=\textwidth}
     \ttabbox[\textwidth]
-    {\caption{LISTA DE MATERIALES (BOM) - PARTE III: LÓGICA Y CONTROL.}\label{table:bom_parte3}}
+    {\caption[]{LISTA DE MATERIALES (BOM) - PARTE III: LÓGICA Y CONTROL.}\label{table:bom_parte3}}
     {\begin{tabular}{|P{1.5cm}|P{1.7cm}|P{3.2cm}|P{5.3cm}|P{2.7cm}|}
         \hline
         \textbf{ID KICAD} & \textbf{VALOR} & \textbf{REF. MOUSER} & \textbf{DESCRIPCIÓN} & \textbf{BLOQUE} \\
@@ -2565,10 +2616,67 @@ A pesar de que el prototipo cumple con ciertos objetivos de validación en labor
         \multicolumn{5}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia a partir de la netlist de KiCad y Mouser Electronics.}
     \end{tabular}}
 \end{table}
+\label{anexo:BOM}
 
+\pagenumbering{gobble} 
 
-\pagenumbering{gobble} % Las páginas de los anexos no se numeran
+\chapter* {Anexo 2: Presupuesto y análisis de impacto socioeconómico}
+\label{anexo:presupuesto}
+\pagenumbering{gobble} 
+\begin{bloqueRevisar}
+A continuación se desglosa el coste estimado de elaboración del proyecto, diferenciando recursos humanos, material y equipamiento.
+\renewcommand{\thetable}{A2.\arabic{table}}
+\setcounter{table}{0}
+\begin{table}[H]
+    \centering
+    \fontsize{10}{12}\selectfont
+    \captionsetup{width=\textwidth}
+    \ttabbox[\textwidth]
+    {\caption[]{PRESUPUESTO ESTIMADO DE ELABORACIÓN DEL TFG}}
+    {\begin{tabular}{|P{5.5cm}|P{2cm}|P{2.5cm}|P{2.5cm}|}
+        \hline
+        \textbf{CONCEPTO} & \textbf{CANTIDAD} & \textbf{COSTE UNITARIO} & \textbf{TOTAL} \\
+        \hline
+        \multicolumn{4}{|l|}{\textbf{\textit{Recursos humanos}}} \\
+        \hline
+        \makecell{Ingeniero junior \\ (alumno)}  & $300\text{ h}$ & $20\text{ €/h}$ & $6.000\text{ €}$ \\
+        \hline
+        \makecell{Ingeniera sénior \\ (tutora)}  & $20\text{ h}$ & $45\text{ €/h}$ & $900\text{ €}$ \\
+        \hline
+        \multicolumn{4}{|l|}{\textbf{\textit{Material y componentes}}} \\
+        \hline
+        \makecell{Componentes electrónicos \\ (BOM, Anexo \ref{anexo:BOM})} & 1 lote & -- & $44{,}16\text{ €}$ \\
+        \hline
+        \makecell{Fabricación de PCB  \\ (prototipo)} & 1 lote & $ 3\text{ €}$ & $15\text{ €}$ \\
+        \hline
+        \makecell{Estación de soldado \\ (estaño, cableado, disipadores) }& -- & -- & $10\text{ €}$ \\
+        \hline
+        \multicolumn{4}{|l|}{\textbf{\textit{Equipamiento y software}}} \\
+        \hline
+        Amortización de banco de laboratorio (fuente, osciloscopio) & $10\text{ h}$ & $2\text{ €/h}$ & $20\text{ €}$ \\
+        \hline
+         \makecell{Software de diseño \\ (KiCad: libre; PSIM: académica)} & -- & -- & $0\text{ €}$ \\
+        \hline
+        \textbf{Subtotal} & & & \textbf{6989{,}16 €} \\
+        \hline
+        Costes indirectos ($10~\%$) & & & $698{,}9 \text{ €}$ \\
+        \hline
+        \textbf{TOTAL} & & & \textbf{7.688,06 €} \\
+        \hline
+        \multicolumn{4}{r}{\rule{0pt}{3ex}\textbf{Fuente:} Elaboración propia}
+        \label{table:presupuesto_tfg}
+    \end{tabular}}
+\end{table}
 
+El impacto del presente TFG debe valorarse desde una perspectiva de investigación aplicada más que de explotación comercial inmediata, dado que el prototipo se encuentra en un nivel de madurez tecnológica bajo, con la validación experimental de la función de limitación aún pendiente (sección 5.4.2). No se prevé, por tanto, un impacto económico o social a corto plazo derivado de su comercialización directa.
+
+No obstante, el trabajo aporta valor en dos frentes. A nivel técnico, la metodología de escalado desarrollada (capítulo 6) y el uso deliberado de criterios ECSS incluso en ausencia de estandarización para buses de $100\text{ V}$ (sección 3.3) constituyen una contribución que podría alimentar futuros procesos de normalización en el sector espacial europeo, en línea con la tendencia de la industria hacia buses de mayor tensión: a igualdad de potencia, un bus de mayor tensión reduce la corriente necesaria y, con ello, la sección del cableado a bordo; dado que el coste de lanzamiento es proporcional a la masa, avanzar en la protección fiable de buses de $100\text{ V}$ tiene un impacto económico indirecto sobre el coste de las misiones que los adopten.
+\pagenumbering{gobble} 
+A nivel formativo, el desarrollo íntegro del ciclo de diseño ,desde el cálculo teórico hasta el prototipado físico, constituye una transferencia de conocimiento con valor dentro del ámbito universitario y sienta una base de partida, documentada en la sección 7.4, para que futuros TFG o proyectos de investigación continúen el desarrollo hacia una solución de mayor madurez tecnológica.
+
+Desde el punto de vista ambiental, al tratarse de un prototipo de un único ejemplar con un número reducido de componentes (Anexo 1), su huella directa es marginal; cabe destacar que buena parte de los componentes seleccionados cuenta ya con calificación AEC-Q200, orientada a aplicaciones de alta fiabilidad y larga vida útil, lo que reduce la necesidad de sustitución y el desperdicio electrónico asociado.
+
+\end{bloqueRevisar}
 
 
 \end{document}
