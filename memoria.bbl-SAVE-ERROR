@@ -1343,6 +1343,28 @@
       \verb https://s3vi.ndc.nasa.gov/ssri-kb/static/resources/High-Speed%20PCB%20Design%20Guide.pdf
       \endverb
     \endentry
+    \entry{noauthor_what_nodate}{online}{}{}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{This article explains {AEC}‑Q200, the {AEC} standard that defines quality requirements for passive components used in automotive applications. It also introduces the characteristics of Panasonic’s {AEC}‑Q200‑compliant products, the test items, the advantages of adopting the standard, and key points of reliability evaluation.}
+      \field{langid}{english}
+      \field{shorttitle}{What Is {AEC}‑Q200?}
+      \field{title}{What Is {AEC}‑Q200? A Reliability Test Standard for the Qualification of Passive Components - Panasonic}
+      \field{urlday}{1}
+      \field{urlmonth}{8}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb Snapshot:C\:\\Users\\alvar\\Zotero\\storage\\53XVFQRH\\b17.html:text/html
+      \endverb
+      \verb{urlraw}
+      \verb https://industrial.panasonic.com/ww/ds/ss/technical/b17
+      \endverb
+      \verb{url}
+      \verb https://industrial.panasonic.com/ww/ds/ss/technical/b17
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

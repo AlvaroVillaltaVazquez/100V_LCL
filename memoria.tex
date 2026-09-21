@@ -267,7 +267,7 @@ hmargin=3cm
 		\begin{Large}
 			Tutora\\
 			Cristina Fernández Herrero\\
-			Lugar y fecha de presentación prevista\\
+			Leganés, 2026\\
 		\end{Large}
 	\end{center}
 	\vfill
@@ -295,7 +295,7 @@ La metodología comienza con el dimensionamiento de los parámetros críticos de
 
 La simulación realizada permite confirmar el diseño teórico al obtener una corriente limitada conmutando entre $3{,}7 \text{ y } 4{,}5\text{ A}$ durante un máximo de $1{,}496~ms$ antes de su enclavamiento salvo en casos de fallos sucesivos en los cuales este tiempo se ha demostrado menor. La validación experimental, sin embargo, estuvo limitada por un fallo en la huella de un integrado, requiriendo un montaje en araña, generando inestabilidad en el circuito de control e impidiendo una correcta excitación del MOSFET, impidiendo, por tanto, comprobar la limitación y el enclavamiento. Mediante una PWM externa y un bus de menor potencia se pudo validar la etapa de potencia y la capacidad de filtro de la bobina, obteniendo resultados de eficiencia menores frente a los teóricos que justifican el empleo de un ciclo de trabajo unitario y un bus de mayor potencia.  
 
-En conclusión, la topología N-MOS conmutada en \textit{high-side} demuestra una eficiencia térmica superior frente a los sistemas lineales tradicionales, lo cual justifica el esfuerzo adicional requerido para la excitación del transisto pese a que su correcta validación en limitación debe ser abordada en trabajos futuros.
+En conclusión, la topología N-MOS conmutada en \textit{high-side} demuestra una eficiencia térmica superior frente a los sistemas lineales tradicionales, lo cual justifica el esfuerzo adicional requerido para la excitación del transistor pese a que su correcta validación en limitación debe ser abordada en trabajos futuros.
 
 \noindent\textbf{Palabras clave:} Limitador de corriente de enclavamiento, MOSFET de canal N, electrónica de potencia, topología conmutada, control por histéresis, temporizador asimétrico, gestión térmica, normativa ECSS.
 
@@ -347,6 +347,15 @@ In conclusion, the high-side-switched N-MOS topology demonstrates superior therm
 
 \setcounter{page}{6}
 	
+A aquellos profesores que lograron que me reconciliase con la electrónica y que han hecho que mi tiempo libre tenga más resistencias y condensadores de los que nunca esperé. En especial, a Cristina por su apoyo y sus consejos durante estos largos meses.  
+
+A mis amigos, que han sido los que han conseguido que no me volviese loco durante estos cuatro años y que son, por encima de cualquier conocimiento de electrónica, lo mejor que me ha dado la universidad. 
+Al grupo 29, por hacer de ir a Leganés algo que he llegado incluso a disfrutar; no podría haber tenido mejores compañeros. 
+A mis amigos del Covarrubias, por haber hecho de Madrid un hogar para mí y ser mi familia lejos de casa. A mis amigos de A Coruña, volver a casa es mucho más sencillo teniéndoos allí y sabiendo que nada ha cambiado; doy gracias a diario por vosotros. 
+
+A mis hermanos, por haber sido siempre el espejo en el que me he mirado y me seguiré mirando toda la vida, sois el mejor ejemplo que uno puede tener y estoy agradecido de teneros a mi lado en estas etapas de cambios constantes. 
+
+Por último, a mis padres. Por darme la oportunidad de estudiar y vivir Madrid, apoyarme en todas mis decisiones, rezar por mí y darme vuestro apoyo constante. Nai, por las llamadas cortas diarias. Pai, por las llamadas largas semanales. El título lleva mi nombre, pero vuestros apellidos; es tan mío como vuestro. 
 	% ESCRIBIR LA DEDICATORIA AQUÍ	
 		
 	\vfill
@@ -409,7 +418,7 @@ Históricamente, las topologías tradicionales de LCL han empleado transistores 
 Sin embargo, esta arquitectura contiene severas limitaciones de rendimiento y escalabilidad. En primer lugar, los dispositivos P-MOS presentan inherentemente una resistencia de canal mayor que los de canal N (N-MOS) para una misma tensión nominal. Esto supone, durante el funcionamiento nominal, mayores pérdidas por conducción lo que puede obligar a paralelizar semiconductores en aplicaciones de altas corrientes, incrementando el volumen y la complejidad del sistema.
 
 El problema más crítico, no obstante, se encuentra durante un evento de sobrecarga. Para limitar la corriente al valor de referencia, el LCL tradicional fuerza al P-MOS a operar en modo activo (zona lineal), mediante la variación del valor de la resistencia interna. En este estado el transistor estará soportando un voltaje el cual podrá llegar hasta el valor de la tensión del bus, provocando que el semiconductor disipe una enorme potencia durante el tiempo de temporización elegido.
-En consecuencia, se provocará un incremento drástico y rápido de su temperatura lo cual restringirá la fiabilidad del dispositivo. Además, este estrés térmico dificultará el escalado del LCL hacia buses de tensión sobre 100 o 120 voltios por la escasez de P-MOS en el mercado que puedan soportar estos niveles de voltaje manteniendo niveles reducidos de resistencia de canal ($\rdson$).
+En consecuencia, se provocará un incremento drástico y rápido de su temperatura lo cual restringirá la fiabilidad del dispositivo. Además, este estrés térmico dificultará el escalado del LCL hacia buses de tensión sobre 100 o 120~V por la escasez de P-MOS en el mercado que puedan soportar estos niveles de voltaje manteniendo niveles reducidos de resistencia de canal ($\rdson$).
 
 \section{Solución propuesta}
 Con el objetivo de superar las limitaciones térmicas y de escalabilidad que presentan los transistores P-MOS, en la década de los 90 la evolución de los interruptores de estado sólido convergió hacia la adopción de los transistores MOSFET de canal N (N-MOS) para las topologías high-side. 
@@ -417,13 +426,13 @@ La ventaja de los N-MOS radica en su propia física: la movilidad de los electro
 
 A pesar de esta superioridad, el uso de un N-MOS como interruptor \textit{high-side} introduce una complicación intrínseca en su circuito de disparo, ya que la tensión en la puerta ($V_\text{g}$) debe elevarse por encima de la tensión del bus de potencia ($V_\text{s} + V_\text{gs(th)}$). En aplicaciones donde el interruptor opera en conducción continua (ciclo de trabajo del 100\%) bajo condiciones nominales, las técnicas convencionales de \textit{bootstrap} resultan inviables. Esto se debe a la ausencia de una conmutación periódica que permita la recarga del condensador de flotación, derivando en su descarga prematura y el consecuente apagado del transistor \cite{tim_skovmand_micropower_1993}.
 
-Para solucionar este escenario de conducción permanente y asegurar, a su vez, una dinámica de conmutación veloz durante periodos de fallo, el presente trabajo opta por una arquitectura de alimentación flotante basada en un convertidor DC-DC aislado de tamaño compacto. A diferencia de las soluciones basadas en bombas de carga (\textit{charge pumps}) integradas —cuya limitada capacidad de corriente restringe su uso a conmutaciones lentas o regímenes estáticos—, el uso de una etapa DC-DC aislada dedicada garantiza un suministro constante de +15 V sobre el nodo de \textit{source}. Esta configuración no solo permite mantener el N-MOS encendido indefinidamente de forma segura, sino que también provee la corriente de pico necesaria para gestionar las altas velocidades de conmutación ($\text{d}v/\text{d}t$) requeridas durante la activación de la limitación de corriente.
+Para solucionar este escenario de conducción permanente y asegurar, a su vez, una dinámica de conmutación veloz durante periodos de fallo, el presente trabajo opta por una arquitectura de alimentación flotante basada en un convertidor CC-CC aislado de tamaño compacto. A diferencia de las soluciones basadas en bombas de carga (\textit{charge pumps}) integradas —cuya limitada capacidad de corriente restringe su uso a conmutaciones lentas o regímenes estáticos—, el uso de una etapa CC-CC aislada dedicada garantiza un suministro constante de +15 V respecto a la fuente del MOSFET. Esta configuración no solo permite mantener el N-MOS encendido indefinidamente de forma segura, sino que también provee la corriente de pico necesaria para gestionar las altas velocidades de conmutación ($\text{d}v/\text{d}t$) requeridas durante la activación de la limitación de corriente.
 
-Apoyándonos en este esquema de alimentación robusto, se propone el diseño y validación de un limitador de corriente de enclavamiento utilizando un N-MOS en topología reductora, tomando como referencia los fundamentos teóricos de López \textit{et al.} \cite{lopez_antuna_diseno_2024}. Mediante esta arquitectura, el transistor operará en conmutación de alta frecuencia únicamente durante el estado de limitación, disminuyendo drásticamente las pérdidas térmicas en el semiconductor en comparación con los esquemas lineales tradicionales basados en P-MOS.
+Tomando como base este esquema de alimentación robusto, se propone el diseño y validación de un limitador de corriente de enclavamiento utilizando un N-MOS en topología reductora, tomando como referencia los fundamentos teóricos de López \textit{et al.} \cite{lopez_antuna_diseno_2024}. Mediante esta arquitectura, el transistor operará en conmutación de alta frecuencia únicamente durante el estado de limitación, disminuyendo drásticamente las pérdidas térmicas en el semiconductor en comparación con los esquemas lineales tradicionales basados en P-MOS.
 
 \section{Objetivos del trabajo}
 
-Como se ha presentado en los anteriores puntos, las topologías tradicionales de limitadores de corriente de enclavamiento (LCL) que emplean MOSFET de canal P se enfrentan a grandes limitaciones por la disipación de potencia debido a la operación en zona lineal durante la sobrecorriente. Para solventar este problema y reducir el estrés térmico del semiconductor, este proyecto propone el empleo de una topología en la que la limitación se lleve a cabo a través de un transistor de canal N en conmutación. Basándonos en esta idea, el presente Trabajo de Fin de Grado persigue los siguientes propósitos.
+Como se ha presentado en los anteriores puntos, las topologías tradicionales de limitadores de corriente de enclavamiento (LCL) que emplean MOSFET de canal P se enfrentan a grandes limitaciones por la disipación de potencia debido a la operación en zona lineal durante la sobrecorriente. Para solventar este problema y reducir el estrés térmico del semiconductor, este proyecto propone el empleo de una topología en la que la limitación se lleve a cabo a través de un transistor de canal N en conmutación. Basado en esta idea, el presente Trabajo de Fin de Grado persigue los siguientes propósitos.
  
 \begin{itemize}
     \item \textbf{Objetivo principal:} Diseñar, simular y validar de forma experimental un Limitador de Corriente de Enclavamiento (LCL) en conmutación basado en tecnología N-MOS, demostrando la mejoría que supone respecto a topologías tradicionales de limitación lineal.
@@ -442,7 +451,7 @@ Como se ha presentado en los anteriores puntos, las topologías tradicionales de
 \section{Marco regulador}
 El presente trabajo, por buscar ser una primera aproximación hacia un sistema embarcado en satélites, se apoya en normativa aeroespacial europea como referencia para el dimensionmiento y validación del prototipo. Las normas seguidas son las siguientes: 
 \begin{itemize}
-  \item La norma \textbf{ECSS-E-ST-20-20C} \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016}, centrada en los requisitos de diseño de los sistemas de alimentación de potencia. Esta norma se emplea como criterio para el cálculo de la inductancia crítica (sección \ref{section:3.3}) y para la justificación de los criterios de dimensionamiento empleados en la misma sección pese a no existir la clase estándar de $100$ voltios. 
+  \item La norma \textbf{ECSS-E-ST-20-20C} \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016}, centrada en los requisitos de diseño de los sistemas de alimentación de potencia. Esta norma se emplea como criterio para el cálculo de la inductancia crítica (sección \ref{section:3.3}) y para la justificación de los criterios de dimensionamiento empleados en la misma sección pese a no existir la clase estándar de $100$ V. 
   \item La norma \textbf{ECSS-E-ST-20C} \cite{european_cooperation_for_space_standardization_ecss_space_2022} se emplea junto con la definición del LCL recogida en el glosario ECSS \cite{european_cooperation_for_space_standardization_ecss_latching_nodate} para sustentar el marco conceptual presentado en el capítulo \ref{chapter: 2Situacionactual} y así justificar la necesidad en satélites de este nuevo diseño.
   \item La norma \textbf{IPC-2221C} \cite{ipc_association_connecting_electronics_industries_generic_nodate} (\textit{Generic Standard onPrinted Board Design}) se emplea para el dimensionamiento de las pistas tanto de potencia como de alimentación de la subsección \ref{subsec:5.1.3} y para establecer las distancias necesarias de aclarado entre los distintos planos de masa de la PCB de la subsección \ref{subsec:5.1.2}.
 \end{itemize}
@@ -455,6 +464,11 @@ Finalmente, se presentarán las bases teóricas comparando la limitación en mod
 \section{Origen y fundamentos de los Limitadores de Corriente de Enclavamiento (LCL)}
 Los fusibles eléctricos aparecen por primera vez en 1864 \cite{feeo_cables_2023} en forma de alambres con baja temperatura de fusión o placas delgadas con el objetivo de proteger a condensadores de corriente de descarga excesivas, pero no es hasta la década de 1880 cuando, por el gran crecimiento de los sistemas eléctricos, se explota realmente su potencial de protección. 
 El principio de funcionamiento del fusible se basa en el uso de un filamento fino fabricado con un material metálico que, ante un aumento de la corriente, aumentará su temperatura debido al efecto Joule hasta quemarse y abrirse el circuito \cite{sdi_industrial_fusibles_2021}. Esta respuesta sigue una relación inversa entre la corriente y el tiempo de actuación como se puede ver en las curvas características de la figura \ref{fig:I^2vst}.
+
+En ella se observa que el tiempo hasta la fusión disminuye a medida que la magnitud de la corriente aumenta. Por tanto, para sobrecorrientes moderadas los tiempos de respuesta pueden ser de incluso segundos por lo que, antes de aislar la carga, se puede haber producido un daño en la misma. 
+
+Pese a la gran utilidad de estos dispositivos debido a la protección que aportaba a un coste reducido, pronto surge la necesidad de dotar a ciertos equipos o instalaciones de la posibilidad de rearme del circuito por parte de cualquier usuario sin formación y sin la necesidad de cambiar componentes.
+
 \begin{figure}[H]
     \centering
     % Forzamos 10pt para cumplir con la normativa de tu guía
@@ -465,16 +479,12 @@ El principio de funcionamiento del fusible se basa en el uso de un filamento fin
         \label{fig:I^2vst}
     }
     {
-        \includegraphics[width=0.65\textwidth]{Ivst.png}
+        \includegraphics[width=0.85\textwidth]{Ivst.png}
     }
     % Añadimos la fuente requerida por tu guía de TFG
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Extraído de la hoja de datos del fusible 0312008.MXP de Littlefuse\cite{littelfuse_inc_fusible_nodate}. \par}
 \end{figure}
-En ella se observa que el tiempo hasta la fusión disminuye a medida que la magnitud de la corriente aumenta. Por tanto, para sobrecorrientes moderadas los tiempos de respuesta pueden ser de incluso segundos por lo que, antes de aislar la carga, se puede haber producido un daño en la misma. 
-
-Pese a la gran utilidad de estos dispositivos debido a la protección que aportaba a un coste reducido, pronto surge la necesidad de dotar a ciertos equipos o instalaciones de la posibilidad de rearme del circuito por parte de cualquier usuario sin formación y sin la necesidad de cambiar componentes.
-
 Con esto en mente, Thomas Edison describe en 1879 los disyuntores para proteger el cableado de iluminación de sobrecargas, pero no es hasta 1924 cuando la empresa Brown, Boveri \verb|&| Cie patentó una versión de tamaño reducido y similar al usado en la actualidad \cite{academia_lab_disyuntor_nodate} \cite{instalaexpert_interruptores_2025}.
 Un disyuntor, al igual que los fusibles tradicionales, es un dispositivo que interrumpe de forma automática el flujo de corriente cuando este sobrepasa un límite determinado. Está formado por un interruptor conectado a una pletina bimetálica diseñada para doblarse al superar la corriente el valor para el cual está diseñado\cite{delixi_electric_circuit_2023}.
 
@@ -497,7 +507,7 @@ Un disyuntor, al igual que los fusibles tradicionales, es un dispositivo que int
 
 Aunque los disyuntores resolvieron el problema del rearme y la sustitución de componentes debido a su naturaleza mecánica, este mismo factor provoca que tengan limitaciones críticas. No únicamente su tiempo de respuesta de milisegundos es excesivo para ciertos equipos electrónicos sensibles sino que además, en los entornos espaciales sobre los que profundizaremos a lo largo del documento, el desgaste mecánico por vibraciones es reseñable y el arco eléctrico de corriente continua entre la pestaña metálica y el circuito es difícilmente extinguible. Esto es debido a que, mientras que en corriente alterna hay un paso por cero que corta el arco, en corriente continua este mantiene su valor y, por tanto, no se autoextingue, siendo necesario el uso de distancias de aislamiento mucho mayores que repercuten en la masa y dimensiones del sistema.
 
-Como había sucedido con los fusibles anteriormente surge la necesidad de rediseñar el dispositivo para superar barreras térmicas y mecánica. El desarrollo de la electrónica de potencia, disciplina que se centra en la conversión y control de energía eléctrica en niveles de potencia considerables, impulsa la evolución de los disyuntores mecánicos hacia los disyuntores de estado sólido (en adelante, SSCB, por sus siglas en inglés Solid State Circuit Breakers) y los dispositivos encargados de accionarlos, los controladores de potencia de estado sólido (en adelante, SSPC, por sus siglas en inglés Solid State Power Controller). 
+Como había sucedido con los fusibles anteriormente surge la necesidad de rediseñar el dispositivo para superar barreras térmicas y mecánicas. El desarrollo de la electrónica de potencia, disciplina que se centra en la conversión y control de energía eléctrica en niveles de potencia considerables, impulsa la evolución de los disyuntores mecánicos hacia los disyuntores de estado sólido (en adelante, SSCB, por sus siglas en inglés Solid State Circuit Breakers) y los dispositivos encargados de accionarlos, los controladores de potencia de estado sólido (en adelante, SSPC, por sus siglas en inglés Solid State Power Controller). 
 La aparición de estas dos familias de dispositivos supone un antes y un después en el control de circuitos pues, además de ser la base de los convertidores de potencia, son los encargados de remplazar los contactos mecánicos y las pletinas bimetálicas hasta el momento empleados por semiconductores de potencia, siendo los principales los transistores de efecto de campo MOSFET y los transistores bipolares de puerta aislada IGBT.
 
 Estos dispositivos aventajan enormemente a lo disponible hasta la fecha pues, al no constar de partes móviles los tiempos de desconexión se reducen hasta los microsegundos, imposibilita la creación de arcos eléctricos y permite un control más sencillo del circuito. Sin embargo, los SSCB presentan una resistencia en conducción mayor lo que provoca una generación de calor que en los modelos anteriores no es preocupante. Es por ello por lo que se tiende a usar configuraciones en serie o en paralelo que gestionan la limitación. \cite{onsemi_solid-state_nodate}. Otro problema que surge son las interferencias electromagnéticas (EMI) debido a las altas frecuencias de conmutación. 
@@ -507,19 +517,19 @@ Pese a todas las ventajas que presentan, la sensibilidad de estos nuevos circuit
 
 Es en esta situación operacional donde surge la necesidad de crear un circuito capaz de, en caso de detección de sobrecorriente, mantener la carga conectada durante un tiempo predefinido para no abrir el circuito de forma innecesaria debido a un transitorio al conectar o pico de corriente momentáneo, y es, por ende, cuando adquiere importancia el limitador de corriente de enclavamiento o LCL. El valor de este tiempo conocido como \textit{"Trip-off time"} no es un valor seleccionado de forma arbitraria, sino que depende directamente de la capacidad de disipación térmica del semiconductor elegido y la energía máxima que admite la carga.
 
-La ECSS (\textit{European Cooperation for Space Standardization}) define el LCL como un "dispositivo de protección conmutable y de enclavamiento situado entre una fuente de alimentación y la carga correspondiente, que provoca una desconexión tras alcanzar en su salida un límite de sobrecorriente durante un tiempo de desconexión determinado" [traducción propia]\cite{european_cooperation_for_space_standardization_ecss_latching_nodate}. Como podemos extraer de la definición, el LCL ante una sobrecorriente no desconecta la carga instantáneamente sino que limita la corriente a un valor seguro para los componentes electrónicos durante el \textit{Trip-off time} explicado con anterioridad. Por tanto, únicamente si la sobrecorriente persiste una vez este margen de tiempo finaliza se considera que la sobrecorriente es debido a un fallo real y, por tanto, el LCL se enclava en estado abierto, aislando la carga y protegiendo el bus principal. 
+La ECSS (\textit{European Cooperation for Space Standardization}) define el LCL como un "dispositivo de protección conmutable y de enclavamiento situado entre una fuente de alimentación y la carga correspondiente, que provoca una desconexión tras alcanzar en su salida un límite de sobrecorriente durante un tiempo de desconexión determinado" [traducción propia]\cite{european_cooperation_for_space_standardization_ecss_latching_nodate}. Como se puede extraer de la definición, el LCL ante una sobrecorriente no desconecta la carga instantáneamente sino que limita la corriente a un valor seguro para los componentes electrónicos durante el \textit{Trip-off time} explicado con anterioridad. Por tanto, únicamente si la sobrecorriente persiste una vez este margen de tiempo finaliza se considera que la sobrecorriente es debido a un fallo real y, por tanto, el LCL se enclava en estado abierto, aislando la carga y protegiendo el bus principal. 
 
-Los LCL no deben confundirse con los limitadores de corriente de fallo (FCL por sus siglas en inglés, Fault Current Limiters), ya que mientras un LCL tiene la capacidad de aislar ambas partes del circuito tras un tiempo previamente determinado por la constante de tiempo ${\tau}$ del circuito de temporización, los FCL limitan la corriente a un valor de entre el 10\% y el 25\% de la corriente nominal, sufriendo un estrés térmico mucho mayor y siendo un parámetro clave en el diseño el valor de limitación que debe ser elegido en consonancia con las características y restricciones que impone el semiconductor \cite{marroqui_sempere_david_diseno_nodate}. Sin embargo, la diferencia principal radica en que estos dispositivos no tienen capacidad de enclavamiento, es decir, mantiene el suministro a la carga indefinidamente mientras sufre del estrés térmico por limitar esa corriente.
+Los LCL no deben confundirse con los limitadores de corriente de fallo (FCL por sus siglas en inglés, Fault Current Limiters), ya que mientras un LCL tiene la capacidad de aislar ambas partes del circuito tras un tiempo previamente determinado por la constante de tiempo ${\tau}$ del circuito de temporización, los FCL limitan la corriente a un valor de entre el 10\% y el 25\% de la corriente nominal, sufriendo un estrés térmico mucho mayor y siendo un parámetro clave en el diseño el valor de limitación que debe ser elegido en consonancia con las características y restricciones que impone el semiconductor \cite{marroqui_sempere_david_diseno_nodate}. Sin embargo, la diferencia principal radica en que estos dispositivos no tienen capacidad de enclavamiento, es decir, mantienen el suministro a la carga indefinidamente mientras sufren del estrés térmico por limitar esa corriente.
 
 \section{Evolución tecnológica de los dispositivos semiconductores}
 
-Una vez mostrada la evolución de los sistemas contra sobrecorrientes y establecida la necesidad operativa del LCL para la robustez de los buses de potencial, es necesario analizar el componente que determina el rendimiento que podremos obtener del circuito: el interruptor de estado sólido. Como hemos visto en la sección anterior, la evolución de los protectores está supeditada a los hitos conseguidos en el sector de diseño de los semiconductores de potencia. 
+Una vez mostrada la evolución de los sistemas contra sobrecorrientes y establecida la necesidad operativa del LCL para la robustez de los buses de potencia, es necesario analizar el componente que determina el rendimiento que podremos obtener del circuito: el interruptor de estado sólido. Como se ha visto en la sección anterior, la evolución de los protectores está supeditada a los hitos conseguidos en el sector de diseño de los semiconductores de potencia. 
 Pese a priorizar la simplicidad de implementación en las primeras arquitecturas empleando dispositivos de canal P, el aumento de los requerimientos de potencia y de las tensiones nominales de los buses en satélites (pasando de 28 V a 100 V) fuerzan a hacer la transición a materiales y polaridades más adecuadas.
 En esta sección se analizan tanto las limitaciones del silicio de canal P que han promovido el paso al canal N como las limitaciones del silicio como material, provocando la aparición de nuevos materiales de banda prohibida ancha (WBG) con mayor velocidad de respuesta y eficiencia térmica.
 
 \subsection{Topologías clásicas basadas en canal P (P-MOS)}
 
-Las arquitecturas tradicionales de LCL han empleado a lo largo de los años transistores MOSFET de canal P operando en región lineal durante la sobrecorriente, es decir, se comporta como un elemento resistivo con una curva no lineal y es controlado por tensión. En estas arquitecturas es predominante la colocación \textit{high-side}, donde la fuente del dispositivo se conecta al bus de entrada como podemos ver en la figura \ref{fig:comparativa_mosfet}:
+Las arquitecturas tradicionales de LCL han empleado a lo largo de los años transistores MOSFET de canal P operando en región lineal durante la sobrecorriente, es decir, se comportan como un elemento resistivo con una curva no lineal y es controlado por tensión. En estas arquitecturas es predominante la colocación \textit{high-side}, donde la fuente del dispositivo se conecta al bus de entrada como se puede ver en la figura \ref{fig:comparativa_mosfet}:
 
 \begin{figure}[H]
     \centering
@@ -544,7 +554,7 @@ No obstante, durante la limitación de corriente en el modo lineal se produce un
 \begin{equation}P_\text{lineal} = V_\text{DS} \cdot I_\text{lim} \approx \vbus \cdot I_\text{lim}\label{eq:potencia_instantanea_lineal}
 \end{equation}
 
-Como vemos, el interés por aumentar el voltaje de los buses en satélites hasta los 100 V choca directamente con esta situación debido al gran aumento de las pérdidas instantáneas en los transistores lineales al aumentar el voltaje. La disipación en forma de calor afecta a su vez a las condiciones de funcionamiento del transistor, ya que en todas las aplicaciones, pero en especial en las aeroespaciales, es imprescindible que el dispositivo se mantenga en el Área de Operación Segura (en adelante, SOA, por sus siglas en inglés Safe Operating Area) \cite{texas_instruments_using_2023}, pues con las combinaciones de corriente y voltaje situadas en ese área, el fabricante nos asegura un correcto funcionamiento y que el dispositivo no se va a dañar. Un ejemplo de SOA de un transistor se puede observar en la figura \ref{fig:soa_mosfet}. En este caso se obtiene a partir de la hoja de datos del fabricante Vishay para el MOSFET de potencia IRFP9240, transistor con canal tipo P, $V_{\text{DS}}$ máxima de $-200~V $ y corriente máxima a través del drenador de $-12~A$ \cite{vishay_semiconductors_irfp9240pbfmosfet_nodate}.
+Como se puede observar, el interés por aumentar el voltaje de los buses en satélites hasta los 100 V choca directamente con esta situación debido al gran aumento de las pérdidas instantáneas en los transistores lineales al aumentar el voltaje. La disipación en forma de calor afecta a su vez a las condiciones de funcionamiento del transistor, ya que en todas las aplicaciones, pero en especial en las aeroespaciales, es imprescindible que el dispositivo se mantenga en el Área de Operación Segura (en adelante, SOA, por sus siglas en inglés Safe Operating Area) \cite{texas_instruments_using_2023}, pues con las combinaciones de corriente y voltaje situadas en ese área, el fabricante nos asegura un correcto funcionamiento y que el dispositivo no se va a dañar. Un ejemplo de SOA de un transistor se puede observar en la figura \ref{fig:soa_mosfet}. En este caso se obtiene a partir de la hoja de datos del fabricante Vishay para el MOSFET de potencia IRFP9240, transistor con canal tipo P, $V_{\text{DS}}$ máxima de $-200~V $ y corriente máxima a través del drenador de $-12~A$ \cite{vishay_semiconductors_irfp9240pbfmosfet_nodate}.
 
 \begin{figure}[H]
     \centering
@@ -564,15 +574,16 @@ Como vemos, el interés por aumentar el voltaje de los buses en satélites hasta
     {\raggedleft \textbf{Fuente:} Extraído de hoja de datos del IRFP9240PBF\cite{vishay_semiconductors_irfp9240pbfmosfet_nodate}. \par}
 \end{figure}
 
-En aplicaciones espaciales actuales, con los buses de voltajes mayores a los tradicionales, la potencia disipada vista en la ecuación\ref{eq:potencia_instantanea_lineal} puede superar con facilidad la capacidad térmica que soporta el encapsulado, llevando a un aumento de la temperatura en la unión ($T_\text{J}$) en pocos milisegundos. Esto podemos confirmarlo al analizar la curva del fabricante para la SOA del dispositivo (figura \ref{fig:soa_mosfet}). En ella se observa que, para la comentada tensión de bus $(\vbus)$ de $100$ V, el componente puede soportar únicamente una corriente continua inferior a $0{,}4$ A sin que la integridad del dispositivo se vea comprometida. En la figura también se puede observar que el IRFP9240PBF es capaz de soportar corriente de $3$ A, pero únicamente al enfrentarse a transitorios de muy poca duración (pulsos de $1$ ms). 
+En aplicaciones espaciales actuales, con los buses de voltajes mayores a los tradicionales, la potencia disipada vista en la ecuación \ref{eq:potencia_instantanea_lineal} puede superar con facilidad la capacidad térmica que soporta el encapsulado, llevando a un aumento de la temperatura en la unión ($T_\text{J}$) en pocos milisegundos. Esto se puede confirmar al analizar la curva del fabricante para la SOA del dispositivo (figura \ref{fig:soa_mosfet}). En ella se observa que, para la comentada tensión de bus $(\vbus)$ de $100$ V, el componente puede soportar únicamente una corriente continua inferior a $0{,}4$ A sin que la integridad del dispositivo se vea comprometida. En la figura también se puede observar que el IRFP9240PBF es capaz de soportar corriente de $3$ A, pero únicamente al enfrentarse a transitorios de muy poca duración (pulsos de $1$ ms). 
 Con todo lo expuesto, el diseño de LCL empleando P-MOS regulando de forma lineal la corriente se enfrenta a una problemática con difícil solución: para aumentar el tiempo de limitación y evitar la desconexión de la carga tras un transitorio se requiere el empleo de semiconductores de gran tamaño junto a sistemas de gestión térmica bien pasivos o bien activos, aumentando el valor de una variable crítica en los satélites como es la masa. 
 
 \subsection{La transición al canal N (N-MOS) y materiales de banda prohibida ancha (WBG)}
-
+Las mayores ventajas en términos de diseño de materiales y dispositivos se encuentra en el uso de transistores de canal N y en el uso de materiales de banda prohibida ancha (WBG) que se analizan a continuación.
+\subsubsection{Ventajas de los N-MOS respecto a los P-MOS}
 La superioridad técnica de los dispositivos de canal N tiene su raíz física en la movilidad de los portadores de carga en el silicio. Mientras en un MOSFET de canal N el silicio está dopado de electrones que actúan de portadores, en un MOSFET de canal P los portadores mayoritarios son los huecos. 
 La movilidad en los electrones $\mu_\text{e}$ a $300$ K en el silicio es de $1350 \, \text{cm}^2/\text{V}\cdot\text{s}$, mientras que la movilidad de los huecos ($\mu_p$) es prácticamente 3 veces menor, rondando los $480 \, \text{cm}^2/\text{V}\cdot\text{s}$ \cite{departamento_de_ingenieria_universidad_de_almeria_propiedades_nodate}. Estas diferencias de conductividad no son únicamente propias del silicio, sino que es común en otros semiconductores como el germanio o en aleaciones como el arseniuro de germanio (AsGe). 
 
-Cualquier transistor en estado activo, es decir, durante el paso de corriente, tiene una cierta resistencia parásita que se opone a este paso. Esta resistencia es comunmente denominada $\rdson$ y, al igual que cualquier resistencia, sigue la ecuación expresada en \ref{eq:ResistenciaRDSON} donde $\rho$ representa la resistividad del material, $W$ el ancho del canal y $T$ la profundidad del mismo. 
+Cualquier transistor en estado activo, es decir, durante el paso de corriente, tiene una cierta resistencia parásita que se opone a este paso. Esta resistencia es comúnmente denominada $\rdson$ y, al igual que cualquier resistencia, sigue la ecuación expresada en \ref{eq:ResistenciaRDSON} donde $\rho$ representa la resistividad del material, $W$ el ancho del canal y $T$ la profundidad del mismo. 
 \begin{equation}
 	\rdson = \rho \frac{L}{W T}
 \label{eq:ResistenciaRDSON}
@@ -590,8 +601,7 @@ Sin embargo, el aumento del área de silicio no solo aumenta el coste del compon
 Por tanto, pese a la simplicidad que supone el control de la puerta del P-MOS como se analizó en la sección anterior, la transición hacia buses de mayor potencia hace de las pérdidas por conducción un factor clave, especialmente teniendo en cuenta que en los LCL las pérdidas principales de los MOSFET son estas, pues solo conmuta durante la limitación tras fallo. Es por ello que con la aparición de las técnicas de bootstrap o los convertidores aislados necesarias para el control de la puerta en una configuración \textit{High-side} se ha producido una transición hacia los N-MOS.
 
 \subsubsection{El papel de los materiales WBG (SiC y GaN)}
-
-La transición al canal N, pese a ser el cambio principal y el más asentado, no se trata del único. El silicio presenta ciertas limitaciones como son su comportamiento respecto a las variaciones de temperatura y en conmutación. En los MOSFET, la movilidad de portadores disminuye debido al aumento de la temperatura de la unión ($T_\text{J}$) debido al fenómeno conocido como dispersión por vibraciones de la red (\textit{Lattice Scattering})\cite{ridley_quantum_2013}, incrementando la $\rdson$ y las pérdidas por conducción. 
+La transición al canal N, pese a ser el cambio principal y el más asentado, no se trata del único. El silicio presenta ciertas limitaciones como son su comportamiento respecto a la temperatura y en conmutación. En los MOSFET, la movilidad de portadores disminuye debido al aumento de la temperatura de la unión ($T_\text{J}$) por el fenómeno conocido como dispersión por vibraciones de la red (\textit{Lattice Scattering})\cite{ridley_quantum_2013}.
 Por otra parte, la banda prohibida del silicio es baja respecto a otro tipo de materiales. Esta magnitud representa las barreras de energía en semiconductores que deben superar los electrones para poder circular como corriente eléctrica \cite{noauthor_materiales_nodate}, obligando a diseños de capas más gruesas para soportar los 100 V y, por tanto, aumentando la resistencia interna del dispositivo.
 
 Los materiales de banda prohibida ancha o WBG como el Carburo de Silicio (SiC) o el Nitruro de Galio (GaN) poseen una banda muy superior al Silicio, siendo en el SiC aproximadamente 3 veces superior, lo que se traduce en un campo eléctrico crítico mucho mayor. En la tabla \ref{table:si_vs_sic} podemos observar algunas de las características principales de un semiconductor.
@@ -607,7 +617,7 @@ Los materiales de banda prohibida ancha o WBG como el Carburo de Silicio (SiC) o
         \hline
         Banda prohibida ($E_g$) & $\sim 1{,}1$ eV & $\sim 3{,}2\text{--}3{,}3$ eV \\
         \hline
-        Campo de ruptura máximo & $\sim 0{,}3$ MV/cm & $\sim 2{,}5\text{--}3$ MV/cm \\
+        Campo de ruptura & $\sim 0{,}3$ MV/cm & $\sim 2{,}5\text{--}3$ MV/cm \\
         \hline
         Resistencia encendido ($R_{on}$) & Alta, limitada por el campo & Muy baja, permite dispositivos de alta tensión pequeños \\
         \hline
@@ -622,7 +632,7 @@ Los materiales de banda prohibida ancha o WBG como el Carburo de Silicio (SiC) o
     \end{tabular}}
 \end{table}
 
-Como vimos anteriormente en la ecuación \ref{eq:ResistenciaRDSON}, a mayor conductividad menor será la resistencia en conducción $\rdson$, por lo que la diferencia entre el Silicio y el Carburo de Silicio que podemos ver en la tabla \ref{table:si_vs_sic} hace que podamos fabricar capas mucho más delgadas para la misma tensión, disminuyendo aun así la resistencia. Además, el rendimiento en alta frecuencia mejora enormemente debido a la carga de puerta reducida ($Q_{\text{G}}$), lo que provoca que los tiempos de apagado y encendido sean menores y, por tanto, las perdidas de conmutación menores, permitiendo llegar a frecuencias mayores. Por último, la conductividad térmica mayor del SiC permite que este evacúe el calor más rápido, permitiéndole trabajar a temperaturas mayores. 
+Como se ha visto anteriormente en la ecuación \ref{eq:ResistenciaRDSON}, a mayor conductividad menor será la resistencia en conducción $\rdson$, por lo que la diferencia entre el Silicio y el Carburo de Silicio que podemos ver en la tabla \ref{table:si_vs_sic} hace que podamos fabricar capas mucho más delgadas para la misma tensión, disminuyendo aun así la resistencia. Además, el rendimiento en alta frecuencia mejora enormemente debido a la carga de puerta reducida ($Q_{\text{G}}$), lo que provoca que los tiempos de apagado y encendido sean menores y, por tanto, las pérdidas de conmutación menores, permitiendo llegar a frecuencias mayores. Por último, la conductividad térmica mayor del SiC permite que este evacúe el calor más rápido, permitiéndole trabajar a temperaturas mayores. 
 
 La mejora en las condiciones del material es lo que permite trabajar de forma segura y cómoda a alta frecuencia y lo que nos ha permitido, como se verá en la siguiente sección, evolucionar desde la regulación lineal a la regulación conmutada durante la limitación en los LCL. 
 
@@ -632,17 +642,17 @@ Pese a la explicación realizada respecto a la superioridad del SiC frente al Si
 La mejora en los materiales explicada en la sección anterior resultó en un cambio en el paradigma de la limitación. Mientras hasta el momento las pérdidas por conmutación en el Silicio eran demasiado altas y se recurría a limitación en la región lineal o zona activa, la evolución hacia el Carburo de Silicio y sus condiciones electrotérmicas superiores permitieron el paso a limitadores en conmutación, haciendo uso de las topologías de convertidores de potencia desarrollados. 
 
 \subsubsection{Limitadores en modo lineal}
-Durante la operación lineal empleada en los LCL tradicionales, el MOSFET actúa como una resistencia variable  controlada por la tensión y opera en su región activa. Siendo el objetivo limitar la corriente durante el fallo al valor de limitación ($I_\text{lim}$), el circuito de control se encarga de ajustar la tensión entre puerta y fuente ($V_\text{GS}$) manteniendo el canal parcialmente abierto y forzando una caida de tensión considerablemente alta entre el drenador y la fuente del dispositivo ($V_{DS}$). 
+Durante la operación lineal empleada en los LCL tradicionales, el MOSFET actúa como una resistencia variable  controlada por la tensión y opera en su región activa. Siendo el objetivo limitar la corriente durante el fallo al valor de limitación ($I_\text{lim}$), el circuito de control se encarga de ajustar la tensión entre puerta y fuente ($V_\text{GS}$) manteniendo el canal parcialmente abierto y forzando una caída de tensión considerablemente alta entre el drenador y la fuente del dispositivo ($V_{DS}$). 
 
 Este método se enfrenta a un problema principal que es la gestión térmica del semiconductor. El dispositivo absorbe la diferencia de voltaje entre el bus de entrada y la carga durante la limitación de corriente, por lo que la potencia instantánea definida en la ecuación \ref{eq:potencia_instantanea_lineal} se disparará. Teniendo en cuenta el paso a buses de 100 V, los límites marcados por el área segura de operaciones (SOA, mostrado en la figura \ref{fig:soa_mosfet}) son fácilmente excedibles, por lo que en esta zona la limitación será únicamente posible para pulsos muy cortos (microsegundos) para evitar la destrucción del semiconductor debido al estrés térmico. Debido a esto, los LCL lineales tradicionales requerirían de dispositivos de grandes dimensiones con disipadores de calor enormes para conseguir llegar a los \textit{trip-off times} de milisegundos empleados actualmente. 
 
 \subsubsection{Limitadores en modo de conmutación}
 Una vez vistas las limitaciones intrínsecas de la tecnología del Silicio en modo lineal y gracias a la llegada de los materiales WBG, la alternativa robusta para los LCL es el modo de conmutación. En este modo, el MOSFET deja de actuar como una resistencia variable y de limitar la corriente extra, sino que actúa conmutando a alta frecuencia mediante la modulación por ancho de pulso (en adelante PWM, por sus siglas \textit{Pulse Width Modulation}) de la que se encarga un driver dedicado. Mediante esta estrategia y debido a la topología que se presentará en el siguiente capítulo, el LCL actúa como un convertidor reductor (\textit{Buck}) que, mediante la variación del ciclo de trabajo, regula la corriente media durante la limitación. 
 
-La ventaja principal que podemos encontrar respecto a los limitadores lineales está en la eficiencia, ya que en vez de trabajar en la zona lineal (canal parcialmente abierto) como era el caso anterior, el transistor alterna entre el estado abierto ($I_\text{D} = 0$) y el de conducción ($V_\text{DS} \approx 0$), minimizando así las perdidas instantáneas de la ecuación \ref{eq:potencia_instantanea_lineal}. 
+La ventaja principal que podemos encontrar respecto a los limitadores lineales está en la eficiencia, ya que en vez de trabajar en la zona lineal (canal parcialmente abierto) como era el caso anterior, el transistor alterna entre el estado abierto ($I_\text{D} = 0$) y el de conducción ($V_\text{DS} \approx 0$), minimizando así las pérdidas instantáneas de la ecuación \ref{eq:potencia_instantanea_lineal}. 
 Las pérdidas totales serán la combinación de las de conducción debido a la corriente de limitación media a través de la resistencia parásita del MOSFET ($\rdson$) y las pérdidas de conmutación, siendo las de dispositivos de Carburo de Silicio reducidas debido a la carga de puerta ($Q_\text{G}$) \cite{lopez_antuna_diseno_2024}. Es gracias a esto por lo que el semiconductor es capaz de resistir térmicamente la limitación durante un periodo de tiempo mayor, llegando a valores de hasta 20 ms para los LCL de clase 1 \cite{european_cooperation_for_space_standardization_ecss_ecss-e-st-20-20c_2016} impensables para los transistores en modo lineal si se pretende mantener el dispositivo en zona SOA.
 
-Pese a ser una mejora en el cómputo global, el uso de una limitación conmutada introduce un rizado de corriente que puede ser perjudicial para la carga. Es por ello por lo que es recomendable el uso de una etapa de filtrado posterior al limitador que suavice la onda de corriente y suprimiendo así aquellos armónicos de alta frecuencia generados. La unión de ambas etapas permite una limitación precisa, de mayor tiempo y si el estrés térmico propio del modo lineal, mientras se mantiene la alimentación estable para la carga. 
+Pese a ser una mejora en el cómputo global, el uso de una limitación conmutada introduce un rizado de corriente que puede ser perjudicial para la carga. Es por ello por lo que es recomendable el uso de una etapa de filtrado posterior al limitador que suavice la onda de corriente y suprimiendo así aquellos armónicos de alta frecuencia generados. La unión de ambas etapas permite una limitación precisa, de mayor tiempo y sin el estrés térmico propio del modo lineal, mientras se mantiene la alimentación estable para la carga. 
 
 \section{Tendencias en la protección de sistemas de potencia}
 Una vez vista la evolución de los sistemas de protección hasta la actualidad es importante comentar que la mejora de estos sistemas no se centra únicamente en la mejora de los materiales de fabricación, sino que se extiende a un uso más óptimo de la energía \cite{adrian_garcia_hidalgo_diseno_nodate}. Es por eso que la tendencia actual en espacio es la transición hacia los controladores de potencia de estado sólido, los cuales combinan protección con telemetría y diagnóstico \cite{noauthor_comprension_nodate}. 
@@ -679,7 +689,7 @@ Por otro lado, con el objetivo de no repetir los cálculos tanto con valores gen
 Los valores seleccionados en este tipo de limitadores no son arbitrarios, sino que están seleccionados teniendo en cuenta tanto el bus de potencia principal como la carga a proteger. Durante el diseño de este tipo de dispositivos, los parámetros principales a tener en cuenta son la tensión del bus ($\vbus$), la corriente a la que empezará a limitar el dispositivo ($I_\text{lim}$) y el tiempo de disparo o \textit{trip-off time} ($t_\text{trip}$). 
 \subsection{Parámetros fundamentales y clases de LCL}
 
-En el ámbito aeroespacial, sector en el que se sigue la normativa ECSS-E-ST-20C \cite{european_space_agency_ecss-e-st-20c_2022}, están establecidas una serie de clases predefinidas para los LCL de 28 V. El uso de estas clases donde los parámetros principales mencionados anteriormente son establecidos aseguran que todas las partes encargadas de la fabricación de la carga, el sistema de potencia\dots compartan unas reglas comunes para la protección. En la tabla \ref{table:EstandarLCL} se han recopilado los valores típicos en función de la clase. 
+En el ámbito aeroespacial, sector en el que se sigue la normativa ECSS-E-ST-20C \cite{european_space_agency_ecss-e-st-20c_2022}, están establecidas una serie de clases predefinidas para los LCL de 28 V. El uso de estas clases donde los parámetros principales mencionados anteriormente son establecidos asegura que todas las partes encargadas de la fabricación de la carga, el sistema de potencia\dots compartan unas reglas comunes para la protección. En la tabla \ref{table:EstandarLCL} se han recopilado los valores típicos en función de la clase. 
 
 \begin{table}[H]
    \centering
@@ -716,7 +726,25 @@ En el ámbito aeroespacial, sector en el que se sigue la normativa ECSS-E-ST-20C
 
 \subsection{Personalización del diseño para bus de 100 V}
 
-Una característica singular de este trabajo es el uso de un bus de 100 V, como se ha visto en secciones anteriores. Los buses de 100 V, a diferencia de los de 28 V o los de 50 V, no son todavía ampliamente utilizados, lo que provoca que no contemos con una tabla de clases estandarizada para este voltaje. Esto nos otorga libertad a la hora de elegir las características principales de nuestro sistema y a su vez nos obliga a justificar aquellas decisiones que tomemos, tanto en cuanto a voltaje, corriente y tiempo como en cuanto a componentes. 
+Una característica singular de este trabajo es el uso de un bus de 100 V, como se ha visto en secciones anteriores. La imagen \ref{fig:distPotencia} muestra el esquema de un sistema de distribución presente en un satélite, pudiendo observar la presencia de varios sistemas LCL para cada una de las cargas secundarias.
+\begin{figure}[H]
+    \centering
+    % Forzamos 10pt para cumplir con la normativa de tu guía
+    \fontsize{10}{12}\selectfont 
+    \ffigbox[\FBwidth]
+    {
+        \caption{Sistema de distribución de potencia en un satélite.}
+        \label{fig:distPotencia}
+    }
+    {
+        \includegraphics[width=0.8\textwidth]{SistDistrib.pdf}
+    }
+    % Añadimos la fuente requerida por tu guía de TFG
+    \vspace{2mm}
+    {\raggedleft \textbf{Fuente:} Extraído del artículo de López et al. \cite{lopez_antuna_diseno_2024}. \par}
+\end{figure}
+
+Los buses de 100 V, a diferencia de los de 28 V o los de 50 V, no son todavía ampliamente utilizados, lo que provoca que no contemos con una tabla de clases estandarizada para este voltaje. Esto nos otorga libertad a la hora de elegir las características principales de nuestro sistema y a su vez nos obliga a justificar aquellas decisiones que tomemos, tanto en cuanto a voltaje, corriente y tiempo como en cuanto a componentes. 
 
 Para el LCL diseñado se han seleccionado las siguientes especificaciones:
 \begin{itemize}
@@ -727,18 +755,18 @@ Para el LCL diseñado se han seleccionado las siguientes especificaciones:
 
 \subsection{Enfoque del prototipado}
 
-Antes de entrar en el diseño y selección de componentes para el prototipo, es necesario subrayar que el dispositivo está ideado para cumplir con objetivos de validación funcional en un entorno de laboratorio. Es por ello por lo que las estríctas reglas y estándares aeroespaciales (tanto a nivel de componentes como a nivel diseño) no se han seguido en todo momento, dejando el refinado de estos puntos para una iteración posterior del prototipo. No obstante, a pesar de esta flexibilidad necesaria en fase de investigación, todos los criterios de selección de la topología (uso de MOSFET de canal N, gestión del rizado y protecciones) se han orientado para ser compatibles con el sector aeroespacial y tener una escalabilidad sencilla. 
+Antes de entrar en el diseño y selección de componentes para el prototipo, es necesario subrayar que el dispositivo está ideado para cumplir con objetivos de validación funcional en un entorno de laboratorio. Es por ello por lo que las estrictas reglas y estándares aeroespaciales (tanto a nivel de componentes como a nivel diseño) no se han seguido en todo momento, dejando el refinado de estos puntos para una iteración posterior del prototipo. No obstante, a pesar de esta flexibilidad necesaria en fase de investigación, todos los criterios de selección de la topología (uso de MOSFET de canal N, gestión del rizado y protecciones) se han orientado para ser compatibles con el sector aeroespacial y tener una escalabilidad sencilla. 
 
 Además, otro objetivo es permitir la experimentación con distintos valores de limitación de corriente y diferentes tiempos mediante el cambio de un número mínimo de componentes como se verá en el capítulo \ref{chapter:Escalado}.
 \section{Arquitectura del limitador basado en N-MOS}
 \label{section:Arquitectura}
-En el capítulo anterior se ha justificado la idoneidad del uso de dispositivos de canal N frente a los de canal P debido a las diferencias en términos de resitencias parásitas y a la influencia de este factor en la eficiencia y gestión térmica del dispositivo. En esta sección se partirá del uso de un N-MOS para mostrar la estructura de convertidor reductor o \textit{Buck} que emplearemos para la operación de este dispositivo en topología \textit{high-side}, centrándonos tanto en el diseño de la parte de potencia como en la parte de control formada por los bloques de temporización, sensado e histéresis.
+En el capítulo anterior se ha justificado la idoneidad del uso de dispositivos de canal N frente a los de canal P debido a las diferencias en términos de resistencias parásitas y a la influencia de este factor en la eficiencia y gestión térmica del dispositivo. En esta sección se partirá del uso de un N-MOS para mostrar la estructura de convertidor reductor o \textit{Buck} que emplearemos para la operación de este dispositivo en topología \textit{high-side}, centrándonos tanto en el diseño de la parte de potencia como en la parte de control formada por los bloques de temporización, sensado e histéresis.
 
 \subsection{Topología conmutada y configuración de potencia}
 
 La etapa de potencia del LCL se diseña empleando una topología de convertidor \textit{Buck}, lo que implica que el N-MOS está situado en el lado de alta tensión para actuar como elemento de corte en serie con la carga.
 
-A diferencia de los convertidores reductores habituales, en el diseño de este limitador se prescinde del condensador de salida. Esto se debe a que el objetivo del circuito es permitir que sea únicamente la bobina la encargada de control de forma dinámica la corriente. El condensador de salida, al reducir el rizado, dificulta la detección instantánea de variaciones provocadas por la carga y es por ello por lo que se evita el uso del mismo. 
+A diferencia de los convertidores reductores habituales, en el diseño de este limitador se prescinde del condensador de salida. Esto se debe a que el objetivo del circuito es permitir que sea únicamente la bobina la encargada de controlar de forma dinámica la corriente. El condensador de salida, al reducir el rizado, dificulta la detección instantánea de variaciones provocadas por la carga y es por ello por lo que se evita el uso del mismo. 
 
 El circuito, basado en la topología propuesta por López et al. \cite{lopez_antuna_diseno_2024}, se puede observar en la figura \ref{fig:convertidor_histeresis}: 
 
@@ -849,9 +877,9 @@ El circuito, basado en la topología propuesta por López et al. \cite{lopez_ant
 
 Uno de los elementos críticos al emplear un N-MOS en arquitectura \textit{high-side} es asegurar un correcto ciclo de trabajo durante la no limitación. En condiciones nominales, el transistor debe conducir de forma constante, es decir, tener un ciclo de trabajo (D) igual a 1 para así asegurar el suministro en la carga de aproximadamente los 100 V de la entrada. 
 
-Por tratarse de un N-MOS en \textit{high-side} es necesario para que el dispositivo conduzca que haya en la puerta del mismo en torno a 15 voltios más que el voltaje del bus, lo que imposibilita el uso de técnicas tradicionales como el uso de un condensador \textit{bootstrap} ya que estos requieren de la conmutación para recargar el condensador. Empleando un ciclo de trabajo constante de 1 sería inevitable la descarga del condensador y, por tanto, el cierre del canal del MOSFET, lo que llevaría a la desconexión de la carga. 
+Por tratarse de un N-MOS en \textit{high-side} es necesario para que el dispositivo conduzca que haya en la puerta del mismo en torno a 15 V más que el voltaje del bus, lo que imposibilita el uso de técnicas tradicionales como el uso de un condensador \textit{bootstrap} ya que estos requieren de la conmutación para recargar el condensador. Empleando un ciclo de trabajo constante de 1 sería inevitable la descarga del condensador y, por tanto, el cierre del canal del MOSFET, lo que llevaría a la desconexión de la carga. 
 
-Es por ello por lo que se ha decidido emplear una fuente de alimentación flotante la cual añadirá 15 voltios al voltaje que podemos ver en la figura \ref{fig:convertidor_histeresis} como masa flotante. De esta manera, nos aseguramos tener siempre una señal capaz de polarizar la puerta del MOSFET al ser el voltaje total de esta señal dependiente del voltaje en la fuente del transistor y por tanto $V_\text{GS}$ constante y suficiente para asegurar el trabajo en saturación. 
+Es por ello por lo que se ha decidido emplear una fuente de alimentación flotante la cual añadirá 15 V al voltaje que podemos ver en la figura \ref{fig:convertidor_histeresis} como masa flotante. De esta manera, nos aseguramos tener siempre una señal capaz de polarizar la puerta del MOSFET al ser el voltaje total de esta señal dependiente del voltaje en la fuente del transistor y por tanto $V_\text{GS}$ constante y suficiente para asegurar el trabajo en saturación. 
 
 Otro de los componentes principales para asegurar una correcta conmutación es el diodo de libre circulación. Durante el tiempo de apagado $\Toff$ del transistor, la energía almacenada en el inductor debe descargarse antes del próximo periodo de conmutación. Al estar abierto el circuito por el transistor, el diodo permite cerrar el circuito y que así la corriente siga circulando hacia la carga. La presencia de este diodo evita que la corriente circule hacia el transistor y provoque en él una sobrecorriente que pueda destruirlo. Para aumentar la eficiencia de la conmutación, se emplea un diodo Schottky cuya carga de recuperación ($Q_\text{rr}$) se puede considerar nula.
 
@@ -859,7 +887,7 @@ El condensador $C_\text{bus}$ por su parte actúa como condensador de filtrado p
 
 \subsection{Sensado y acondicionamiento de señal}
 
-Para que el driver sepa cuando hacer conmutar al MOSFET, es necesario contar con una manera de medir la corriente que circula hacia la carga. Debido a las dificultades que presenta la medición de corriente, se emplea una resistencia de medida ($R_\text{shunt}$) de baja inductancia y se toma el valor del voltaje antes (masa de control) y después de la misma ($V_\text{meas}$). Empleando una resistencia con una baja tolerancia y siendo la caida de voltaje proporcional a la corriente por ella, se sabe con exactitud la corriente que fluye hacia la carga. 
+Para que el driver sepa cuándo hacer conmutar al MOSFET, es necesario contar con una manera de medir la corriente que circula hacia la carga. Debido a las dificultades que presenta la medición de corriente, se emplea una resistencia de medida ($R_\text{shunt}$) de baja inductancia y se toma el valor del voltaje antes (masa de control) y después de la misma ($V_\text{meas}$). Empleando una resistencia con una baja tolerancia y siendo la caída de voltaje proporcional a la corriente por ella, se sabe con exactitud la corriente que fluye hacia la carga. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -906,7 +934,7 @@ Para que el driver sepa cuando hacer conmutar al MOSFET, es necesario contar con
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia basada en la topología de López et al. \cite{lopez_antuna_diseno_2024}. \par}
 \end{figure}
-Debido a los valores de corriente y al bajo valor de la resistencia de medida, la señal es de bajo valor. Es por ello por lo que, en un sistema con conmutación y por tanto rizado de corriente, esta caida de tensión podría pasar desapercibida. 
+Debido a los valores de corriente y al bajo valor de la resistencia de medida, la señal es de bajo valor. Es por ello por lo que, en un sistema con conmutación y por tanto rizado de corriente, esta caída de tensión podría pasar desapercibida. 
 
 Para solucionar esta problemática se emplean dos amplificadores operacionales alimentados entre la masa de control y la alimentación flotante en cascada con una ganancia de entorno a -25 V/V. Esta ganancia es inversora ya que la masa de control se encuentra antes que el punto de medida.
 Esto como vemos en la ecuación \ref{eq:gananciaSensado} transforma una caída de voltaje de en torno a los 100 mV en un voltaje con el que podemos trabajar más cómodamente de en torno a los 2,5 V. En una aplicación crítica donde un pequeño incremento de corriente puede implicar la pérdida de la carga, es preciso poder distinguir claramente si la corriente que fluye es una sobrecorriente o no y, alejando ambos casos entre sí, se simplifica esta tarea. 
@@ -933,6 +961,7 @@ La caída de tensión acondicionada medida en la resistencia ($V_\text{sense}$) 
         \label{fig:histeresistemporizacion}
     }
     {
+        
    \begin{tikzpicture}[transform shape]
 	% Paths, nodes and wires:
 	\node[shape=rectangle, fill={rgb,255:red,255;green,255;blue,255}, draw={rgb,255:red,0;green,0;blue,0}, line width=1pt, minimum width=1.606cm, minimum height=1.08cm](N1) at (4.505, 9.202){} node[anchor=center] at (N1.text){$Driver$};
@@ -1028,7 +1057,7 @@ Por su parte, el bloque de temporización se mantiene en alto (``1'') mientras e
 
 
 \subsubsection{Histéresis}
-El bloque de histéresis es el encargado de mantener la corriente que atraviesa la carga dentro de los márgenes de las clases predefinidas durante la sobrecorriente. Como se comentó previamente, los buses de 100 V no tienen una regulación de clases como es el caso de los de 28 o 50 voltios por lo que es decisión nuestra seleccionar entre que valores estará la corriente. El valor seleccionado para el umbral superior ($V_\text{superior}$) será el equivalente a la caída de voltaje debido al paso de $4{,}5~A$ por la resistencia de sensado multiplicado por la ganancia de la etapa de sensado mientras el valor seleccionado para el umbral inferior ($V_\text{inferior}$) será la equivalente para el paso de $3{,}7~A$.
+El bloque de histéresis es el encargado de mantener la corriente que atraviesa la carga dentro de los márgenes de las clases predefinidas durante la sobrecorriente. Como se comentó previamente, los buses de 100 V no tienen una regulación de clases como es el caso de los de 28 V o 50 V. En este trabajo, el valor seleccionado para el umbral superior ($V_\text{superior}$) será el equivalente a la caída de voltaje debido al paso de $4{,}5~A$ por la resistencia de sensado multiplicado por la ganancia de la etapa de sensado, mientras el valor seleccionado para el umbral inferior ($V_\text{inferior}$) será la equivalente para el paso de $3{,}7~A$.
 
 Cuando la corriente alcanza el límite superior, el biestable conmuta su salida a nivel bajo apagando el MOSFET. Debido a esto, la corriente empieza a decrecer hasta alcanzar el límite inferior, momento en el cual el biestable vuelve a conmutar a nivel alto encendiendo el MOSFET.
 
@@ -1038,7 +1067,7 @@ Mientras el bloque anterior es el encargado de gestionar la conmutación dentro 
 
 El primer comparador, en colector abierto, permitirá que se inicie la carga del condensador de temporización ($C_\text{timer}$) a través de una red RC asimétrica una vez la señal de medida ($V_\text{sense}$) sea mayor que la corriente de limitación ($TMR_\text{ON} = I_\text{lim} \cdot |G|$). 
 
-Como se puede observar en la figura \ref{fig:histeresistemporizacion}, se dispone de dos diodos en paralelo en dirección opuesta, lo que permite tener una constante de tiempo ($\tau$) diferente para la carga y la descarga del condensador.
+Como se puede observar en la figura \ref{fig:histeresistemporizacion}, se dispone de dos diodos en antiparalelo, lo que permite tener una constante de tiempo ($\tau$) diferente para la carga y la descarga del condensador.
 
 La carga del condensador se realiza a través de una resistencia de valor reducido que resulta en una constante de $1{,}5~ms$. Por el contrario, la descarga se produce a través de una resistencia mayor. La red asimétrica asegura que, en caso de que se produzcan varias sobrecorrientes seguidas, el condensador esté parcialmente cargado. Esta práctica se realiza con el objetivo de proteger el transistor, teniendo en cuenta que la anterior limitación lo ha calentado y no ha tenido suficiente tiempo para el enfriamiento. Asumiendo que la estabilización térmica del dispositivo es de primer orden, se usará una resistencia que asegure un tiempo de descarga cinco veces mayor al de carga. 
 
@@ -1055,7 +1084,7 @@ Una vez que la tensión en $C_\text{timer}$ alcanza la referencia $V_\text{TimON
 \label{section:3.3}
 El diseño del limitador de corriente de enclavamiento con limitación conmutada supone adaptar los requerimientos teóricos del sistema a través de la implementación física con componentes comerciales. En esta sección, se desarrollan los parámetros teóricos más influyentes en la operación del limitador basándonos para ello en las normativas impuestas en el sector aeroespacial, los límites de los dispositivos\dots así como las características parásitas de los componentes seleccionados. 
 
-A diferencia de un modelo púramente teórico, el enfoque adoptado incorpora ciertos parámetros críticos en el funcionamiento del limitador como es el caso de las resistencias en serie equivalentes (ESR), los tiempos de propagación de los integrados\dots para así obtener una correcta parametrización del comportamiento del circuito durante las etapas de funcionamiento más exigentes. Se ha considerado que la realización de una aproximación púramente teórica no presentaría ninguna ventaja respecto a la introducción de valores parásitos y que el realizar el modelado a ambos niveles podría llevar a confusión, por lo que se ha optado por la opción descrita.
+A diferencia de un modelo puramente teórico, el enfoque adoptado incorpora ciertos parámetros críticos en el funcionamiento del limitador, como es el caso de las resistencias en serie equivalentes (ESR), los tiempos de propagación de los integrados\dots para así obtener una correcta parametrización del comportamiento del circuito durante las etapas de funcionamiento más exigentes. Se ha considerado que la realización de una aproximación puramente teórica no presentaría ninguna ventaja respecto a la introducción de valores parásitos y que el realizar el modelado a ambos niveles podría llevar a confusión, por lo que se ha optado por la opción descrita.
 
 El dimensionado es, por tanto, un compromiso entre tres pilares fundamentales del sistema: 
 \begin{itemize}
@@ -1089,14 +1118,14 @@ Con un valor de $22\text{ m}\Omega$, la caída de tensión a través de la resis
     V_\text{sense} = I_\text{lim} \cdot R_\text{shunt} = 3{,}7 \cdot 0{,}022 = 81{,}4\text{ mV}
 \end{equation}
 
-Este valor de voltaje es suficientemente elevado como para obtener una relación señal a ruido (SNR) muy buena. Con la ganancia de la etapa de acondicionamiento ($-25~V/V $) llegaremos a un valor de $2{,}035~V$, siendo un valor este perfecto para los comparadores alimentados en el rango $0-5$ V. 
+Este valor de voltaje es suficientemente elevado como para obtener una relación señal a ruido (SNR) muy buena. Con la ganancia de la etapa de acondicionamiento ($-25~V/V $) llegaremos a un valor de $2{,}035~V$, siendo este un valor perfecto para los comparadores alimentados en el rango $0-5$ V. 
 
 \subsubsection{Mantenimiento del valor de salida}
 El objetivo del LCL durante el correcto funcionamiento del sistema es pasar desapercibido a nivel eléctrico. Siendo el objetivo llevar a la carga el mismo voltaje del bus, las caídas de tensión deben minimizarse, pudiendo lograr esto mediante el empleo de una resistencia de bajo valor. 
 
-Empleando un bus de $100~V$, la caída de tensión debido a la resistencia de medida $R_\text{shunt}$ será de únicamente $81{,}4~mV$, lo que supone únicamente un $0{,}081~\%$ del voltaje del bus. Si, por el contrario, emplearamos una resistencia de $1~ \Omega$ para obtener una señal más lejana a la provocada por el ruido o interferencias descritas, la caída de voltaje sería de $3{,}7~V$ y, por tanto, el voltaje en la carga de $96{,}3~V$. 
+Empleando un bus de $100~V$, la caída de tensión debido a la resistencia de medida $R_\text{shunt}$ será de únicamente $81{,}4~mV$, lo que supone únicamente un $0{,}081~\%$ del voltaje del bus. Si, por el contrario, empleáramos una resistencia de $1~ \Omega$ para obtener una señal más lejana a la provocada por el ruido o interferencias descritas, la caída de voltaje sería de $3{,}7~V$ y, por tanto, el voltaje en la carga de $96{,}3~V$. 
 
-El empleo de $22~\text{m}\Omega$ asegura, por tanto, que la carga reciba sin tener en cuenta otras resistencia serie parásitas sea de $99{,}919~V$. 
+El empleo de $22~\text{m}\Omega$ asegura, por tanto, que tras la caída de tensión debido a la resistencia de sensado encontremos un voltaje de $99{,}919~V$. La carga tendrá una diferencia de potencial menor debido a las resistencias parásitas de otros componentes.
 
 
 \subsection{Cálculo de la frecuencia máxima según pérdidas}
@@ -1143,7 +1172,7 @@ Adaptando la ecuación \ref{eq:termicasinDisipador} a partir del circuito de la 
     T_\text{j} - T_\text{a} = P_\text{mos,max} \cdot R_{\theta,\text{JA}} \rightarrow P_\text{mos,max} = \frac{125-25}{62}=1{,}613~W
 \end{equation}
 
-Un límite tan estricto de pérdidas prácticamente nos obliga al empleo de un disipador que evite un calentamiento tan drástico del semiconductor. Con esto en mente, el siguiente circuito equivalente modela la transmisión térmica de nuestro dispositivo: 
+Un límite tan estricto de pérdidas prácticamente obliga al empleo de un disipador que evite un calentamiento tan drástico del semiconductor. Con esto en mente, el siguiente circuito equivalente modela la transmisión térmica del dispositivo: 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1174,19 +1203,19 @@ Un límite tan estricto de pérdidas prácticamente nos obliga al empleo de un d
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
 \end{figure}
-Adaptando la ecuación \ref{eq:termicaconDisipador} a partir del circuito de la figura \ref{fig:termicaconDisipador}, llegamos a que las pérdidas máximas en el N-MOS serán de $10{,}07~W$.
+Adaptando la ecuación \ref{eq:termicaconDisipador} a partir del circuito de la figura \ref{fig:termicaconDisipador}, se llega a que las pérdidas máximas en el N-MOS serán de $10{,}07~W$.
 \begin{equation}
     \label{eq:termicaconDisipador}
     T_\text{j} - T_\text{a} = P_\text{mos,max} \cdot (R_{\theta,\text{JC}}+R_{\theta,\text{CS}}+R_{\theta,\text{SA}}) \rightarrow P_\text{mos,max} = \frac{125-25}{1{,}43+0{,}5+8}=10{,}07~W
 \end{equation}
 
-Una vez determinada la potencia máxima que puede disipar nuestro semiconductor, calculamos que parte de esa potencia es debido a la conducción y cuál es debido a la conmutación para, con esta última, obtener la frecuencia máxima a la que podemos conmutar sin exceder el valor calculado. 
+Una vez determinada la potencia máxima que puede disipar el semiconductor, se calcula que parte de esa potencia es debida a la conducción y cuál es debida a la conmutación para, con esta última, obtener la frecuencia máxima a la que podemos conmutar sin exceder el valor calculado. 
 \begin{equation}
     \label{eq:perdidasNMOS}
     P_\text{mos,max} = P_{\text{cond}} + P_{\text{sw}} = \rdson \cdot I_{\text{media,sc}}^2 + P_{\text{sw}}\rightarrow P_{\text{sw}} = 10{,}07 - 80\cdot 10^{-3} \cdot 4{,}2^2 = 8{,}66~W
 \end{equation}
 
-Por tanto, la frecuencia máxima a la que podremos conmutar la obtenemos a partir de la ecuación \ref{eq:fmaxNMOS} empleando los valores de tiempo de subida ($12~ns$) y de tiempo de bajada ($6{,}3~ns$) de nuestro transistor. 
+Por tanto, la frecuencia máxima a la que podrá conmutar la obtenemos a partir de la ecuación \ref{eq:fmaxNMOS} empleando los valores de tiempo de subida ($12~ns$) y de tiempo de bajada ($6{,}3~ns$) del transistor. 
 \begin{equation}
     \label{eq:fmaxNMOS}
     P_{\text{sw}} \geq \frac{1}{2} \vbus \cdot I_{\text{media,sc}}\cdot (t_\text{r}+t_\text{f})\cdot \fswitch \rightarrow \fswitch \leq 2{,}253~MHz
@@ -1201,10 +1230,9 @@ Uno de los elementos más importantes del diseño del sistema es el dimensionado
 
 \subsubsection{Requisitos 5.4.1.1.1a y 5.4.1.1.1b}
 
-Los requisitos mencionados establecen que en el peor caso de sobrecorriente siendo este el cortocircuito la sobrecorriente de entrada o de salida debe no exceder los 50 A. Debido a que nuestra aproximación es una primera iteración con componentes sin certificación espacial y con objetivo de estudio, se ha decidido ser más restrictivo respecto a este requisito y limitar la corriente máxima absoluta a un valor de 10 A. 
+Los requisitos mencionados establecen que en el peor caso de sobrecorriente, siendo este el cortocircuito, la sobrecorriente de entrada o de salida debe no exceder los 50 A. Debido a que la aproximación es una primera iteración de este trabajo con componentes sin certificación espacial y con objetivo de estudio, se ha decidido ser más restrictivo respecto a este requisito y limitar la corriente máxima absoluta a un valor de 10 A. 
 
-Debido a que durante los intervalos de conducción y de corte la tensión en la bobina se mantiene prácticamente constante, podemos asumir que la corriente varía de forma lineal con respecto al tiempo. Con esta suposición 
-y partiendo de la ecuación \ref{eq:Vderivada_inductancia} obtenemos la ecuación \ref{eq:Vdelta_inductancia}: 
+Debido a que durante los intervalos de conducción y de corte la tensión en la bobina se mantiene prácticamente constante, se puede asumir que la corriente varía de forma lineal con respecto al tiempo. Con esta suposición y partiendo de la ecuación \ref{eq:Vderivada_inductancia} se obtiene la ecuación \ref{eq:Vdelta_inductancia}: 
 
 \begin{equation}
     \label{eq:Vderivada_inductancia}
@@ -1218,9 +1246,9 @@ y partiendo de la ecuación \ref{eq:Vderivada_inductancia} obtenemos la ecuació
 Debido a que el requisito 5.4.1.1.1b establece que el peor caso de estudio debe ser un cortocircuito repentino, se emplearán los siguientes valores:
 
 \begin{itemize}
-    \item \textbf{Tensión de la bobina ($V_\text{L}$):} Será la diferencia de voltaje entre el bus de entrada ($\vbus$) y el voltaje de salida. Por ser el peor caso de sobrecorriente establecemos un voltaje de salida de 0 V, siendo $V_\text{L} = \vbus$
-    \item \textbf{Rizado de corriente ($\Delta i$):} Será el exceso de corriente máximo permitido por encima del valor de histéresis superior elegido. En nuestro caso el límite superior es de $4{,}5~A$ y, como se especificó anteriormente, la corriente máxima permitida será de $10~A$. Por tanto, el rizado de corriente máximo permitido será de $5{,}5~A$. 
-    \item \textbf{Intervalo de tiempo ($\Delta t$):} Será el tiempo durante el cual no se ha detectado la sobrecorriente y es la bobina la encargada de limitar la corriente. Este tiempo viene determinado por la respuesta temporal de los componentes elegidos: los amplificadores operacionales del sensado de corriente, los comparadores del temporizador y del bloque de histéresis, el biestable, la puerta lógica y el \textit{driver}. Como se verá en el siguiente capítulo, uno de los argumentos principales para la selección de los integrados ha sido la velocidad de respuesta. El tiempo de propagación total que denominaremos $t_\text{sense}$ es de $171{,}4~ns$.
+    \item \textbf{Tensión de la bobina ($V_\text{L}$):} Será la diferencia de voltaje entre el bus de entrada ($\vbus$) y el voltaje de salida. Por ser el peor caso de sobrecorriente se establece un voltaje de salida de 0 V, siendo $V_\text{L} = \vbus$
+    \item \textbf{Rizado de corriente ($\Delta i$):} Será el exceso de corriente máximo permitido por encima del valor de histéresis superior elegido. En este caso el límite superior es de $4{,}5~A$ y, como se especificó anteriormente, la corriente máxima permitida será de $10~A$. Por tanto, el rizado de corriente máximo permitido será de $5{,}5~A$. 
+    \item \textbf{Intervalo de tiempo ($\Delta t$):} Será el tiempo durante el cual no se ha detectado la sobrecorriente y es la bobina la encargada de limitar la corriente. Este tiempo viene determinado por la respuesta temporal de los componentes elegidos: los amplificadores operacionales del sensado de corriente, los comparadores del temporizador y del bloque de histéresis, el biestable, la puerta lógica y el \textit{driver}. Como se verá en el siguiente capítulo, uno de los argumentos principales para la selección de los integrados ha sido la velocidad de respuesta. El tiempo de propagación total que se denominará $t_\text{sense}$ es de $171{,}4~ns$.
 \end{itemize}
 
 Particularizando la ecuación \ref{eq:Vdelta_inductancia} para los valores determinados, los requisitos 5.4.1.1.1a y 5.4.1.1.1b establecen una $\Lmin$ de $3{,}116\,\mu H$:
@@ -1232,7 +1260,7 @@ Particularizando la ecuación \ref{eq:Vdelta_inductancia} para los valores deter
 
 \subsubsection{Requisito 5.4.1.1.1e}
 
-El requisito mencionado establece que la carga de entrada no debe poder exceder $1~mC$ debido a una sobrecarga en la entrada. Para este requisito seguimos el modelo propuesto por López et al. en \cite{lopez_antuna_diseno_2024}, empleando las ecuaciones \ref{eq:reqA}-\ref{eq:reqC}:
+El requisito mencionado establece que la carga de entrada no debe poder exceder $1~mC$ debido a una sobrecarga en la entrada. Para este requisito se emplea el modelo propuesto por López et al. en \cite{lopez_antuna_diseno_2024}, empleando las ecuaciones \ref{eq:reqA}-\ref{eq:reqC}:
 
 \begin{equation}
     \label{eq:reqA}
@@ -1274,8 +1302,8 @@ Para los valores dados, el requisito 5.4.1.1.1e establece una $\Lmin$ de $1{,}7\
 
 
 \subsubsection{Requisito 5.2.3.1a}
-El último requisito determina que, tras el \textit{overshoot} inicial, la bobina no puede permitir un pico de corriente que exceda los límites de la clase. En nuestro caso, las clases no están definidas por lo que el límite será determinado por nosotros. Con un límite superio de histéresis ($\IhistSup$) de $4{,}5~A$, permitiremos que la corriente sobrepase esta corriente hasta un máximo de $4{,}7~A$.
-Partiendo como anteriormente de la ecuación \ref{eq:Vdelta_inductancia}, en este caso emplearemos el voltaje de salida menos óptimo calculado en la sección anterior. Obtenemos de esta manera una $\Lmin$ de $42{,}85\, \mu H$:
+El último requisito determina que, tras el \textit{overshoot} inicial, la bobina no puede permitir un pico de corriente que exceda los límites de la clase. En este caso, las clases no están definidas por lo que el límite debe ser establecido. Con un límite superior de histéresis ($\IhistSup$) de $4{,}5~A$, se permite que la corriente sobrepase esta corriente hasta un máximo de $4{,}7~A$.
+Partiendo como anteriormente de la ecuación \ref{eq:Vdelta_inductancia}, en este caso se emplea el voltaje de salida más desfavorable calculado en la sección anterior. Se obtiene de esta manera una $\Lmin$ de $42{,}85\, \mu H$:
 \begin{equation}
     \Lmin = (\vbus-\vout)\cdot\frac{t_\text{sense}}{\Imax - \IhistSup}= (100-50)\cdot\frac{171{,}4\cdot 10^{-9}}{4{,}7-4{,}5}=42{,}85 \, \mu H
     \label{eq:particularizacionImax}
@@ -1286,8 +1314,8 @@ Una vez obtenidos todos los valores, se adopta como $\Lmin$ el valor de $42{,}85
 \subsection{Cálculo de la frecuencia de conmutación}
 \label{subsec:Cálculo de la frecuencia de conmutación}
 
-Al actuar el circuito como un convertidor de potencia, podemos concretar la ecuación \ref{eq:Vdelta_inductancia} para el tiempo de conducción del N-MOS ($\Ton$) y para el tiempo de apertura del N-MOS ($\Toff$). Con el objetivo de tener en cuenta las pérdidas de los componentes y saber la potencia disipada debemos tener en cuenta la resistencia parásita del N-MOS ($\rdson = 80 m\Omega$) y de la bobina ($R_\text{L} = 27{,}3 m\Omega$), además de la  caída de voltaje del diodo ($V_\text{D}=0{,}9 V$) y la resistencia de medida ($R_\text{shunt} = 22 m\Omega$).
-Como se justificó en la anterior sección en la ecuación \ref{eq:derivada_vout}, emplearemos $\vout$ igual a $50~V$.  
+Al actuar el circuito como un convertidor de potencia, se puede concretar la ecuación \ref{eq:Vdelta_inductancia} para el tiempo de conducción del N-MOS ($\Ton$) y para el tiempo de apertura del N-MOS ($\Toff$). Con el objetivo de tener en cuenta las pérdidas de los componentes y saber la potencia disipada debe tenerse en cuenta la resistencia parásita del N-MOS ($\rdson = 80 m\Omega$) y de la bobina ($R_\text{L} = 27{,}3 m\Omega$), además de la caída de voltaje del diodo ($V_\text{D}=0{,}9 V$) y la resistencia de medida ($R_\text{shunt} = 22 m\Omega$).
+Como se justificó en la anterior sección en la ecuación \ref{eq:derivada_vout}, se empleará $\vout$ igual a $50~V$.  
 
 Para $\Ton$, la ecuación es la siguiente: 
 \begin{equation}
@@ -1302,7 +1330,7 @@ Para $\Toff$, la ecuación es la siguiente:
     \Toff= \frac{\Delta i \cdot L}{-\vout- \vdiodo - I_{\text{L}} (R_\text{shunt}+R_\text{L})}
 \end{equation}
 
-Sabiendo la ecuación tanto para el periodo de encendido como para el de apagado podemos calcular la frecuencia de conmutación como la inversa del tiempo total, es decir, la inversa de la suma de $\Ton$ y $\Toff$. Realizando la operación y simplificando parcialmente la expresión llegamos a la ecuación \ref{eq:fswitchParasitos}. Para simplificar la escritura denominamos $R_\text{eq}$ a la suma de $\rdson$, $R_{\text{shunt}}$ y $R_\text{L}$.
+Sabiendo la ecuación tanto para el periodo de encendido como para el de apagado se puede calcular la frecuencia de conmutación como la inversa del tiempo total, es decir, la inversa de la suma de $\Ton$ y $\Toff$. Realizando la operación y simplificando parcialmente la expresión se llega a la ecuación \ref{eq:fswitchParasitos}. Para simplificar la escritura se denomina $R_\text{eq}$ a la suma de $\rdson$, $R_{\text{shunt}}$ y $R_\text{L}$.
 
 \begin{equation}
     \label{eq:fswitchParasitos}
@@ -1311,7 +1339,7 @@ Sabiendo la ecuación tanto para el periodo de encendido como para el de apagado
   \end{split}
 \end{equation}
 
-Empleando los valores especificados, obtenemos la siguiente ecuación por la cual podemos obtener la frecuencia en función de la inductancia elegida o, por el contrario, determinar la inductancia necesaria para nuestro objetivo de frecuencia. El valor de $R_\text{eq}$ será de $129{,}3 m\Omega$. 
+Empleando los valores especificados, se obtiene la siguiente ecuación por la cual se puede obtener la frecuencia en función de la inductancia elegida o, por el contrario, determinar la inductancia necesaria para el objetivo de frecuencia. El valor de $R_\text{eq}$ será de $129{,}3 m\Omega$. 
 
 \begin{equation}
     \label{eq:fswitchParasitosValores}
@@ -1323,15 +1351,15 @@ Empleando los valores especificados, obtenemos la siguiente ecuación por la cua
     f_{\text{sw}} = \frac{41{,}819}{L}
 \end{equation}
 
-En la susbsección anterior (\ref{subsec:inductanciaECSS}) obtuvimos un valor mínimo para la inductancia debido a los criterios impuestos por la normativa ECSS. Para ese valor de inductancia mínima ($L_\text{min} = 42{,}85\,\mu H$) obtenemos de la ecuación \ref{eq:fswitchfunciondeL} una frecuencia de conmutación de $975{,}94\,kHz$. 
-Pese a ser esta la inductancia mínima teórica, nos alejamos del peor caso para así asegurar un correcto funcionamiento, pero sin aumentarlo excesivamente para que la frecuencia de conmutación siga siendo de un valor elevado y la $R_\text{DC}$ un valor reducido. Además, por sencillez en la busqueda de componentes se escogerá un valor más estandarizado.
+En la subsección anterior (\ref{subsec:inductanciaECSS}) se obtuvo un valor mínimo para la inductancia debido a los criterios impuestos por la normativa ECSS. Para ese valor de inductancia mínima ($L_\text{min} = 42{,}85\,\mu H$) se obtiene de la ecuación \ref{eq:fswitchfunciondeL} una frecuencia de conmutación de $975{,}94\,kHz$. 
+Pese a ser esta la inductancia mínima teórica, se aleja del peor caso para así asegurar un correcto funcionamiento, pero sin aumentarlo excesivamente para que la frecuencia de conmutación siga siendo de un valor elevado y la $R_\text{DC}$ un valor reducido. Además, por sencillez en la búsqueda de componentes se escogerá un valor estandarizado.
 
-Con ambos factores en mente, se elije una inductancia de $68\,\mu H$ que resulta en una frecuencia de conmutación de $614{,}98\,kHz$ ocupando un tamaño admisible y una resistencia en conducción no muy elevada. 
+Con ambos factores en mente, se elige una inductancia de $68\,\mu H$ que resulta en una frecuencia de conmutación de $614{,}98\,kHz$ ocupando un tamaño admisible y una resistencia en conducción no muy elevada.
 
 \subsection{Definición de la banda de histéresis}
 Como se ha visto hasta el momento, los beneficios de esta topología se basan en el control conmutado manteniendo el valor de la corriente entre los límites de histéresis en vez de la limitación activa de corriente por el MOSFET. Dentro de este control por conmutación uno de los valores principales es la banda de histéresis, es decir, el rango de valores entre los que estará conmutando la corriente al limitarla. 
 
-Como se ha comentado a lo largo del capítulo, los buses de $100\,V$ no son todavía estándar, lo que hace que no existan clases predefinidas con valores especificados por la ECSS como en el caso de los buses de $28\,V$ de la tabla \ref{table:EstandarLCL}. No estar regido por una norma nos otorga cierta libertad a la hora de realizar el diseño a la vez que nos obliga a ser coherentes con el mismo y escoger valores adecuados tanto para la corriente que fluye como en relación con el aumento de voltaje.
+Como se ha comentado a lo largo del capítulo, los buses de $100\,V$ no son todavía estándar, lo que hace que no existan clases predefinidas con valores especificados por la ECSS como en el caso de los buses de $28\,V$ de la tabla \ref{table:EstandarLCL}. No estar regido por una norma otorga cierta libertad a la hora de realizar el diseño a la vez que obliga a ser coherentes con el mismo y escoger valores adecuados tanto para la corriente que fluye como en relación con el aumento de voltaje.
 
 Para el diseño propuesto se establece un límite superior de histéresis ($\IhistSup$) de $4{,}5\,A$ y un límite inferior ($\IhistInf$) de $3{,}7\,A$, generando, por tanto, una banda de histéresis de $0{,}8\,A$. 
 
@@ -1345,36 +1373,36 @@ Para el diseño propuesto se establece un límite superior de histéresis ($\Ihi
         \label{fig:histeresis}
     }
     {
-        \includegraphics[width=0.8\textwidth]{Histeresis.pdf}
+        \includegraphics[width=1\textwidth]{Histeresis.pdf}
     }
     
     % Añadimos la fuente requerida por tu guía de TFG
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
 \end{figure}
-La selección de la amplitud es un \textit{trade-off} entre la frecuencia de conmutación de nuestro limitador y el rendimiento que tendrá térmicamente. A partir de la ecuación \ref{eq:fswitchParasitos} podemos ver que la relación entre la banda de histéresis ($\Delta i$) y la frecuencia de conmutación ($\fswitch$) es inversamente proporcional, lo que supone que, si quisieramos que la fluctuación de corriente fuera menor, tendríamos que aumentar de igual manera la frecuencia de conmutación del N-MOS. Esto como ya hemos visto provocaría un incremento de las pérdidas en conmutación y, por tanto, un mayor estrés térmico, pudiendo salir del área de operación segura del dispositivo. 
+La selección de la amplitud es un \textit{trade-off} entre la frecuencia de conmutación del limitador y el rendimiento que tendrá térmicamente. A partir de la ecuación \ref{eq:fswitchParasitos} se puede ver que la relación entre la banda de histéresis ($\Delta i$) y la frecuencia de conmutación ($\fswitch$) es inversamente proporcional, lo que supone que, si se busca que la fluctuación de corriente fuera menor, se debería aumentar de igual manera la frecuencia de conmutación del N-MOS. Esto como ya hemos visto provocaría un incremento de las pérdidas en conmutación y, por tanto, un mayor estrés térmico, pudiendo salir del área de operación segura del dispositivo. 
 
 Además, la banda no debe ser tan estrecha como para que el tiempo de retardo ($t_\text{sense}$) sea comparable con el tiempo de conmutación, ya que, de ser así, se producirían solapamientos y picos de corriente.
 
-\subsubsection{Límite inferior de histéresis($\IhistInf$)}
+\subsubsection{Límite inferior de histéresis ($\IhistInf$)}
 El límite inferior de histéresis se ha seleccionado para que coincida con el valor de la corriente de limitación ($3{,}7\,A$) por varios motivos. 
 
-Uno de los motivos es la función intrínseca del LCL. Como vimos en la evolución histórica de los limitadores, componentes como los fusibles o los disyuntores se abren inmediatamente al recibir una corriente por encima de un valor determinado mientras los LCL limitan esa corriente durante un cierto tiempo para no desconectar de forma prematura la carga en caso de que sea un simple transitorio. Al fijar el límite inferior en este valor aseguramos que, incluso en el punto más bajo de rizado de conmutación, la carga está recibiendo los $3{,}7\,A$. Por no tener referencias respecto a la carga que se podría emplear en una aplicación real, debemos seleccionar un límite inferior que pueda asegurar el aportar una corriente media suficiente para mantener la carga operativa en los transitorios. 
+Uno de los motivos es la función intrínseca del LCL. Como se vió en la evolución histórica de los limitadores, componentes como los fusibles o los disyuntores se abren inmediatamente al recibir una corriente por encima de un valor determinado mientras los LCL limitan esa corriente durante un cierto tiempo para no desconectar de forma prematura la carga en caso de que sea un simple transitorio. Al fijar el límite inferior en este valor se asegura que, incluso en el punto más bajo de rizado de conmutación, la carga está recibiendo los $3{,}7\,A$. Por no tener referencias respecto a la carga que se podría emplear en una aplicación real, se debe seleccionar un límite inferior que pueda asegurar el aportar una corriente media suficiente para mantener la carga operativa en los transitorios. 
 
-Otro de los motivos es la lógica implementada en el temporizador. La etapa de temporización emplea un integrado para comparar la caida de voltaje en la resistencia de medida respecto a un voltaje proporcional al paso de $3{,}7\,A$ por esa resistencia. Eligiendo un valor menor, existirían instantes durante la conmutación donde la corriente estaría por debajo del valor de activación del temporizador por lo que el condensador del mismo se empezaría a descargar para volver a cargarse al volver a subir la corriente, provocando que el \textit{trip-off time} fuese mayor de $1{,}5\,ms$.
+Otro de los motivos es la lógica implementada en el temporizador. La etapa de temporización emplea un integrado para comparar la caída de voltaje en la resistencia de medida respecto a un voltaje proporcional al paso de $3{,}7\,A$ por esa resistencia. Eligiendo un valor menor, existirían instantes durante la conmutación donde la corriente estaría por debajo del valor de activación del temporizador por lo que el condensador del mismo se empezaría a descargar para volver a cargarse al volver a subir la corriente, provocando que el \textit{trip-off time} fuese mayor de $1{,}5\,ms$.
 
-Además, el rizado debe ser lo suficientemente grande para no llevar a un nivel demasiado alto la frecuencia y, por tanto, no disipar excesivamente en conmutación. Con este objetivo en mente, disminuímos al máximo el valor límite por abajo al provocar menores pérdidas de las que se producirían si aumentasemos el mismo valor el límite superior.
+Además, el rizado debe ser lo suficientemente grande para no llevar a un nivel demasiado alto la frecuencia y, por tanto, no disipar excesivamente en conmutación. Con este objetivo en mente, se disminuye al máximo el valor límite inferior al provocar menores pérdidas de las que se producirían si se aumentase el mismo valor el límite superior.
  
-\subsubsection{Límite superior de histéresis($\IhistSup$)}
-La selección del límite superior de $4{,}5\,A$ está integramente relacionada con la banda de histéresis y con el límite inferior que acabamos de ver. 
-Como hemos visto, una banda más estrecha provocaría un posible solapamiento entre el tiempo de retardo y el tiempo de conmutación por lo que un valor de $0{,}8\,A$ nos asegura una frecuencia de $614{,}98\,kHz$ que nos separa del tiempo de retraso calculado con valor de $171{,}4\,ns$. De esta manera, aseguramos que tras el \textit{overshoot} inicial la corriente no llegue a valores destructivos para el circuito, como establecimos en el apartado \ref{subsec:inductanciaECSS}. 
+\subsubsection{Límite superior de histéresis ($\IhistSup$)}
+La selección del límite superior de $4{,}5\,A$ está íntegramente relacionada con la banda de histéresis y con el límite inferior. 
+Como se ha visto, una banda más estrecha provocaría un posible solapamiento entre el tiempo de retardo y el tiempo de conmutación, por lo que un valor de $0{,}8\,A$ asegura una frecuencia de $614{,}98\,kHz$ que separa del tiempo de retraso calculado con valor de $171{,}4\,ns$. De esta manera, se asegura que tras el \textit{overshoot} inicial la corriente no llegue a valores destructivos para el circuito, como se establece en el apartado \ref{subsec:inductanciaECSS}. 
 
-Para las clases de 28 voltios de la ECSS, la banda se establece de $0{,}9 \,A$ para la clase de 3 amperios y de $1{,}2\,A$ para la clase de 4 amperios. Para la corriente de limitación de $3{,}7\,A$ la banda será más restrictiva, pues la potencia es más elevada debido al voltaje del bus empleado. Es por ello por lo que, mientras para la clase 4 se llega hasta los $5{,}6\,A$, nosotros para una corriente entre la clase 3 y la clase 4 llegaremos hasta un valor superior más conservador. 
+Para las clases de 28~V de la ECSS, la banda se establece de $0{,}9 \,A$ para la clase de 3 amperios y de $1{,}2\,A$ para la clase de 4 amperios. Para la corriente de limitación de $3{,}7\,A$ la banda será más restrictiva, pues la potencia es más elevada debido al voltaje del bus empleado. Es por ello por lo que, mientras para la clase 4 se llega hasta los $5{,}6\,A$, nosotros para una corriente entre la clase 3 y la clase 4 llegaremos hasta un valor superior más conservador. 
 
 \subsection{Parametrización del temporizador}
 El bloque de temporización explicado con anterioridad tiene como objetivo determinar el tiempo máximo ($t_\text{trip}$) durante el cual el limitador permite que la corriente conmute en el rango de histéresis durante la sobrecorriente. Si una vez finalizado este tiempo la corriente no ha bajado a un valor inferior a $3{,}7\,A$ el limitador se enclava y desconecta la carga. 
 
-Fijándonos únicamente en el bloque de temporización de la figura \ref{fig:histeresistemporizacion} obtenemos la siguiente figura más precisa. Los valores de las resistencias y condensador se justificarán a continuación. 
+Observando únicamente en el bloque de temporización de la figura \ref{fig:histeresistemporizacion} obtenemos la siguiente figura más precisa. Los valores de las resistencias y condensador se justificarán a continuación. 
 
 \begin{figure}[H]
     \centering
@@ -1434,24 +1462,24 @@ Fijándonos únicamente en el bloque de temporización de la figura \ref{fig:his
     {\raggedleft \textbf{Fuente:} Elaboración propia. \par}
 \end{figure}
 
-La alimentación auxiliar $V_\text{cc}$ de $5\,V$ es la encargada de, a través de un divisor resistivo, establecer el valor a partir del cual el temporizador empieza a funcionar. Este valor será la caída de voltaje equivalente a un paso de la corriente de limitación, $3{,}7\,A$, a través de la resistencia de sensado multiplicada por la ganancia propia de la etapa de sensado, es decir, los $25\,V/V$ que vemos en la ecuación \ref{eq:gananciaSensado}. 
+La alimentación auxiliar $V_\text{cc}$ de $5\,V$ es la encargada de, a través de un divisor resistivo, establecer el valor a partir del cual el temporizador empieza a funcionar. Este valor será la caída de voltaje equivalente a un paso de la corriente de limitación, $3{,}7\,A$, a través de la resistencia de sensado multiplicada por la ganancia propia de la etapa de sensado, es decir, los $25\,V/V$ que se ven en la ecuación \ref{eq:gananciaSensado}. 
 \begin{equation}
     \label{eq:VtimON}
     V_\text{timON} = G_\text{sensado} \cdot I_\text{lim} \cdot R_\text{shunt} = 25 \cdot 3{,}7 \cdot 22\cdot 10^{-3} = 2{,}035\,V
 \end{equation}
 
-Para obtener este valor como se expresa arriba, se emplea un divisor resistivo simple con dos resistencias, siendo el voltaje de entrada los $5\,V$ de alimentación y el de salida $V_\text{timON}$. Obtenemos la siguiente ecuación para el cálculo de los valores para las resistencias $R_\text{1}$ y $R_\text{2}$ de la figura \ref{fig:temporizadorValores}:
+Para obtener este valor como se expresa arriba, se emplea un divisor resistivo simple con dos resistencias, siendo el voltaje de entrada los $5\,V$ de alimentación y el de salida $V_\text{timON}$. Se obtiene la siguiente ecuación para el cálculo de los valores para las resistencias $R_\text{1}$ y $R_\text{2}$ de la figura \ref{fig:temporizadorValores}:
 
 \begin{equation}
     \label{eq:resistencaisVtimON}
     V_\text{timON}= V_\text{cc} \cdot \frac{R_\text{2}}{R_\text{1} + R_\text{2}}\Rightarrow \frac{R_\text{1}}{R_\text{2}} = \frac{V_\text{cc}}{V_\text{timON}} - 1 \Rightarrow R_\text{1} = 1{,}46 \cdot R_\text{2}
 \end{equation}
 
-A partir de esta ecuación y recordando el enfoque práctico que se le busca dar al proyecto, buscaremos dos resistencias que, siguiendo esta relación, sean más comunes. En este caso se decide optar por una $R_\text{UP}$ de $1{,}6\, k\Omega$ y una $R_\text{DOWN}$ de $1{,}1\, k\Omega$. 
+A partir de esta ecuación y recordando el enfoque práctico que se le busca dar al proyecto, se seleccionan dos resistencias que, siguiendo esta relación, sean más comunes. En este caso se decide optar por una $R_\text{UP}$ de $1{,}6\, k\Omega$ y una $R_\text{DOWN}$ de $1{,}1\, k\Omega$. 
 
 Siguiendo el circuito, una vez el voltaje $V_\text{sense}$ llegue a este valor, el comparador en colector abierto cambiará de estado. En un primer momento, la entrada negativa será mayor que la entrada positiva ($V_\text{-} >V_\text{+}$) por no haber una sobrecorriente, lo que hace que el transistor interno se encienda y conecte la salida a tierra. En cambio, cuando se detecta una sobrecorriente la entrada positiva del primer comparador excede los $2{,}035\,V$ ($V_\text{-} <V_\text{+}$) apagando el transistor interno y manteniendo la salida flotante. Gracias a la resistencia \textit{pull-up} denominada $R_\text{3}$ en la figura \ref{fig:temporizadorValores}, la salida es alta y comienza la carga del condensador.
 
-En este caso, cuando el condensador llegue a cargarse por encima del valor $2{,}035\,V$ cambiará el estado del segundo comparador. A diferencia del anterior comparador, el valor de referencia está conectado a la entrada positiva por lo que en un primer momento esta será mayor que la entrada negativa ($V_\text{+} >V_\text{-}$) manteniendo la salida alta gracias a la resistencia \textit{pull-up} R4. Si volvemos a la topología de la figura \ref{fig:histeresistemporizacion} vemos que esto hace que en la entrada de la puerta \textit{AND} haya un ``1'' lógico, permitiendo que se produzca la conmutación controlada por el bloque de histéresis. 
+En este caso, cuando el condensador llegue a cargarse por encima del valor $2{,}035\,V$ cambiará el estado del segundo comparador. A diferencia del anterior comparador, el valor de referencia está conectado a la entrada positiva por lo que en un primer momento esta será mayor que la entrada negativa ($V_\text{+} >V_\text{-}$) manteniendo la salida alta gracias a la resistencia \textit{pull-up} R4. Si se vuelve a la topología de la figura \ref{fig:histeresistemporizacion} se puede observar que esto hace que en la entrada de la puerta \textit{AND} haya un ``1'' lógico, permitiendo que se produzca la conmutación controlada por el bloque de histéresis. 
 Una vez el voltaje en el condensador sea tal que el tiempo de limitación se ha agotado, el transitor del comparador se encenderá llevando la salida a tierra, lo que implica un ``0'' lógico en la puerta \textit{AND} y, por tanto, el enclavamiento. 
 
 Para facilitar el seguimiento de la lógica del temporizador se presenta la siguiente tabla (\ref{table:estados_driver}) con los posibles estados del temporizador:
@@ -1475,33 +1503,31 @@ Para facilitar el seguimiento de la lógica del temporizador se presenta la sigu
         \label{table:estados_driver}
     \end{tabular}}
 \end{table}
-
-
-Para que nuestro temporizador siga los requisitos que le hemos impuesto debemos fijarnos en la red RC de carga y descarga del condensador la cual es asimétrica, lo que significa que cuenta con distintas constantes temporales ($\tau$) para ambos casos.
+Para que el temporizador siga los requisitos impuestos se debe prestar atención a la red RC de carga y descarga del condensador la cual es asimétrica, lo que significa que cuenta con distintas constantes temporales ($\tau$) para ambos casos.
 
 \subsubsection{Carga del condensador}
-El objetivo del temporizador es, cuando hay una sobrecorriente, cargar un condensador hasta un valor tal que, una vez se obtenga, hayan pasado $1{,}5\,ms$. Debido a que ya tenemos un divisor resistivo calculado para darnos $2{,}035 \,V$, podemos reutilizar este valor como voltaje al que se habrá cargado el condensador tras el \textit{trip-off time}.
+El objetivo del temporizador es, cuando hay una sobrecorriente, cargar un condensador hasta un valor tal que, una vez se obtenga, hayan pasado $1{,}5\,ms$. Debido a que ya existe un divisor resistivo calculado para obtener los $2{,}035 \,V$, es posible reutilizar este valor como voltaje al que se habrá cargado el condensador tras el \textit{trip-off time}.
 
-En la subsección \ref{subsec:temporizador} donde se explica la topología del temporizador, se presenta la ecuación \ref{eq:cargaCondensador} con la fórmula que rige la carga de un condensador. Como se ha expresado anteriormente, con el objetivo de no repetir de manera innecesaria cálculos se emplean valores reales como es el caso de la caída de voltaje provocada por el diodo. A partir de la ecuación de carga incluímos el voltaje del diodo: 
+En la subsección \ref{subsec:temporizador} donde se explica la topología del temporizador, se presenta la ecuación \ref{eq:cargaCondensador} con la fórmula que rige la carga de un condensador. Como se ha expresado anteriormente, con el objetivo de no repetir de manera innecesaria cálculos se emplean valores reales como es el caso de la caída de voltaje provocada por el diodo. A partir de la ecuación de carga se incluye el voltaje del diodo: 
 
 \begin{equation}
     \label{eq:cargaCondensadorTau}
     V_\text{timON} = (V_\text{cc}-V_\text{F}) \cdot \left(1 - e^{-\frac{t}{\tau_\text{carga}}}\right)
 \end{equation}
 
-Operando la anterior ecuación e incluyendo los valores llegamos a obtener la constante de carga ($\tau_\text{carga}$): 
+Operando la anterior ecuación e incluyendo los valores se consigue la constante de carga ($\tau_\text{carga}$): 
 \begin{equation}
     \label{eq:tauCarga}
     \tau_\text{carga} = - \frac{t_\text{trip}}{ln\left(1 - \frac{V_\text{timON}}{V_\text{cc}-V_\text{F}}\right)} = - \frac{1{,}5\cdot 10^{-3}}{ln\left(1 - \frac{2{,}035}{5-0{,}32}\right)} = 2{,}61 \cdot 10^{-3}
 \end{equation}
 
-Habiendo obtenido este valor y sabiendo que la constante de tiempo de una red RC es el producto de ambas podemos seleccionar uno de ambos componentes y ajustar el otro. Se emplea un condensador de $100\, nF$ por ser este valor un \textit{trade-off} entre protección ante capacidades parásitas que no tendríamos con un condensador de poco valor y un tiempo de respuesta aceptable que no tendríamos con uno de alto valor. Además, este valor nos lleva al uso de una resistencia \textit{pull-up} encargada de la carga de $26{,}1\,k\Omega$, valor comercial y con corrientes de fuga mínimas. 
+Habiendo obtenido este valor y sabiendo que la constante de tiempo de una red RC es el producto de ambas podemos seleccionar uno de ambos componentes y ajustar el otro. Se emplea un condensador de $100\, nF$ por ser este valor un \textit{trade-off} entre protección ante capacidades parásitas que no se conseguiría con un condensador de poco valor y un tiempo de respuesta aceptable que no tendríamos con uno de alto valor. Además, este valor nos lleva al uso de una resistencia \textit{pull-up} encargada de la carga de $26{,}1\,k\Omega$, valor comercial y con corrientes de fuga mínimas. 
 
 
 \subsubsection{Descarga del condensador}
 La red asimétrica se implementa con el objetivo de dotar al circuito temporizador de memoria para que, si dos sobrecorrientes de las cuales la primera es menor de $1{,}5\, ms$ se suceden en un muy corto periodo de tiempo, el temporizador tenga en cuenta que el transistor no ha tenido tiempo a enfriarse. De no implementarse este mecanismo, el permitir una segunda sobrecorriente que durase todo el tiempo de \textit{trip-off} podría excederse la temperatura máxima del N-MOS y perder el dispositivo. 
 
-A partir de la hoja de datos del fabricante para el N-MOS IRFB4020PBF \cite{noauthor_irfb4020pbfpmd_nodate}, podemos ver en la figura \ref{fig:Foster} la red térmica de Foster donde se muestran cada una de las capas internas que conforman el dispositivo. 
+A partir de la hoja de datos del fabricante para el N-MOS IRFB4020PBF \cite{noauthor_irfb4020pbfpmd_nodate}, se puede ver en la figura \ref{fig:Foster} la red térmica de Foster donde se muestran cada una de las capas internas que conforman el dispositivo. 
 
 \begin{figure}[H]
     \centering
@@ -1521,9 +1547,9 @@ A partir de la hoja de datos del fabricante para el N-MOS IRFB4020PBF \cite{noau
     {\raggedleft \textbf{Fuente:} Extraído de la hoja de datos de Infineon para el IRFP4020PBF\cite{noauthor_irfb4020pbfpmd_nodate}. \par}
 \end{figure}
 
-En la imagen se especifica, para cada una de las capas del semiconductor, la constante de tiempo asociada, siendo la más grande $\tau_\text{4}$ con un valor de $0{,}007391$ segundos. Por ser la más restrictiva será en la que nos basaremos para calcular cuanto tardará el transistor en enfriarse. 
+En la imagen se especifica, para cada una de las capas del semiconductor, la constante de tiempo asociada, siendo la más grande $\tau_\text{4}$ con un valor de $0{,}007391$ segundos. Por ser la más restrictiva será en la que estará basada el análisis para calcular cuanto tardará el transistor en enfriarse. 
 
-Para el análisis térmico transitorio consideramos el sistema de primer orden asumiendo, por tanto, que se consigue un enfriamiento prácticamente completo tras un intervalo de tiempo de 5 veces su constante de tiempo, es decir, tras al menos $36{,}955$ milisegundos. Siendo el estrés térmico el factor que más puede afectar a nuestro transistor se ha buscado ser conservador con el enfriamiento seleccionando una resistencia de $100\,k\Omega$. Con este valor, el tiempo disponible de memoria térmica del sistema vendrá dado por la siguiente ecuación:\begin{equation}
+Para el análisis térmico transitorio se considera el sistema de primer orden asumiendo, por tanto, que se consigue un enfriamiento prácticamente completo tras un intervalo de tiempo de 5 veces su constante de tiempo, es decir, tras al menos $36{,}955$ milisegundos. Siendo el estrés térmico el factor que más puede afectar al transistor se ha buscado ser conservador con el enfriamiento seleccionando una resistencia de $100\,k\Omega$. Con este valor, el tiempo disponible de memoria térmica del sistema vendrá dado por la siguiente ecuación:\begin{equation}
     \label{eq:tauDescarga}
     t_\text{descarga} = 5\cdot C_\text{timer} \cdot (R_\text{3}+R_\text{dis})=5\cdot 100\cdot 10^{-9} \cdot (26{,}1 \cdot 10^{-3}+ 100\cdot 10^{-3}) = 63{,}05\, ms
 \end{equation}
@@ -1536,12 +1562,12 @@ Los condensadores empleados a la entrada de un limitador de corriente conmutado 
 
 Es por ello por lo que se decide emplear dos condensadores en paralelo entre bus y masa, cada uno con su ubicación en el prototipo y con un objetivo marcado. 
 \subsubsection{Condensador de almacenamiento o \textit{Bulk}}
-El primer filtrado consiste en un condensador electrolítico de $47\text{ }\mu\text{F}$ que deberemos situar físicamente a la entrada del circuito, lo más cercano posible de los conectores de alimentación del bus. Para el dimensionado del mismo debemos tener en cuenta dos factores, la respuesta dinámica y la seguridad contra corrientes de inserción de nuestro circuito, lo que determinará un límite inferior y un límite superior respectivamente. 
+El primer filtrado consiste en un condensador electrolítico de $47\text{ }\mu\text{F}$ que se debe situar físicamente a la entrada del circuito, lo más cercano posible de los conectores de alimentación del bus. Para el dimensionado del mismo se deben tener en cuenta dos factores, la respuesta dinámica y la seguridad contra corrientes de inserción de nuestro circuito, lo que determinará un límite inferior y un límite superior respectivamente. 
 \begin{itemize}
-    \item \textbf{Límite inferior:} establecemos este límite inferior en aproximadamente $10\text{ }\mu\text{F}$ para asegurar que el tiempo de respuesta del control en caso de falla no provoque una gran caída en el voltaje del bus.
-    \item \textbf{Límite superior:} establecemos este límite superior en aproximadamente $100\text{ }\mu\text{F}$ debido a que, de establecer un valor mayor, una excesiva corriente de inserción (\textit{inrush current}) provocada por el encendido podría ser vista como un cortocircuito en vez de una funcionalidad deseada. 
+    \item \textbf{Límite inferior:} se establece este límite inferior en aproximadamente $10\text{ }\mu\text{F}$ para asegurar que el tiempo de respuesta del control en caso de falla no provoque una gran caída en el voltaje del bus.
+    \item \textbf{Límite superior:} se establece este límite superior en aproximadamente $100\text{ }\mu\text{F}$ debido a que, de establecer un valor mayor, una excesiva corriente de inserción (\textit{inrush current}) provocada por el encendido podría ser vista como un cortocircuito en vez de una funcionalidad deseada. 
 \end{itemize}
-Con ambos límites en mente, se opta por $47\text{ }\mu\text{F}$ para proteger el circuito de una pérdida de la capacidad del condensador que nos llevaría a situarnos por debajo del valor límite inferior, y para situarnos debajo del límite superior siendo capaces de mantener una reserva de energía lo suficientemente grande como para mantener el voltaje del bus en un valor constante sin arriesgarnos a problemas con la mencionada corriente de arranque. 
+Con ambos límites en mente, se opta por $47\text{ }\mu\text{F}$ para proteger el circuito de una pérdida de la capacidad del condensador que llevaría a situarnos por debajo del valor límite inferior, y para situarnos debajo del límite superior siendo capaces de mantener una reserva de energía lo suficientemente grande como para mantener el voltaje del bus en un valor constante sin arriesgarnos a problemas con la mencionada corriente de arranque. 
 
 \subsubsection{Condensador de alta frecuencia}
 El segundo filtrado consiste en un condensador de $1\text{ }\mu\text{F}$ que deberá tener una baja inductancia serie equivalente (ESL) para poder actuar a alta frecuencia. Debido a la alta frecuencia de conmutación empleada, el condensador \textit{bulk} empleado para almacenar energía no es capaz de gestionar la necesidad de flancos de corriente del semiconductor por tener una alta ESL. Es por ello por lo que se decide emplear este segundo condensador, en este caso cerámico, que deberá estar situado lo más cercano posible al transistor. Al igual que en el caso anterior, se tienen en cuenta dos factores que establecen límites para la selección de los componentes, siendo estos factores la capacitancia y la respuesta a alta frecuencia.
@@ -1633,14 +1659,14 @@ Con el objetivo de facilitar la visualización, la tabla \ref{table:ResumenTeori
 
 \chapter{Elección de componentes, diseño en KiCad e implementación de características parásitas en PSIM}
 \label{ch:4compkicadpsim}
-Una vez realizado el dimensionamiento y análisis teórico del circuito debemos trasladar lo observado a la realidad de nuestra aplicación. En el anterior capítulo se presentaron ciertos valores parásitos de los componentes a usar sin justificar la elección de los mismos con el objetivo de no repetir los cálculos para el caso ideal y real. 
+Una vez realizado el dimensionamiento y análisis teórico del circuito se debe trasladar lo observado a la realidad de la aplicación. En el anterior capítulo se presentaron ciertos valores parásitos de los componentes a usar sin justificar la elección de los mismos con el objetivo de no repetir los cálculos para el caso ideal y real. 
 
-El presente capítulo se divide en dos fases. Durante la primera fase se justifican las especificaciones buscadas para los componentes más críticos del dispositivo y los componentes comerciales elegidos para el prototipo físico del laboratorio. Posteriormente, se mostrará la implementación del circuito en la herramienta de simulación PSIM, incluyendo los modélos parásitos obtenidos de las hojas de características de los fabricantes para validar el comportamiento dinámico y comprobar que los cálculos realizados para obtener el \textit{trip-off time} y los límites de histéresis deseados han sido correctos. 
+El presente capítulo se divide en dos fases. Durante la primera fase se justifican las especificaciones buscadas para los componentes críticos del dispositivo y los componentes comerciales elegidos para el prototipo físico del laboratorio. Posteriormente, se mostrará la implementación del circuito en la herramienta de simulación PSIM, incluyendo los modelos parásitos obtenidos de las hojas de características de los fabricantes para validar el comportamiento dinámico y comprobar que los cálculos realizados para obtener el \textit{trip-off time} y los límites de histéresis deseados han sido correctos. 
 
 \section{Justificación de los componentes seleccionados}
 El propósito de la sección es justificar qué dispositivos comerciales disponibles en distribuidores de renombre como Mouser o DigiKey se han seleccionado para realizar este primer prototipo del LCL conmutado. Como se ha ido remarcando durante el trascurso del documento, el diseño se entiende como una primera aproximación o prueba para validar el funcionamiento de la topología en un entorno de laboratorio controlado. Es por esto por lo que se ha priorizado emplear componentes comerciales disponibles en el momento del montaje de la placa frente a dispositivos con calificación espacial los cuales, además de incrementar enormemente el precio del prototipado, obligarían en el momento de su elección a tener en cuenta ciertos parámetros como la inmunidad a radiación, encapsulados\dots que quedan fuera del objetivo del trabajo. 
 
-Para facilitar el replicamiento del prototipo, la lista de materiales detallada con las referencias de los fabricantes y encapsulados se encuentra disponible en el anexo \ref{anexo:BOM}.
+Para facilitar la reproducción del prototipo, la lista de materiales detallada con las referencias de los fabricantes y encapsulados se encuentra disponible en el anexo \ref{anexo:BOM}.
 \subsection{MOSFET de potencia: IRFB4020PbF}
 El elemento principal del limitador, es decir el MOSFET de potencia, debe justificar la selección de esta topología y ensalzar la mejora que supone tanto el uso de los MOSFET de canal N como la limitación por conmutación que se ha justificado durante el documento. Es por esto por lo que se ha seleccionado el transistor \textit{IRFB4020PbF} de Infineon (International Rectifier) \cite{noauthor_irfb4020pbfpmd_nodate}.
 
@@ -1649,13 +1675,13 @@ Este dispositivo, fabricado en Silicio, presenta las principales característica
     \item \textbf{Tensión drenador-fuente:} permite un máximo de $200$ V, lo que supone un margen del $100\%$ respecto a la tensión del bus nominal. 
     \item \textbf{Corriente en el drenador:} permite el paso continuo de $18\text{ A}$ con pulsos máximos de $52\text{ A}$, lo que supone un orden de seguridad perfecto respecto al máximo permitido del limitador durante un pulso ($10\text{ A}$) o durante la limitación ($4{,}5\text{ A}$).
     \item \textbf{Resistencia en conducción:} el transistor cuenta con una resistencia en conducción relativamente alta ($\rdson = 80 \text{ m}\Omega$) en comparación con otras alternativas por el interés de mejorar la respuesta dinámica en detrimento de las pérdidas por conducción.
-    \item \textbf{Carga de puerta:} por lo mencionado anteriormente, se ha seleccionado este N-MOS teniendo en cuenta el bajo valor de carga de la puerta ($Q_\text{G} = 18 \text{ nC}$). Esto permite un rápido cambio de estado del transistor y pocas perdidas en la conmutación. 
+    \item \textbf{Carga de puerta:} por lo mencionado anteriormente, se ha seleccionado este N-MOS teniendo en cuenta el bajo valor de carga de la puerta ($Q_\text{G} = 18 \text{ nC}$). Esto permite un rápido cambio de estado del transistor y pocas pérdidas en la conmutación. 
 \end{itemize}
 
 Al compararlo con distintos transistores de Silicio, el \textit{IRFB4020PbF} presenta una ventaja principal que justifica su selección para el lazo de conmutación de alta frecuencia. Los distintos transistores disponibles no contaban con una relación entre pérdidas por conducción y pérdidas por conmutación tan óptima para la aplicación al estar principalmente ideados para la conducción. 
-Estas opciones cuentan con una resistencia en conducción mucho menor, pero sus pérdidas de conmutación se disparan enormemente. Teniendo en cuenta la corriente que fluye de forma nominal por el circuito, las pérdidas por conducción son gestionables por el transistor sin sufrir estrés térmico excesivo, y la caída de voltaje es nimia en un bus de 100 voltios. 
+Estas opciones cuentan con una resistencia en conducción mucho menor, pero sus pérdidas de conmutación se disparan enormemente. Teniendo en cuenta la corriente que fluye de forma nominal por el circuito, las pérdidas por conducción son gestionables por el transistor sin sufrir estrés térmico excesivo, y la caída de voltaje es nimia en un bus de 100~V. 
 
-Por otro lado, a pesar de habernos centrado durante el capítulo \ref{chapter: 2Situacionactual} en las propiedades físicas de los materiales de banda prohibida ancha como el Carburo de Silicio o el Nitruro de Galio, por la aplicación concreta y al ser un prototipo inicial se ha considerado que la selección de un transistor convencional de Silicio cumple con los requerimientos. 
+Por otro lado, a pesar de que durante el capítulo \ref{chapter: 2Situacionactual} se priorizó el análisis de las propiedades físicas de los materiales de banda prohibida ancha como el Carburo de Silicio o el Nitruro de Galio, por la aplicación concreta y al ser un prototipo inicial se ha considerado que la selección de un transistor convencional de Silicio cumple con los requerimientos. 
 Debido a normativas o requisitos técnicos, el margen del $100\%$ respecto a la tensión del bus nominal puede no ser suficiente por lo que emplear un transistor de Carburo de Silicio puede ser necesario, pero estos requisitos no influyen en las pruebas iniciales en el laboratorio. Además, el precio de estos transistores es elevado para un prototipado inicial y la circuitería necesaria para disparar estos transistores más compleja (necesidad de alimentación simétrica), dificultando la fuente flotante de la PCB. 
 
 \subsection{Controlador de puerta: UCC27511AQDBVRQ1}
@@ -1721,10 +1747,10 @@ La justificación de este semiconductor viene dada principalmente por los parám
     \item \textbf{Ancho de banda y velocidad de respuesta:} el ancho de banda del \textit{OPA2836} es de $205\text{ MHz}$ con un \textit{Slew Rate} de $560\text{ V}/\mu\text{s}$. La corriente triangular de alta frecuencia que fluye por la inductancia cuenta con pendientes pronunciadas por lo que amplificadores operacionales generales retrasarían la llegada de la señal al temporizador y al controlador de histéresis. La respuesta dinámica de este dispositivo garantiza que la salida de la misma sea una reproducción amplificada pero fidedigna de la señal de entrada.
     \item \textbf{Mínimo retardo temporal:} el integrado seleccionado cuenta con un tiempo de subida de únicamente $3\text{ ns}$ y un bajo tiempo de asentamiento (señal al 0.1\%) de $22\text{ ns}$. Esta respuesta temporal es clave para obtener el \textit{sense time} de $171{,}4\text{ ns}$ que asegura que no se produzca un retraso en el apagado del MOSFET que pueda provocar la pérdida del dispositivo.
 
-    \item \textbf{Configuración de entrada \textit{Low-Side} local y salida Rail-to-Rail:} pese a realizar la medición en el lado de alta tensión (\textit{High-Side}), el acondicionamiento está referenciado de forma flotante a la masa de control. Esto provoca que la tensión de entrada se encuentre muy cercana a la masa local. La selección del \textit{OPA2836} soluciona lo mencionado gracias a la arquitectura de entrada \textit{Negative-Rail}, que permite amplificar señales incluso cercanas al rail negativo de alimentación (0 voltios locales) y evitar que aparezcan zonas no amplificadas. 
+    \item \textbf{Configuración de entrada \textit{Low-Side} local y salida Rail-to-Rail:} pese a realizar la medición en el lado de alta tensión (\textit{High-Side}), el acondicionamiento está referenciado de forma flotante a la masa de control. Esto provoca que la tensión de entrada se encuentre muy cercana a la masa local. La selección del \textit{OPA2836} soluciona lo mencionado gracias a la arquitectura de entrada \textit{Negative-Rail}, que permite amplificar señales incluso cercanas al rail negativo de alimentación (0~V locales) y evitar que aparezcan zonas no amplificadas. 
 \end{itemize}
 \subsection{Alimentación flotante: TMA 1515S y L78L05CD13TR}
-La topología empleada, con un N-MOS como interruptor en \textit{high-side}, introduce una dificultad añadida para el lazo de control: la alimentación de los integrados. La fuente del transistor no se encuentra anclado a la masa del circuito como en las topologías tradicionales \textit{low-side} sino que varía siguiendo el valor del bus de potencia. Por tanto, son necesarios componentes capaces de elevar la tensión del bus los +15 V o +5 V necesarios por los integrados para alimentarse o el canal del transistor para conducir completamente. 
+La topología empleada, con un N-MOS como interruptor en \textit{high-side}, introduce una dificultad añadida para el lazo de control: la alimentación de los integrados. La fuente del transistor no se encuentra anclada a la masa del circuito como en las topologías tradicionales \textit{low-side} sino que varía siguiendo el valor del bus de potencia. Por tanto, son necesarios componentes capaces de elevar la tensión del bus los +15 V o +5 V necesarios por los integrados para alimentarse o el canal del transistor para conducir completamente. 
 
 Para resolver esta problemática se incluye una etapa de alimentación flotante mediante el uso de un convertidor DC/DC aislado \textit{TMA 1515S} de Traco Power \cite{traco_power_tma_nodate} y un regulador de voltaje lineal \textit{L78L05CD13TR} de STMicroelectronics \cite{stmicroelectronics_l78l05cd13tr_nodate}.
 
@@ -1746,20 +1772,19 @@ Las motivaciones para el empleo de este dispositivo son las siguientes:
     \item \textbf{Compatibilidad y protección:} debido a la naturaleza del mismo, mientras la entrada del regulador puede variar la salida está anclada a los $+5\text{ V}$. Este factor es importante a la hora de proteger las entradas de alimentación de los integrados y protegerlos, junto a los condensadores de desacoplo, de los transitorios que se pueden provocar en el bus. 
 \end{itemize}
 
-\section{Diseño esquemático en KiCad y modelado de validación mediante simulación en PSIM}
+\section{Diseño del esquema eléctrico en KiCad}
+%Una vez establecidos los componentes a emplear, esta sección detalla la arquitectura real del circuito implementado en KiCad con los componentes especificados en la sección anterior. Posteriormente, se muestra el circuito equivalente incorporado en el entorno de simulación PSIM teniendo para ello en cuenta los efectos parásitos de los componentes y, por último, se discutirán los resultados de simulación obtenidos para este circuito.
 
-Una vez establecidos los componentes a emplear, esta sección detalla la arquitectura real del circuito implementado en KiCad con los componentes especificados en la sección anterior. Posteriormente, se muestra el circuito equivalente incorporado en el entorno de simulación PSIM teniendo para ello en cuenta los efectos parásitos de los componentes y, por último, se discutirán los resultados de simulación obtenidos para este circuito.
-
-\subsection{Esquema en KiCad mediante componentes comerciales}
+%\subsection{Esquema en KiCad mediante componentes comerciales}
 Una vez validadas las ecuaciones de diseño y el comportamiento dinámico ideal del limitador, se procede a la traslación del circuito hacia una arquitectura física real. Para ello, se ha empleado el entorno KiCad, seleccionando componentes comerciales específicos que cumplen con las restricciones de velocidad, ancho de banda y niveles lógicos del sistema. En este apartado se describe la implementación circuital detallada de cada uno de los bloques funcionales que conformarán la tarjeta de circuito impreso (PCB), cuyas referencias exactas y encapsulados se recopilan en la lista de materiales (BOM) del anexo \ref{anexo:BOM}.
 
-\subsubsection{Bloque del lazo de potencia y alimentación flotante}
+\subsection{Bloque del lazo de potencia y alimentación flotante}
 La etapa de potencia y el controlador de puerta del MOSFET son el núcleo del sistema y, por tanto, del diseño. Como se puede apreciar en la figura \ref{fig:PotenciaAlimentacionKicad}, la placa recibe el voltaje del bus a través del conector de entrada J3 y la corriente fluye a través del bus principal hasta llegar a la carga situada en el conector de salida J2. 
 
 Como se explica en el análisis teórico, para mitigar los transitorios de conmutación de alta frecuencia y estabilizar el bus se emplea un condensador cerámico de desacoplo ($C_\text{f1} = 1\,\mu\text{F}$) en paralelo con un condensador electrolítico de mayor capacidad ($C_\text{7} = 47\,\mu\text{F}$). El disparo del MOSFET Q1 se realiza con el driver UCC27511AQDBVRQ1 (IC1), el cual consta de una salida dividida que permite establecer velocidades diferentes de encendido y de apagado. 
 Para proteger al integrado del sobrevoltaje destructivo del apagado, la resistencia de apagado es $R_{10} = 10\,\Omega$ ($OUTL$) mientras que la resistencia de encendido es de un valor menor, $R_6 = 4{,}7\,\Omega$ ($OUTH$), con el objetivo de llenar la carga de la puerta y reducir las pérdidas de conmutación. 
 
-Por otro lado, debido a la topología en \textit{high-side} es necesario contar con un bus de control capaz de aportar una tensión entre puerta y fuente de $+15 V$, lo que en condiciones nominales supone obtener aproximadamente $115$ voltios respecto a la masa global del sistema. Como se explicó en la anterior sección, esto se logra empleando el convertidor DC/DC TMA1515S (PS1) el cual toma los 15 voltios que la placa recibe a través del conector de alimentación J1 (filtrados por los condensadores $C_{11}$ y $C_{7}$), y proporciona una salida aislada galvánicamente de $15\,\text{V flotantes}$ (filtrada por los condensadores $C_{12}$ y $C_{13}$). Esta señal es la empleada para alimentar el \textit{driver} IC1 y la empleada por el regulador lineal (U4), el cual emplea los condensadores $C_{14}$ y $C_{16}$ recomendados por la hoja de datos \cite{stmicroelectronics_l78l05cd13tr_nodate} para generar el rail de alimentación estable de 5 voltios. 
+Por otro lado, debido a la topología en \textit{high-side} es necesario contar con un bus de control capaz de aportar una tensión entre puerta y fuente de $+15 V$, lo que en condiciones nominales supone obtener aproximadamente $115$ V respecto a la masa global del sistema. Como se explicó en la anterior sección, esto se logra empleando el convertidor DC/DC TMA1515S (PS1) el cual toma los 15~V que la placa recibe a través del conector de alimentación J1 (filtrados por los condensadores $C_{11}$ y $C_{7}$), y proporciona una salida aislada galvánicamente de $15\,\text{V flotantes}$ (filtrada por los condensadores $C_{12}$ y $C_{13}$). Esta señal es la empleada para alimentar el \textit{driver} IC1 y la empleada por el regulador lineal (U4), el cual emplea los condensadores $C_{14}$ y $C_{16}$ recomendados por la hoja de datos \cite{stmicroelectronics_l78l05cd13tr_nodate} para generar el rail de alimentación estable de 5~V. 
 
 Finalmente, los componentes NetTie (NT1 y NT2) especifican el uso de un conexionado Kelvin \cite{pcbsync_kelvin_2025} en el rutado de la PCB, lo que separa la ruta por la que circula la corriente de la ruta de detección de tensión y nos aportará una medida más exacta. 
 
@@ -1774,7 +1799,7 @@ Finalmente, los componentes NetTie (NT1 y NT2) especifican el uso de un conexion
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
 
-\subsubsection{Bloque de acondicionamiento de corriente}
+\subsection{Bloque de acondicionamiento de corriente}
 La conexión Kelvin es el punto desde el cual se obtiene la caída de tensión de la resistencia de medida proporcional a la corriente que fluye por ella. Esta señal $I_\text{meas}$ se amplifica ($G = - 25\text{ V/V}$) a través de la red de resistencias de los operacionales (U2) que se aprecia en la figura \ref{fig:Acondicionamiento_Kicad}. 
 
 Con el objetivo de obtener estabilidad en el lazo de control y filtrar el ruido de alta frecuencia producido por la conmutación del N-MOS se emplean 3 filtros paso bajo en cascada.
@@ -1797,9 +1822,9 @@ La señal de salida ($I_\text{sense2}$), representa la corriente instantánea a 
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
 
-\subsubsection{Bloque del lazo de histéresis y enclavamiento}
+\subsection{Bloque del lazo de histéresis y enclavamiento}
 
-La conmutación se realiza mediante el uso de dos comparadores que establecen el estado de un biestable como se puede observar en la figura \ref{fig:HisteresisKicad}. Para la comparación se establecen en los límites superior e inferior de la banda de histéresis ($I_\text{sup}$ e $I_\text{inf}$) el voltaje medible en la $R_\text{shunt}$ para el paso de la corriente definida, multiplicando el valor por la ganancia de acondicionamiento. De esta manera, las resistencias $R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$ establecen sendos divisores resistivos para obtener un valor intermedio de voltaje a partir de los 5 voltios flotantes el cual se ajusta a los límites deseados mediante los potenciómetros RV1 y RV2. 
+La conmutación se realiza mediante el uso de dos comparadores que establecen el estado de un biestable como se puede observar en la figura \ref{fig:HisteresisKicad}. Para la comparación se establecen en los límites superior e inferior de la banda de histéresis ($I_\text{sup}$ e $I_\text{inf}$) el voltaje medible en la $R_\text{shunt}$ para el paso de la corriente definida, multiplicando el valor por la ganancia de acondicionamiento. De esta manera, las resistencias $R_{14}$, $R_{15}$, $R_{16}$ y $R_{17}$ establecen sendos divisores resistivos para obtener un valor intermedio de voltaje a partir de los 5~V flotantes el cual se ajusta a los límites deseados mediante los potenciómetros RV1 y RV2. 
 
 La comparación de la señal amplificada frente a los umbrales se realiza mediante el LM319 (U3A y U3B), el cual por tener salida en colector abierto requiere de las resistencias $R_\text{18}$ y $R_\text{19}$ para la transición entre el nivel bajo y el nivel alto que llega al SN74LVC2G02DCUR (IC2). Las puertas NOR se enrutan de modo que se configuren como biestable RS, memorizando el estado del limitador y teniendo como salida la señal Q. Esta es, junto a la salida del temporizador (la cual es normalmente 1), una de las entradas de la puerta \textit{AND} encargada de activar y desactivar el \textit{driver} que alimenta al transistor. 
 
@@ -1814,11 +1839,11 @@ La comparación de la señal amplificada frente a los umbrales se realiza median
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
 
-\subsubsection{Bloque de temporización}
+\subsection{Bloque de temporización}
 La última etapa principal, el temporizador de la figura \ref{fig:Temporizador_Kicad}, se encarga de contabilizar la duración de la sobrecorriente y, de sobrepasar el límite establecido, enviar la orden que provoca el enclavamiento. 
 
 La monitorización se realiza mediante dos comparadores LM393 (U1) en cascada con dos propositos diferenciados. 
-El integrado U1A compara la caída de voltaje en la resistencia de medida tras su amplificación ($Isense2$) con una referencia de voltaje realizada mediante el divisor formado por $R_2$ y $R_3$, y la rail flotante de 5 voltios. De esta manera se obtiene un voltaje proporcional a la caída de voltaje provocada por un paso de $3{,}7\,A$.
+El integrado U1A compara la caída de voltaje en la resistencia de medida tras su amplificación ($Isense2$) con una referencia de voltaje realizada mediante el divisor formado por $R_2$ y $R_3$, y la rail flotante de 5~V. De esta manera se obtiene un voltaje proporcional a la caída de voltaje provocada por un paso de $3{,}7\,A$.
 
 Una vez se mide un voltaje mayor al límite establecido, el condensador se empiza a cargar a través de la resistencia $R_7$ y el paso por el ánodo del diodo D3. Para fallos menores al tiempo de \textit{trip-off}, el condensador se descarga a través de la resistencia de mayor valor $R_8$ y el mismo diodo, dotando al sistema de memoria térmica.
 
@@ -1834,10 +1859,10 @@ La red RC ($R_7$ y $Ct_1$) se adapta para que el paso de $1{,}5$ ms equivala al 
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en KiCad. \par}
 \end{figure}
 
-\subsection{Modelado equivalente en PSIM e integración de efectos parásitos}
+\section{Modelado equivalente en PSIM e integración de efectos parásitos}
 Una vez definido el esquema del circuito real en KiCad, el siguiente paso en el análisis es trasladar la arquitectura al entorno de simulación PSIM para validar el comportamiento del sistema. Sin embargo, para obtener resultados realistas que coincidan con el comportamiento del prototipo físico, el modelo no puede ser ideal por las limitaciones que nos impone la herramienta. Es por ello por lo que se emplea un modelo de comportamiento equivalente distribuido en los 3 bloques principales, integrando los tiempos de propagación de los integrados, las características parásitas de los componentes y elementos para la emulación de fallos. 
 
-\subsubsection{Etapa de potencia, lógica de histéresis y bloques de retardo}
+\subsection{Etapa de potencia, lógica de histéresis y bloques de retardo}
 El núcleo de potencia y el lazo de histéresis se ven implementados en el modelo conductual de la figura \ref{fig:Principal_psim}. El bus se alimenta con una fuente continua de $100\,\text{V}$ ($V_\text{bus}$) con dos condensadores no ideales en paralelo, el cerámico de ($C_\text{bus\_ceramico} = 1\,\mu\text{F}$) y el electrolítico ($C_\text{bus\_electrolitico} = 47\,\mu\text{F}$). Debido a limitaciones al introducir el modelo del \textit{driver} UCC27511A en PSIM, se ha empleado una fuente de tensión dependiente controlada por la señal de salida del lazo de control (salida de la puerta \textit{AND}) y una resistencia de puerta para excitar la capacidad parásita de la puerta del IRFB4020PBF, transistor modelado con las características de su hoja de datos. 
 
 La comprobación de la capacidad de protección del circuito se realiza mediante dos resistencias en paralelo. Durante la operación nominal, el convertidor alimenta una resistencia de $R_\text{load1} = 40\,\Omega$ supliéndola con aproximadamente $2{,}5 A$. Para comprobar el estado de sobrecorriente, la resistencia en paralelo $R_\text{sc}$ de $0{,}1\,\Omega$ se conecta a tierra mediante el interruptor controlado por voltaje, provocando una resistencia de carga equivalente muy inferior a la nominal e induciendo una corriente masiva a través de la resistencia \textit{shunt}.
@@ -1848,6 +1873,7 @@ En cuanto al lazo de histéresis, se ha tenido especial atención a la respuesta
     \item \textbf{Puertas lógicas 74LVC:} bloques de $10\,\text{ns}$ para el tiempo combinado de ambas puertas.
     \item \textbf{\textit{Driver} UCC27511A:} bloque de $23\,\text{ns}$.
 \end{itemize}
+
 La inclusión en la simulación de estos $113\,\text{ns}$ de retraso permiten realizar un ajuste de los límites de histéresis más adecuado ya que, por este retraso entre medida y cambio de estado del transistor, los límites $I_\text{sup,PCB}$ e $I_\text{inf,PCB}$ deben ser inferior y superior respectivamente a los teóricos buscados ($I_\text{sup} = 4{,}5\,A$ e $I_\text{inf} = 3{,}7\,A$).
 Dentro de la figura \ref{fig:Principal_psim}, se emplean las características de la hoja de datos para el diodo, el inductor, los condensadores, el MOSFET, los comparadores LM319 y las puertas lógicas, además de la respuesta temporal del \textit{driver}.
 \begin{figure}[H]
@@ -1861,7 +1887,7 @@ Dentro de la figura \ref{fig:Principal_psim}, se emplean las características de
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
 
-\subsubsection{Bloque de acondicionamiento de señal}
+\subsection{Bloque de acondicionamiento de señal}
 La etapa de acondicionamiento analógico en PSIM (figura \ref{fig:Acondicionamiento_psim}) replica de forma directa la topología en cascada diseñada en KiCad, garantizando así una correspondencia exacta en ganancia y respuesta en frecuencia entre el circuito simulado y el hardware. Las características parásitas se emplean en el OPA2836 con el objetivo de obtener un resultado aproximado a la realidad y el filtro pasivo de entrada se omite debido a que, en la herramienta de simulación, el acoplamiento electromagnético debido a las señales de alta frecuencia no afecta a otros componentes. 
 \begin{figure}[H]
     \centering
@@ -1874,14 +1900,14 @@ La etapa de acondicionamiento analógico en PSIM (figura \ref{fig:Acondicionamie
     {\raggedleft \textbf{Fuente:} Elaboración propia a partir del diseño esquemático realizado en PSIM. \par}
 \end{figure}
 
-\subsubsection{Emulación de colector abierto y lazo de enclavamiento del temporizador}
+\subsection{Emulación de colector abierto y lazo de enclavamiento del temporizador}
 El circuito de temporización se ha modelado en PSIM según la arquitectura detallada en la figura \ref{fig:Timer_psim} teniendo en cuenta las restricciones de los comparadores en PSIM. Por ser el LM393 un componente con salida en colector abierto, este comportamiento se emula mediante el empleo de un interruptor controlado por la tensión de salida de un comparador. Al cambiar el valor del comparador, la resistencia de \textit{pull-up} queda conectada a la masa de control, permitiendo la carga a través de esta resistencia y el rail de alimentación de $5\,\text{V}$.
 
 Cuando la señal de corriente se encuentra por debajo del límite establecido, el interruptor está abierto impidiendo la carga del condensador. Una vez la corriente es suficiente, el valor del comparador cambia cerrando el interruptor y conectando la resistencia a tierra, y en este instante comienza la carga a través del diodo (valores de la hoja de datos del BAT54). En caso de no mantenerse la sobrecorriente, el BJT que actúa como interruptor satura y deriva la tensión de control a masa, descargando el condensador a través de la resistencia de descarga. 
 
-El mayor cambio respecto a la implementación real es el enclavamiento. Debido a ser dependientes \textit{Shutdown} y $V_\text{th,tiempo} $ entre sí, al apagarse el MOSFET y descargarse el condensador, el valor \textit{Shutdown} vuelve a su valor inicial (normalmente ``1'') y se entra en un bucle que no permite ni enfriarse al MOSFET ni el enclavamiento. Para solventar este problema se opta por forzar el enclavamiento en el momento del cambio de valor de la señal \textit{Shutdown}. Un interruptor controlado por el voltaje invertido de la salida se encuentra entre el valor de referencia y la masa de control, estando normalmente la masa aislada y siendo el valor en $V+$ el establecido por el divisor resistivo. En el instante de activación de la protección, la señal en el interruptor cambia y se conecta $V+$ a tierra, estableciendo en el pin un valor de $0$ voltios.
+El mayor cambio respecto a la implementación real es el enclavamiento. Debido a ser dependientes \textit{Shutdown} y $V_\text{th,tiempo} $ entre sí, al apagarse el MOSFET y descargarse el condensador, el valor \textit{Shutdown} vuelve a su valor inicial (normalmente ``1'') y se entra en un bucle que no permite ni enfriarse al MOSFET ni el enclavamiento. Para solventar este problema se opta por forzar el enclavamiento en el momento del cambio de valor de la señal \textit{Shutdown}. Un interruptor controlado por el voltaje invertido de la salida se encuentra entre el valor de referencia y la masa de control, estando normalmente la masa aislada y siendo el valor en $V+$ el establecido por el divisor resistivo. En el instante de activación de la protección, la señal en el interruptor cambia y se conecta $V+$ a tierra, estableciendo en el pin un valor de $0$ V.
 
-El valor de 0 voltios en la entrada del comparador provoca que el enclavamiento se mantenga una vez se cumpla el tiempo establecido, imitando de esta manera el comportamiento del circuito real.
+El valor de 0~V en la entrada del comparador provoca que el enclavamiento se mantenga una vez se cumpla el tiempo establecido, imitando de esta manera el comportamiento del circuito real.
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1894,12 +1920,12 @@ El valor de 0 voltios en la entrada del comparador provoca que el enclavamiento 
 \end{figure}
 
 
-\subsection{Análisis dinámico y discusión de resultados de la simulación}
+\section{Análisis dinámico y discusión de resultados de la simulación}
 \label{subsec:analisis_dinamico}
 A partir de los modelos presentados, se discuten a continuación los resultados de simulación obtenidos tras someter al LCL a diferentes fallos por sobrecorriente, tanto de forma transitoria como permanente. 
-\subsubsection{Respuesta temporal ante sobrecorriente permanente}
+\subsection{Respuesta temporal ante sobrecorriente permanente}
 \label{subsubsec:corto_permanente}
-La figura~\ref{fig:Ishunt_fallo_permanente} muestra la corriente circulando por la resistencia de sensado $R_{\text{shunt}}$ al introducir una sobrecorriente en el instante $t = 1~\text{ms}$. En condiciones nominales (sin fallo) el circuito suministra $2{,}5~\text{A}$ constantes a la carga hasta que se produce el suministro, realizado al conectar una resistencia paralela a la carga ($R_{\text{sc}} = 0{,}1~\Omega$).
+La figura~\ref{fig:Ishunt_fallo_permanente} muestra la corriente circulando por la resistencia de sensado $R_{\text{shunt}}$ al introducir una sobrecorriente en el instante $t = 1~\text{ms}$. En condiciones nominales (sin fallo) el circuito suministra $2{,}5~\text{A}$ constantes a la carga hasta que se produce el fallo, realizado al conectar una resistencia paralela a la carga ($R_{\text{sc}} = 0{,}1~\Omega$).
 
 Tras el cortocircuito, la corriente sufre un pico ascendente de corriente y el lazo de control detecta el cortocircuito, comenzando así tanto la carga del temporizador como el control del lazo de histéresis. La imagen muestra perfectamente los dos parámetros claves del LCL: el tiempo de limitación y los límites de histéresis. 
 
@@ -1907,7 +1933,7 @@ Por un lado, la simulación valida el funcionamiento en conmutación del limitad
 
 Por otro lado, la simulación también permite ver los límites de corriente entre los cuales actúa el limitador, siendo estos ($I_{\text{sup}} = 4{,}465~\text{A}$ e $I_{\text{inf}} = 3{,}708~\text{A}$) prácticamente idénticos a los límites teóricos del diseño ($4{,}5~\text{A}$ y $3{,}7~\text{A}$). La pequeña variación en los límites viene justificada por el retardo del lazo de control $t_{\text{sense}}$, lo cual provoca que los valores teóricos de las referencias de histéresis se tengan que adaptar para variar el estado del MOSFET de forma predictiva. Esto se puede ver por ejemplo en el límite superior de histéresis de la figura \ref{fig:Principal_psim}, el cual corresponde a los $2{,}29~V$ debidos al paso de $4{,}16~A$ por la resistencia de medida. Una vez medido este valor, se da la orden de abrir el N-MOS y el retardo provoca que la transición se produzca al llegar la corriente a prácticamente los $4{,}5~\text{A}$ buscados. 
 
-Por último, los resultados demuestran el correcto dimensionamiento de la inductancia al ser esta capaz de limitar la corriente en la banda de histéresis sin permitir un \textit{overshoot} destructivos para el MOSFET. 
+Por último, los resultados demuestran el correcto dimensionamiento de la inductancia al ser esta capaz de limitar la corriente en la banda de histéresis sin permitir un \textit{overshoot} destructivo para el MOSFET. 
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -1920,13 +1946,13 @@ Por último, los resultados demuestran el correcto dimensionamiento de la induct
 \end{figure}
 
 
-\subsubsection{Validación ante fallos sucesivos}
+\subsection{Validación ante fallos sucesivos}
 \label{subsubsec:memoria_termica}
 Una vez vista la capacidad del limitador para proteger frente a una sobrecorriente permanente, la figura~\ref{fig:Ishunt_vs_Vctimer} muestra el comportamiento del circuito ante dos eventos cercanos en el tiempo. 
 
 El primer fallo simula, por ejemplo, el encendido de un motor que provoca un pico de corriente de duración limitada. Durante el intervalo de la sobrecorriente, el condensador del temporizador se empieza a cargar a través de la resistencia de \textit{pull-up}, aumentando de esta manera el voltaje $V_{\text{Ctimer}}$ hasta aproximadamente $1{,}6~\text{V}$. Una vez finaliza la sobrecorriente, la red RC asimétrica provoca que el condensador se descargue a través de la resistencia de descarga de alto valor, otorgando memoria térmica al sistema y asegurando un correcto enfriamiento del transistor. 
 
-Debido a la red asimétrica, al provocarse el segundo cortocircuito en $t = 5{,}3~\text{ms}$ el condensador $C_{\text{timer}}$ no se ha descargado por completo (el transistor no se encuentra a temperatura nominal) y el voltaje que se mantiene el mismo será de entorno a $1{,}25~\text{V}$. Al empezar el cortocircuito antes de la descarga, el tiempo para que la tensión $V_{\text{Ctimer}}$ llegue al umbral de disparo ($V_{\text{th,tiempo}} = 2{,}035~\text{V}$ correspondiente a la carga del condensador durante $1{,}5~\text{ms}$) se reduce a $\Delta t = 1{,}081~\text{ms}$.
+Debido a la red asimétrica, al provocarse el segundo cortocircuito en $t = 4{,}7~\text{ms}$ el condensador $C_{\text{timer}}$ no se ha descargado por completo (el transistor no se encuentra a temperatura nominal) y el voltaje que se mantiene el mismo será de entorno a $1{,}25~\text{V}$. Al empezar el cortocircuito antes de la descarga, el tiempo para que la tensión $V_{\text{Ctimer}}$ llegue al umbral de disparo ($V_{\text{th,tiempo}} = 2{,}035~\text{V}$ correspondiente a la carga del condensador durante $1{,}5~\text{ms}$) se reduce a $\Delta t = 0{,}686 ~\text{ms}$.
 
 Los resultados obtenidos corresponden a lo modelado y muestran la memoria térmica del sistema, reduciendo el tiempo de limitación en caso de fallos consecutivos para evitar sobrepasar la temperatura máxima del semiconductor.
 \begin{figure}[H]
@@ -1935,11 +1961,11 @@ Los resultados obtenidos corresponden a lo modelado y muestran la memoria térmi
     \ffigbox[\FBwidth]
     {   \caption[Simulación de la dinámica de $V_\text{Ctimer}$ frente a fallos sucesivos]{Análisis dinámico de la corriente por $R_\text{shunt}$ y la tensión acumulada en el condensador del temporizador ($V_\text{Ctimer}$), validando el diseño asimétrico de carga del temporizador.}
         \label{fig:Ishunt_vs_Vctimer}}
-    {\includegraphics[width=1\textwidth]{IshuntvsVctimer.pdf}}
+    {\includegraphics[width=1\textwidth]{IshuntvsVctimer1.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
-\subsubsection{Caracterización del limitador mediante sobrecarga en rampa}
+\subsection{Caracterización del limitador mediante sobrecarga en rampa}
 \label{subsubsec:caracterizacion_temporizador}
 La figura~\ref{fig:rampa_corriente} nos permite visualizar el valor de la corriente a partir del cual el circuito comienza a limitar la corriente de forma conmutada. Para ello se emplea una fuente de corriente a modo de carga que incrementa de forma lineal la corriente drenada.
 
@@ -1952,20 +1978,18 @@ La falta de rizado de conmutación propia del control por histéresis en la señ
     \ffigbox[\FBwidth]
     {   \caption[Simulación de caracterización mediante rampa de sobrecarga progresiva]{Caracterización dinámica del limitador mediante rampa de corriente comandada por una fuente de tensión PWL, detallando el punto exacto de activación del limitador}
         \label{fig:rampa_corriente}}
-    {\includegraphics[width=1\textwidth]{rampa_corriente.pdf}}
+    {\includegraphics[width=1\textwidth]{rampa_corriente1.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
 
-\subsubsection{Sincronización de la lógica de control}
+\subsection{Sincronización de la lógica de control}
 \label{subsubsec:logica_control}
-Finalmente, la figura~\ref{fig:IvsVgsvsEntradasAND} muestra la coordinación entre la lógica digital (referenciada a masa de control), el voltaje de excitación del MOSFET y la presencia o ausencia de sobrecorriente por la resistencia de medida. 
-
-En la figura se observan tres etapas funcionales distinguibles: el funcionamiento nominal, la limitación de corriente y el enclavamiento. 
+Finalmente, la figura~\ref{fig:IvsVgsvsEntradasAND} muestra la coordinación entre la lógica digital, el voltaje de excitación del MOSFET y el estado de la corriente por la $R_{\text{shunt}}$ en tres etapas funcionales: el funcionamiento nominal, la limitación de corriente y el enclavamiento. 
 \begin{itemize}
-    \item \textbf{Funcionamiento nominal ($\text{t}<1\text{ms}$ y $2{,}1\text{ ms}<\text{t}<4\text{ ms}$):} durante estos periodos de tiempo la corriente es menor del límite establecido ($3{,}696~\text{A}$) por lo que el condensador de temporización no está cargado (salida del temporizador alta) y la corriente no incumple los límites de histéresis (salida alta del biestable). Debido a esto, la salida de la puerta lógica \textit{AND} es un ``1'' lógico y, por tanto, el \textit{driver} hace que haya una tensión $V_{\text{GS}}\text{ de } 15 V$ que provoca que el N-MOS conduzca.
-    \item \textbf{Limitación de corriente ($1\text{ ms}<\text{t}<2{,}1\text{ ms}$ y $4\text{ ms}<\text{t}<4{,}6\text{ ms}$):} durante estos periodos de tiempo la corriente se encuentra por encima del límite de $3{,}696~\text{A}$. Debido a que el tiempo de limitación es todavía menor al tiempo de \textit{trip-off}, el condensador no está cargado y la señal del temporizador se mantiene alta. Sin embargo, la señal de salida del biestable alterna ``1'' lógicos (aumento de corriente) y ``0'' lógicos (caída de corriente) durante el tiempo de conducción ($T_{\text{on}}$) y corte ($T_{\text{off}}$) del MOSFET. De esta manera, la salida de la puerta lógica \textit{AND} es solo alta durante el aumento de corriente hasta el límite superior de histéresis y $V_{\text{GS}}$ solo será 15 voltios durante estos instantes.
-    \item \textbf{Enclavamiento ($\text{t}>4{,}6\text{ ms}$): }a partir de este instante, el voltaje en el condensador $C_{\text{timer}}$ es mayor a la referencia establecida para los $1{,}5~\text{ms}$ y la señal de salida del temporizador pasa a ser baja. Debido a esto, la salida de la puerta \textit{AND} será constantemente baja y el \textit{driver} dejará de suministrar $+ 15$ voltios flotantes a la puerta del transistor, impidiendo el paso de corriente y aislando la carga.
+    \item \textbf{Funcionamiento nominal ($\text{t}<1\text{ms}$ y $2{,}1\text{ ms}<\text{t}<4\text{ ms}$):} la corriente es menor del límite establecido ($3{,}696~\text{A}$) por lo que el condensador de temporización no está cargado (salida del temporizador alta) y la corriente no incumple los límites de histéresis (salida alta del biestable). Debido a esto, la salida de la puerta lógica \textit{AND} es un ``1'' lógico y, por tanto, el \textit{driver} hace que haya una tensión $V_{\text{GS}}\text{ de } 15 V$ que provoca que el N-MOS conduzca.
+    \item \textbf{Limitación de corriente ($1\text{ ms}<\text{t}<2{,}1\text{ ms}$ y $4\text{ ms}<\text{t}<4{,}6\text{ ms}$):} la corriente se encuentra por encima del límite de $3{,}696~\text{A}$. Siendo el tiempo de limitación todavía menor al \textit{trip-off}, la señal del temporizador se mantiene alta. Sin embargo, la señal de salida del biestable alterna ``1'' lógicos (aumento de corriente) y ``0'' lógicos (caída de corriente) durante el tiempo de conducción ($T_{\text{on}}$) y corte ($T_{\text{off}}$) del MOSFET. De esta manera, la salida de la puerta lógica \textit{AND} es solo alta durante el aumento de corriente hasta el límite superior de histéresis y $V_{\text{GS}}$ solo será 15~V durante estos instantes.
+    \item \textbf{Enclavamiento ($\text{t}>4{,}6\text{ ms}$): }el voltaje en el condensador $C_{\text{timer}}$ es mayor a la referencia establecida para los $1{,}5~\text{ms}$ y la señal de salida del temporizador pasa a ser baja. Debido a esto, la salida de la puerta \textit{AND} será constantemente baja y el \textit{driver} dejará de suministrar $+ 15$ V flotantes a la puerta del transistor, impidiendo el paso de corriente y aislando la carga.
 \end{itemize}
 \begin{figure}[H]
     \centering
@@ -1973,16 +1997,16 @@ En la figura se observan tres etapas funcionales distinguibles: el funcionamient
     \ffigbox[\FBwidth]
     {   \caption[Simulación de lógica de control del LCL conmutado]{Comparativa de la corriente de potencia, la tensión de puerta ($V_\text{GS}$) y los niveles lógicos de control del sistema, las salidas del biestable y del temporizador.}
         \label{fig:IvsVgsvsEntradasAND}}
-    {\includegraphics[width=1\textwidth]{IvsVgsvsEntradasAND.pdf}}
+    {\includegraphics[width=0.9\textwidth]{IvsVgsvsEntradasAND1.pdf}}
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en MATLAB a partir de los resultados obtenidos en PSIM. \par}
 \end{figure}
 
-\chapter{Montaje en placa, respuesta en osciloscopio y discusión de resultados}
+\chapter{Montaje en placa, validación experimental y discusión de resultados}
 \label{ch:montaje_y_resultados}
 Tras el modelado, selección de componentes y validación con simulación en PSIM (empleando parámetros parásitos), este capítulo aborda el prototipado físico y la validación del limitador de enclavamiento conmutado mediante pruebas en el laboratorio.
 
-Entrados en esta fase, el comportamiento del sistema deja de estar gobernado únicamente por las ecuaciones ideales expuestas y pasa a estar condicionado por la geometría del sistema, como las inductancias parásitas de las trazas de cobre, el acoplamiento de señales, los tiempos de retraso\dots por lo que es el objetivo de este capítulo demostrar la viabilidad del limitador diseñado, evaluando la robustez y tiempo de respuesta frente a sobrecorrientes en un entorno de laboratorio. 
+Una vez en esta fase, el comportamiento del sistema deja de estar gobernado únicamente por las ecuaciones ideales expuestas y pasa a estar condicionado por la geometría del sistema, como las inductancias parásitas de las trazas de cobre, el acoplamiento de señales, los tiempos de retraso\dots por lo que es el objetivo de este capítulo demostrar la viabilidad del limitador diseñado, evaluando la robustez y tiempo de respuesta frente a sobrecorrientes en un entorno de laboratorio. 
 
 En un primer lugar se mostrará la distribución de los componentes en la placa, el uso de planos de masa\dots para posteriormente estudiar la respuesta en el osciloscopio de las ondas principales. Finalmente, se realizará un análisis de los resultados comparándolos con las simulaciones y justificando las desviaciones respecto al modelo teórico. 
 \section{Diseño del circuito impreso (PCB)}
@@ -2093,7 +2117,7 @@ Tanto para los comparadores, el OPAMP, las puertas lógicas, el \textit{driver}\
     \vspace{2mm}
     {\raggedleft \textbf{Fuente:} Elaboración propia en KICAD.  \par}
 \end{figure}
-La justificación teórica de esta disposición (ilustrada en la figura~\ref{fig:detalles}) se encuentra, al igual que anteriormente, en contrarrestar la inductancia parásita de las trazas de la PCB ($L_{traza} \approx 1\text{ nH/mm}$). A alta frecuencia de conmutación los milimetros de pista añaden impedancias que provocarían caídas de tensión locales, por lo que la cercanía de los condensadores permitiría suministrar los picos de corriente necesarios, filtrar el ruido de alta corriente y eliminar las caídas de tensión mencionadas. 
+La justificación teórica de esta disposición (ilustrada en la figura~\ref{fig:detalles}) se encuentra, al igual que anteriormente, en contrarrestar la inductancia parásita de las trazas de la PCB ($L_{traza} \approx 1\text{ nH/mm}$). A alta frecuencia de conmutación los milímetros de pista añaden impedancias que provocarían caídas de tensión locales, por lo que la cercanía de los condensadores permitiría suministrar los picos de corriente necesarios, filtrar el ruido de alta corriente y eliminar las caídas de tensión mencionadas. 
 
 
 \section{Dificultades en el montaje físico de la PCB}
@@ -2103,7 +2127,7 @@ Una vez finalizado el diseño de la placa y recibido el prototipo, se comenzó e
 \label{subsec:dead_bug_wiring}
 Como se comenta en la introducción, durante el ensamblaje de la PCB se detectó que la huella de la puerta NOR doble descargada no correspondía con la encapsulación física del componente. 
 
-La huella es de tipo \textit{SOIC-8}, lo que impone un tamaño de $4{,}9 \text{ mm x}~3{,}91\text{ mm x}~1{,}75 \text{ mm}$ y un paso entre pines de $1{,}27\text{ mm}$ \cite{onsemi_soic-8_2015} mientras que el encapsulado físico real del \textit{\textit{SN74\-LVC2G02\-DCUR}} es de tipo \textit{VSSOP-8}, lo que impone un tamaño de $2{,}3 \text{ mm x}~2{,}0\text{ mm x}~0{,}85 \text{ mm}$ y un paso entre pines de $0{,}5\text{ mm}$ \cite{diodes_incorporated_vssop-8_2021}.
+La huella es de tipo \textit{SOIC-8}, lo que impone unas dimensiones de $4{,}9 \times 3{,}91 \times 1{,}75\text{ mm}$ y un paso entre pines (\textit{pitch}) de $1{,}27\text{ mm}$ \cite{onsemi_soic-8_2015}, mientras que el encapsulado físico real del circuito integrado \textit{SN74LVC2G02DCUR} corresponde al estándar \textit{VSSOP-8}, cuyas dimensiones son de $2{,}3 \times 2{,}0 \times 0{,}85\text{ mm}$ con un paso entre pines de apenas $0{,}5\text{ mm}$ \cite{diodes_incorporated_vssop-8_2021}.
 
 Pese a un primer intento de situar el componente en el interior de la huella, el reducido tamaño del encapsulado y la minúscula distancia entre pines imposibilitó el conectar mediante cables flotantes el integrado a los pads originales. 
 
@@ -2131,16 +2155,16 @@ El uso de señales de alta frecuencia implica que se puedan producir acoplamient
     \item \textbf{Fallo de la etapa de control:} La presencia de los transitorios $v_{\text{ruido}}$ pudo provocar oscilaciones en los nodos que conecta los comparadores al biestable. Esto, junto a posibles fallos internos en la lógica de control o en el soldado de los componentes, provocó que la etapa de control perdiera la capacidad de alimentar de manera continua la puerta del MOSFET, impidiendo que el mismo se mantuviese completamente abierto durante la no limitación. 
 \end{itemize}
 
-\section{Ensayos experimentales en laboratorio y respuesta en osciloscopio}
+\section{Ensayos experimentales en laboratorio}
 \label{sec:ensayos_laboratorio}
 Tras comprender las dificultades encontradas durante el montaje, se procedió a la realización de ensayos en el laboratorio. Para ello, se empleó un osciloscopio digital \textit{Tektronix TPS 2024}.
 \subsection{Ensayo a baja tensión (15 V) y degradación de la eficiencia}
 \label{subsec:baja_tension_eficiencia}
-Por motivos de seguridad en el laboratorio y para evitar la pérdida de algún componente por mal conexionado o errores similares, las pruebas de conducción nominal se realizaron mediante la alimentación del bus principal a un voltaje aproximado de $12{,}2\text{ V}$ en lugar de los $100\text{ V}$ para los cuales estaba diseñado. Pese a que es posible el uso de este voltaje, debemos tener en cuenta que los cálculos de pérdidas, eficiencia, frecuencia\dots se han realizado para la tensión nominal, por lo que es de esperar diferencias significativas en el comportamiento del sistema.
+Por motivos de seguridad en el laboratorio y para evitar la pérdida de algún componente por mal conexionado o errores similares, las pruebas de conducción nominal se realizaron mediante la alimentación del bus principal a un voltaje aproximado de $12{,}2\text{ V}$ en lugar de los $100\text{ V}$ para los cuales estaba diseñado. Pese a que es posible el uso de este voltaje, se debe tener en cuenta que los cálculos de pérdidas, eficiencia, frecuencia\dots se han realizado para la tensión nominal, por lo que es de esperar diferencias significativas en el comportamiento del sistema.
 
 La reducción de la tensión provoca una caída drástica de la eficiencia:
 \begin{itemize}
-    \item \textbf{Pérdidas de conducción ($P_{\text{cond}}$):} para un nivel de corriente de salida ($I_{\text{out}}$) seleccionado de $1 \text{ A}$ para la prueba, la potencia seguirá la ecuación \ref{eq:perdidasREAL}. En esta ecuación, debido al empleo de una fuente \textit{PWM} externa que se justifica en la siguiente sección, el ciclo de trabajo no se ha podido elevar más allá de $D = 0{,}6$.
+    \item \textbf{Pérdidas de conducción ($P_{\text{cond}}$):} para un nivel de corriente de salida ($I_{\text{out}}$) seleccionado de $1 \text{ A}$ para la prueba, la potencia seguirá la ecuación \ref{eq:perdidasREAL}. En esta ecuación, debido al empleo de una fuente \textit{PWM} externa que se justifica en la siguiente sección, el ciclo de trabajo no se ha podido elevar más allá de $D = 0{,}65$.
     \begin{equation}
         \label{eq:perdidasREAL}
         P_{\text{cond}} = I_{\text{out}}^2 \cdot (R_{DS,\text{ON}} + R_{\text{shunt}} + R_L) + (1-D) \cdot I_{\text{out}} \cdot V_F = 1{,}543\text{ W}
@@ -2162,13 +2186,13 @@ Al emplear valores menores de tensión, la eficiencia se degrada significativame
 \label{subsec:pwm_externa}
 Como se mencionó anteriormente en la sección \ref{sec:incidencias_montaje}, el montaje en araña (debido al acoplamiento o a conexiones imperfectas) junto a posibles fallos intermedios en la etapa de control imposibilitaron obtener la señal de activación que permitiese al \textit{driver} excitar al transistor de forma continua. Es por ello por lo que, para validar al menos el funcionamiento en conducción y las pérdidas, se decidió desoldar las resistencias de entrada a la puerta del transistor ($R_{6}$ y $R_{10}$ de la figura \ref{fig:PotenciaAlimentacionKicad}) y conectar un módulo generador de PWM directamente a la fuente del transistor. 
 
-La desconexión de las resistencias aseguran que la señal de control externa no se extienda a través de la etapa de control, pudiendo provocar la pérdida de los componentes. El empleo del módulo externo, sin embargo, tiene sus limitaciones por no estar pensado el mismo para una frecuencia de conmutación tal elevada. Esto ha provocado un ciclo de trabajo máximo de $D \approx 0{,}6$ y una frecuencia de conmutación ligeramente inferior a la deseada ($f_{\text{sw}} \approx 507\text{ kHz}$ frente a los $614\text{ kHz}$ teóricos).
+La desconexión de las resistencias asegura que la señal de control externa no se extienda a través de la etapa de control, pudiendo provocar la pérdida de los componentes. El empleo del módulo externo, sin embargo, tiene sus limitaciones por no estar pensado el mismo para una frecuencia de conmutación tal elevada. Esto ha provocado un ciclo de trabajo máximo de $D \approx 0{,}6$ y una frecuencia de conmutación ligeramente inferior a la deseada ($f_{\text{sw}} \approx 507\text{ kHz}$ frente a los $614\text{ kHz}$ teóricos).
 \subsection{Análisis de las formas de onda en el osciloscopio}
 \label{subsec:analisis_osciloscopio}
 Una vez el transistor puede conducir, realizamos las mediciones mediante el empleo de un voltaje de entrada de $12{,}2\text{ V}$ y una corriente de salida de $1\text{ A}$ drenada por una carga electrónica programable. 
 
 \subsubsection{Tensión de entrada frente a tensión de salida}
-La figura~\ref{fig:vin_vs_vout} muestra enfentradas la tensión de entrada suministrada al bus de alimentación $V_{\text{in}}$ (CH2, traza azul) y la tensión de salida en la carga $V_{\text{out}}$ (CH4, traza verde).
+La figura~\ref{fig:vin_vs_vout} muestra enfrentadas la tensión de entrada suministrada al bus de alimentación $V_{\text{in}}$ (CH2, traza azul) y la tensión de salida en la carga $V_{\text{out}}$ (CH4, traza verde).
 \begin{figure}[H]
     \centering
     \fontsize{10}{12}\selectfont 
@@ -2206,7 +2230,7 @@ La etapa de potencia, diseñada como un convertidor reductor en conducción cont
     V_{\text{out}} = D \cdot V_{\text{in}} - I_{\text{out}} \cdot (R_{DS,\text{ON}} + R_L + R_{\text{shunt}}) - (1-D) \cdot V_F
 \end{equation}
 
-Si incluímos los valores $D \approx 0{,}65$ y $V_{\text{in}} = 14\text{ V}$ se obtiene un valor de $V_{\text{out}} = 8{,}656\text{ V}$, lo que justifica de forma analítica los valores obtenidos de forma experimental. 
+Si se incluyen los valores $D \approx 0{,}65$ y $V_{\text{in}} = 14\text{ V}$ se obtiene un valor de $V_{\text{out}} = 8{,}656\text{ V}$, lo que justifica de forma analítica los valores obtenidos de forma experimental. 
 \subsubsection{Análisis del filtrado inductivo: Tensión pre-bobina frente a post-bobina}
 El control de la salida en este esquema está controlado íntegramente por la bobina de salida al no haber ningún otro elemento como un condensador. En la figura \ref{fig:pre_post_bobina} se puede visualizar la capacidad de filtrado de la bobina al enfrentar la señal previa (CH4, traza verde) y la señal posterior $V_{\text{out}}$ (CH2, traza azul). 
 \begin{figure}[H]
@@ -2221,7 +2245,7 @@ El control de la salida en este esquema está controlado íntegramente por la bo
 \end{figure}
 De esta última figura podemos concluir:
 \begin{itemize}
-    \item \textbf{Nodo pre-bobina (CH4):} antes de la bobina podemos ver una onda cuadrada que oscila a $508\text{ kHz}$. Esta onda cuenta con una amplitud pico a pico de $14\text{ V}$ y comparte el ciclo de trabajo con la señal de control.
+    \item \textbf{Nodo pre-bobina (CH4):} antes de la bobina se puede observar una onda cuadrada que oscila a $508\text{ kHz}$. Esta onda cuenta con una amplitud pico a pico de $14\text{ V}$ y comparte el ciclo de trabajo con la señal de control.
     \item \textbf{Nodo post-bobina (CH2):} La tensión tras el inductor de $68~\mu\text{H}$ es una señal continua con un valor medio de $V_{\text{medio}} = 8{,}37\text{ V}$ y cierto ruido. La bobina es capaz de convertir la señal cuadrada de alta frecuencia en un valor continuo. Esto demuestra que, durante la conmutación de la limitación, será capaz de mantener el ritmo sin permitir grandes picos destructivos.
 \end{itemize}
 
@@ -2253,7 +2277,7 @@ A continuación se presentan las conclusiones de las pruebas realizadas en el la
 \label{subsec:conclusiones_lab}
 A partir de las mediciones, se sintetizan las siguientes conclusiones:
 \begin{enumerate}
-    \item \textbf{Validación de la etapa de potencia:} la excitación del MOSFET en \textit{high-side} se realiza mediante un módulo PWM externo $f_{\text{sw}} \approx 507{,}935\text{ kHz}$ (próxima a los $614{,}98\text{ kHz}$ teóricos) con un valor de $+15$ voltios respecto al voltaje de entrada. La localización \textit{high-side} y la limitación de la fuente disponible en torno a los $35$ voltios provocó la necesidad de, para obtener la diferencia de voltaje entre puerta y drenador, reducir el voltaje a un valor cercano a los $15$ voltios. 
+    \item \textbf{Validación de la etapa de potencia:} la excitación del MOSFET en \textit{high-side} se realiza mediante un módulo PWM externo $f_{\text{sw}} \approx 507{,}935\text{ kHz}$ (próxima a los $614{,}98\text{ kHz}$ teóricos) con un valor de $+15$ V respecto al voltaje de entrada. La localización \textit{high-side} y la limitación de la fuente disponible en torno a los $35$ V provocó la necesidad de, para obtener la diferencia de voltaje entre puerta y drenador, reducir el voltaje a un valor cercano a los $15$ V. 
     Mediante la ecuación \ref{eq:buckCCM} se justificó los valores obtenidos a la salida debido al empleo de una señal de control con un ciclo de trabajo menor a la unidad. Los  valores principales fueron:
     \subitem $V_{\text{out}} = 6{,}78\text{ V}$ para $V_{\text{in}} = 12{,}2\text{ V}$ con $D \approx 0{,}65$.
     \subitem $V_{\text{out}} = 8{,}37\text{ V}$ para $V_{\text{in}} = 14\text{ V}$ con $D \approx 0{,}65$.
@@ -2264,16 +2288,16 @@ A partir de las mediciones, se sintetizan las siguientes conclusiones:
 
 \subsection{Líneas de trabajo futuro}
 \label{subsec:trabajo_futuro}
-Una vez vistos los problemas detectados, los siguientes prototipos buscarán subsanar los errores encontrados, ajustarse a criterios aeroespaciales y adaptarlo para poder ser medido facilmente en el laboratorio mediante las siguientes acciones: 
+Una vez vistos los problemas detectados, los siguientes prototipos buscarán subsanar los errores encontrados, ajustarse a criterios aeroespaciales y adaptarlo para poder ser medido fácilmente en el laboratorio mediante las siguientes acciones: 
 \begin{itemize}[label=\arabic*°.]
     \item \textbf{Corrección de la PCB:} corregir la huella del componente en kicad sustituyendo la errónea de gran tamaño ($SOIC-8$) por la de menor tamaño propia del $SN74LVC2G02DCUR$ ($VSSOP-8$). La colocación de una huella menor permitirá además la reestructuración de la zona de control de la placa, reduciendo aún más las trazas y de esta manera la inductancia parásita. La corrección de la PCB permitirá emplear de nuevo el \textit{driver} para el control del transistor.
     \item \textbf{Reconfiguración de la red de histéresis y temporización:} realizar un nuevo prototipo cuyos potenciómetros tengan como objetivo poder adaptar de forma aproximada los limites a corrientes inferiores. Esto permitirá validar el diseño manteniendo la etapa de control, reduciendo los requisitos de las cargas y aumentando la seguridad de las pruebas a realizar. Por otro lado, se deberá adaptar la señal de referencia de temporización para poder hacerla acorde al valor de corriente deseado.
-    \item \textbf{Validación a tensión nominal ($100\text{ V}$) y pruebas temporales:} emplear un banco de resistencias o cargas electrónicas acorde a la potencia empleada. Esto debe permitirnos verificar que el ajuste realizado del tiempo de enclavamiento es correcto, que el sistema reacciona de forma correcta ante fallos repetitvos aplicando para los fallos posteriores un tiempo de enclavamiento menor o que los voltajes de referencia calculados para los límites de histéresis (aplicando la corrección del tiempo de sensado) son correctos entre otros. 
+    \item \textbf{Validación a tensión nominal ($100\text{ V}$) y pruebas temporales:} emplear un banco de resistencias o cargas electrónicas acorde a la potencia empleada. Esto debe permitirnos verificar que el ajuste realizado del tiempo de enclavamiento es correcto, que el sistema reacciona de forma correcta ante fallos repetitivos aplicando para los fallos posteriores un tiempo de enclavamiento menor o que los voltajes de referencia calculados para los límites de histéresis (aplicando la corrección del tiempo de sensado) son correctos entre otros. 
 \end{itemize}
 
 \chapter{Metodología de escalado del diseño}
 \label{chapter:Escalado}
-Una vez validado el prototipo del limitador de corriente de enclavamiento en conmutación es interesante centrarnos en la posibilidad de adaptar el mismo para distintos casos de uso. 
+Una vez validado el prototipo del limitador de corriente de enclavamiento en conmutación es interesante centrarse en la posibilidad de adaptar el mismo para distintos casos de uso. 
 
 El objetivo de este capítulo será definir el procedimiento para adaptar el circuito a diferentes especificaciones: nuevas tensiones de bus ($V_\text{bus}$), corrientes de limitación ($I_\text{lim}$), límites de histéresis ($\Delta i$) y tiempos de disparo (\textit{trip-off time}, $t_\text{trip}$).
 \section{Dimensionado y validación de la etapa de potencia}
@@ -2332,41 +2356,41 @@ Al igual que en este prototipo, en una primera iteración para otros valores de 
 \chapter{Conclusiones y trabajo futuro}
 \label{ch:conclusiones}
 
-El capítulo final aborda las conclusiones técnicas y analíticas de la investigación, diseño, modelado, simulación e implementación experimental del limitador de corriente de enclavamiento controlado por conmutación. En las siguientes secciones se sintetizan los logros obtenidos relacionándolos con los objetivos iniciales planteados en la introducción, se discute los resultados obtenidos tanto durante la simulación de los modelos como de los resultados en el laboratorio y se define la proyección a futuro que debe mantener el prototipo para su implementación en satélites.
+El capítulo final aborda las conclusiones técnicas y analíticas de la investigación, diseño, modelado, simulación e implementación experimental del limitador de corriente de enclavamiento controlado por conmutación. En las siguientes secciones se sintetizan los logros obtenidos relacionándolos con los objetivos iniciales planteados en la introducción, se discuten los resultados obtenidos tanto durante la simulación de los modelos como de los resultados en el laboratorio y se define la proyección a futuro que debe mantener el prototipo para su implementación en satélites.
 
 \section{Síntesis de los logros técnicos y objetivos alcanzados}
 \label{sec:sintesis_logros}
-El propósito principal del trabajo de fin de grado ha sido mostrar las limitaciones en términos de gestión térmica y escalabilidad de las topologías clásicas de limitadores de corriente de enclavamiento basados en regulación lineal con P-MOS. Comenzando con el diseño y cálculo teórico de los parámetros principales se ha recurrido a la simulación y al prototipado para validar ciertos aspectos de la arquitectura conmutada del N-MOS en configuración \textit{high-side}.
+El propósito principal del trabajo de fin de grado ha sido diseñar, simular y validar de forma experimental un limitador de corriente de enclavamiento (LCL) en conmutación basado en tecnología N-MOS, demostrando la mejora que esta arquitectura supone frente a las topologías clásicas de regulación lineal con P-MOS, limitadas en términos de gestión térmica y escalabilidad. Comenzando con el diseño y cálculo teórico de los parámetros principales se ha recurrido a la simulación y al prototipado para validar ciertos aspectos de la arquitectura conmutada del N-MOS en configuración \textit{high-side}.
 
-Con la aproximación seguida se ha podido diseñar un dispositivo para el cual la herramienta de simulación PSIM nos asegura que es posible limitar de forma segura y con una altísima eficiencia un bus de potencia de tensión nominal de $100\text{ V}$, valor que se empieza a emplear en satélites (frente a los $28\text{ V}$ tradicionales). La viabilidad en entorno de simulación del prototipo además permite que en futuras aplicaciones podamos descartar el uso de soluciones lineales con pérdidas masivas de disipación en el fallo.
+Con la aproximación seguida se ha podido diseñar un dispositivo para el cual la herramienta de simulación PSIM asegura que sea posible limitar de forma segura y con una altísima eficiencia un bus de potencia de tensión nominal de $100\text{ V}$, valor que se empieza a emplear en satélites (frente a los $28\text{ V}$ tradicionales). La viabilidad en entorno de simulación del prototipo además permite que en futuras aplicaciones se pueda descartar el uso de soluciones lineales con pérdidas masivas de disipación en el fallo.
 
 En cuanto al diseño, se ha partido de la publicación de López \textit{et al.}\cite{lopez_antuna_diseno_2024}
-y se ha personalizado el mismo para las especificaciones del limitador tanto en corriente (limitación en $3{,}7\text{ A}$) como en voltaje (bus de $100\text{ V}$), empleando para ello limitaciones impuestas por las recomendaciones espaciales. De esta manera se ha alcanzado un \textit{trade-off} entre la frecuencia de operación y las restricciones del dimesionado físico, estableciendo una banda de histéresis de $0{,}8\text{ A}$ acotada superiormente en $4{,}5\text{ A}$.
+y se ha personalizado el mismo para las especificaciones del limitador tanto en corriente (limitación en $3{,}7\text{ A}$) como en voltaje (bus de $100\text{ V}$), empleando para ello limitaciones impuestas por las recomendaciones espaciales. De esta manera se ha alcanzado un \textit{trade-off} entre la frecuencia de operación y las restricciones del dimensionado físico, estableciendo una banda de histéresis de $0{,}8\text{ A}$ acotada superiormente en $4{,}5\text{ A}$.
 
 Asimismo, el enclavamiento se ha gestionado mediante una red RC asimétrica que establece un tiempo de disparo de $1{,}5\text{ ms}$ y que, por su asimetría, incorpora memoria térmica en caso de fallos consecutivos para proteger al semiconductor. 
 
 \section{Diseño teórico y validación mediante entorno de simulación}
-La fase central del trabajo se ha centrado en conseguir adaptar el diseño seleccionado a las condiciones deseadas. Para esto se han seguido tres pasos: cálculos téoricos de los parámetros óptimos necesarios para el circuito, selección de los componentes y tecnologías a emplear en el prototipado, y validación de los resultados teóricos mediante su simulación empleando los componentes seleccionados. 
+La fase central del trabajo se ha centrado en conseguir adaptar el diseño seleccionado a las condiciones deseadas. Para esto se han seguido tres pasos: cálculos teóricos de los parámetros óptimos necesarios para el circuito, selección de los componentes y tecnologías a emplear en el prototipado, y validación de los resultados teóricos mediante su simulación empleando los componentes seleccionados. 
 
-Esta fase, que engloba los capítulos \ref{chapter:3Diseño} y \ref{ch:4compkicadpsim}, es además la que nos permite otro de los objetivos propuestos como es la capacidad de adaptar el diseño optimizado a aquellas corrientes, tiempos de limitación, voltajes de bus\dots que deseemos para nuestra aplicación.
+Esta fase, que engloba los capítulos \ref{chapter:3Diseño} y \ref{ch:4compkicadpsim}, es además la que nos permite otro de los objetivos propuestos como es la capacidad de adaptar el diseño optimizado a aquellas corrientes, tiempos de limitación, voltajes de bus\dots que se desee para la aplicación.
 
-Los cálculos teóricos realizados en un primer momento permitieron comprender las variables críticas del sistema y los valores óptimos para ellas, mientras que la selección de componentes supuso un trabajo de investigación para encontrar aquellos que más se ajustaban a nuestro objetivo. Todo ello a su vez se pudo comprobar mediante la simulación en la cual se consiguió obtener una limitación conmutada entre los límites seleccionados con una tolerancia en los límites de histéresis y de temporización muy reducida. La selección previa de los componentes permitión el empleo de las características parásitas de cada uno de los componentes para que la validación pasase del plano ideal a la realidad esperada. Por otro lado, la simulación permitió comprobar la memoria térmica del sistema ante fallo repetitivos para la seguridad de los componentes. 
+Los cálculos teóricos realizados en un primer momento permitieron comprender las variables críticas del sistema y los valores óptimos para ellas, mientras que la selección de componentes supuso un trabajo de investigación para encontrar aquellos que más se ajustaban al objetivo. Todo ello a su vez se pudo comprobar mediante la simulación en la cual se consiguió obtener una limitación conmutada entre los límites seleccionados con una tolerancia en los límites de histéresis y de temporización muy reducida. La selección previa de los componentes permitión el empleo de las características parásitas de cada uno de los componentes para que la validación pasase del plano ideal a la realidad esperada. Por otro lado, la simulación permitió comprobar la memoria térmica del sistema ante fallos repetitivos para la seguridad de los componentes. 
 
 \section{Diseño físico y validación experimental en laboratorio}
 \label{sec:validacion_experimental}
 La fase de diseño físico y validación experimental ha contado con problemas inesperados que, por la falta de tiempo para realizar un nuevo prototipo y cargas para una medida correcta, han impedido ahondar todo lo deseado y realizar todas las pruebas que en un principio se planteaban. 
 
-El diseño, distribución de componentes, aclarado entre planos de masa,\dots se realizó siguiendo estándares industriales y espaciales con el objetivo de que en una siguiente iteración del proyecto más centrada en el producto final no tuvieran que realizarse muchas modificaciones. Sin embargo, un fallo de asociación entre la huella de un componente y el empaquetado del componente en si provocó la necesidad de realizar un montaje en araña en el biestable RS, limitando nuestro sistema y las posibilidades a la hora de medir el sistema. 
+El diseño, distribución de componentes, aclarado entre planos de masa,\dots se realizó siguiendo estándares industriales y espaciales con el objetivo de que en una siguiente iteración del proyecto más centrada en el producto final no tuvieran que realizarse muchas modificaciones. Sin embargo, un fallo de asociación entre la huella de un componente y el empaquetado del componente en sí provocó la necesidad de realizar un montaje en araña en el biestable RS, limitando nuestro sistema y las posibilidades a la hora de medir el sistema. 
 
-Por una parte, este problema provocó que las pruebas a baja tensión del modo de conducción no se pudieran realizar de forma nominal, empleando una señal externa PWM que, pese a llegar a una frecuencia cercana a la requerida, únicamente podía aportar una señal con ciclo de trabajo del $65~\%$. Esto provocó que la salida del sistema fuera aproximadamente un $65~\%$ de la entrada mientras que en condiciones normales salida y entrada son iguales. Sin embargo, pudimos con este ensayo calcular la reducción de la eficiencia del sistema y comprobar la acción de filtrado a alta frecuencia de la bobina, lo que nos muestra como podría actuar la misma ante la limitación de corriente. 
+Por una parte, este problema provocó que las pruebas a baja tensión del modo de conducción no se pudieran realizar de forma nominal, empleando una señal externa PWM que, pese a llegar a una frecuencia cercana a la requerida, únicamente podía aportar una señal con ciclo de trabajo del $65~\%$. Esto provocó que la salida del sistema fuera aproximadamente un $65~\%$ de la entrada mientras que en condiciones normales salida y entrada son iguales. Sin embargo, se pudo con este ensayo calcular la reducción de la eficiencia del sistema y comprobar la acción de filtrado a alta frecuencia de la bobina, lo que nos muestra como podría actuar la misma ante la limitación de corriente. 
 
-Debido a las grandes diferencias entre el circuito de simulación y el empleado durante el experimento (voltaje y corriente menores, $D\neq1$, empleo de señal de control externa con $D\neq 1$\dots) resulta absurdo realizar una comparación entre ambos casos. De este estudio podemos determinar la idoneidad de la etapa de potencia de nuestra etapa: correcto funcionamiento en \textit{high-side} del MOSFET, caída despreciable en la resistencia, filtrado correcto de la bobina a alta frecuencia\dots.
+Debido a las grandes diferencias entre el circuito de simulación y el empleado durante el experimento (voltaje y corriente menores, $D\neq1$, empleo de señal de control externa con $D\neq 1$\dots) resulta absurdo realizar una comparación entre ambos casos. De este estudio se puede determinar la idoneidad de la etapa de potencia de nuestro circuito: correcto funcionamiento en \textit{high-side} del MOSFET, caída despreciable en la resistencia, filtrado correcto de la bobina a alta frecuencia\dots.
 
 Como se comentó en el capítulo centrado en las medidas en el laboratorio, la presencia de potenciómetros centrados en el ajuste preciso y no en cambiar la posición de la banda de histéresis, el ruido captado por el biestable RS, la falta de cargas adecuadas en el momento de la medición\dots impidieron realizar el análisis del circuito en conmutación, siendo este uno de los principales estudios a validar en una siguiente iteración del prototipo. 
 
 \section{Líneas de trabajo futuro para implementación en espacio}
 \label{sec:trabajo_futuro}
-A pesar de que el prototipo cumple con ciertos objetivos de validación en laboratorio, el empleo en espacio requiere continuar con la optimización y el desarollo del mismo siguiendo los pasos mostrados a continuación:
+A pesar de que el prototipo cumple con ciertos objetivos de validación en laboratorio, el empleo en espacio requiere continuar con la optimización y el desarrollo del mismo siguiendo los pasos mostrados a continuación:
 \begin{enumerate}[label=\arabic*°.]
     \item \textbf{Validación de etapa de control y limitación conmutada:} debido a los problemas comentados, no se han podido realizar las comprobaciones necesarias respecto a los límites de corriente, de tiempo o el enclavamiento entre otros, por lo que es primordial realizar este ensayo antes de centrarnos en optimizar el diseño del sistema. Las limitaciones de potencia y seguridad del laboratorio hacen que sea recomendable adaptar la placa a una corriente de limitación menor para asegurar el correcto funcionamiento del sistema de control y sensado. 
     \item \textbf{Optimización de la PCB:} la PCB actual debe optimizarse tanto geométricamente como en cuanto a los encapsulados de los componentes empleados, además de resolver aquellos errores como la huella equivocada que han surgido. Deben revisarse los valores de \textit{clearence}, anchos de vías\dots para que se cumplan los requisitos de las autoridades certificadoras. Además, deben tenerse en cuenta factores como las intensas vibraciones mecánicas durante el lanzamiento al espacio a la hora de seleccionar la técnica de anclado o soldado de los componentes.  
@@ -2490,8 +2514,8 @@ Un presupuesto estimado para la elaboración de este TFG junto con el análisis 
 
 %\nocite{*} % Si quieres que aparezcan en la bibliografía todos los documentos que la componen (también los que no estén citados en el texto) descomenta está línea
 
-\clearpage
-\addcontentsline{toc}{chapter}{Bibliografía}
+%\clearpage
+%\addcontentsline{toc}{chapter}{Bibliografía}
 \setquotestyle[english]{british} % Cambiamos el tipo de cita porque en el estilo IEEE se usan las comillas inglesas.
 \printbibliography 
 %----------
@@ -2608,7 +2632,7 @@ Un presupuesto estimado para la elaboración de este TFG junto con el análisis 
 \chapter{Presupuesto y análisis de impacto socioeconómico}
 \label{anexo:presupuesto}
 
-La tabla a continuación muestra el presupuesto de coste estimado para la elaboración del presente TFG, diferenciando en la misma entre los costes de materiales, de equipamento y de recursos humanos. Un sobrecoste del 10~\% se ha añadido para cubrir costes indirectos dificilmente cuantificables como el consumo eléctrico, alquiler de espacios\dots
+La tabla a continuación muestra el presupuesto de coste estimado para la elaboración del presente TFG, diferenciando en la misma entre los costes de materiales, de equipamento y de recursos humanos. Un sobrecoste del 10~\% se ha añadido para cubrir costes indirectos difícilmente cuantificables como el consumo eléctrico, alquiler de espacios\dots
 
 \begin{table}[H]
     \centering
@@ -2622,7 +2646,7 @@ La tabla a continuación muestra el presupuesto de coste estimado para la elabor
         \hline
         \multicolumn{4}{|l|}{\textbf{\textit{Recursos humanos}}} \\
         \hline
-        \makecell{Ingeniero junior \\ (alumno)}  & $300\text{ h}$ & $20\text{ €/h}$ & $6.000\text{ €}$ \\
+        \makecell{Ingeniero junior \\ (alumno)}  & $300\text{ h}$ & $20\text{ €/h}$ & $6000\text{ €}$ \\
         \hline
         \makecell{Ingeniera sénior \\ (tutora)}  & $20\text{ h}$ & $45\text{ €/h}$ & $900\text{ €}$ \\
         \hline
@@ -2651,11 +2675,91 @@ La tabla a continuación muestra el presupuesto de coste estimado para la elabor
     \end{tabular}}
 \end{table}
 
-El impacto del presente trabajo debe juzgarse teniendo en cuenta que el mismo tiene un objetivo de investigación aplicada más que de explotación comercial inmediata dado que el objetivo ha sido la validación de la topología y la posibilidad de escalarlo, y ya que el prototipo se encuentra en las primeras fases de desarrollo y no cuenta con validación experimental de la limitación. Por tanto, el impacto económico o social a corto plazo por la comercialización del mismo se prevé muy reducido o nulo.
+El impacto del presente trabajo debe juzgarse teniendo en cuenta que el mismo tiene un objetivo de investigación aplicada más que de explotación comercial inmediata dado que el objetivo ha sido la validación de la topología y la posibilidad de escalarla, y ya que el prototipo se encuentra en las primeras fases de desarrollo y no cuenta con validación experimental de la limitación. Por tanto, el impacto económico o social a corto plazo por la comercialización del mismo se prevé muy reducido o nulo.
 
 Sin embargo, el trabajo aporta valor a dos niveles. A nivel técnico, la metodología desarrollada durante el capítulo \ref{chapter:Escalado} y el empleo de criterios ECSS pese a la ausencia de estándar para buses de $100\text{ V}$ (sección \ref{section:3.3}) contribuye a facilitar la adaptación a un futuro estándar y a facilitar el rediseño del circuito en caso de que se opte por otros buses o tiempos de limitación. Además, la realización de trabajos empleando buses de mayor voltaje contribuye a apoyar esta tendencia industrial, lo que resultaría en sistemas con menor corriente para la misma potencia y, por tanto, secciones menores de cable que permitirían abaratar los costes de lanzamiento por la reducción del peso. 
 
 Por otro lado, a nivel formativo el proceso desde el cálculo teórico hasta el prototipado es una base firme para que futuros proyectos de investigación perfeccionen el diseño y lo adapten siguiendo las recomendaciones de la sección \ref{sec:trabajo_futuro}, aumentando su valor e impacto económico.
 
 Por último, en el plano ambiental su huella directa es muy reducida por tratarse de un único prototipo cuyos componentes, pese a provenir de Estados Unidos, llegaron en un pedido mayor del departamento. Además, la mayoría de sus componentes cuentan con calificación AEC-Q200 \cite{noauthor_what_nodate}, la cual asegura componentes de alta fiabilidad y, por tanto, reduciendo el desperdicio por sustitución de componentes.
+
+
+\chapter{Declaración de uso de Inteligencia Artificial Generativa (IAG)}
+
+\section*{Parte 1: Declaración sobre comportamiento legal, ético y responsable}
+
+\noindent\textbf{He usado IAG en mi TFG} \\
+Marca lo que corresponda: \fbox{\textbf{X}} SI \quad \fbox{\phantom{X}} NO
+
+\vspace{0.8em}
+\noindent Si has marcado SI, completa las siguientes 3 partes de este documento:
+
+\vspace{0.8em}
+\noindent\textit{Ten presente que el uso de IAG conlleva unos riesgos y puede generar una serie de consecuencias académicas graves: la evaluación de tu TFG puede verse comprometida si el uso de la IAG comporta la utilización de datos de carácter confidencial, materiales protegidos por derechos de autoría, o datos de carácter personal, y se hace sin cumplir las condiciones exigidas en cada caso (autorización de los interesados, autorización de los titulares, seguimiento de las instrucciones de la Universidad).}
+
+\vspace{1em}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|p{9.2cm}|p{5.8cm}|}
+\hline
+\textbf{Pregunta} & \\ \hline
+En mi interacción con herramientas de IAG he facilitado datos de carácter confidencial contando siempre con la debida autorización de los interesados. La confidencialidad abarca toda información que una persona u organización desea proteger por razones legales, comerciales, de privacidad o estratégicas (como patentes o secretos comerciales). & \textbf{NO, no he usado datos de carácter confidencial} \\ \hline
+En mi interacción con herramientas de IAG he facilitado materiales protegidos por derechos de autoría contando siempre con la autorización de los respectivos titulares. & \textbf{NO, no he usado materiales protegidos por derechos de autoría} \\ \hline
+En mi interacción con herramientas de IAG he facilitado datos de carácter personal con la debida autorización de los interesados. & \textbf{NO, no he usado datos de carácter personal} \\ \hline
+Mi utilización de la herramienta de IAG ha respetado sus términos de uso, así como los principios éticos esenciales, no orientándola de manera maliciosa a obtener un resultado inapropiado para el trabajo presentado, es decir, que produzca una impresión o conocimiento contrario a la realidad de los resultados obtenidos, que suplante mi propio trabajo o que pueda resultar en un perjuicio para las personas. & \textbf{SI} \\ \hline
+\end{tabular}
+\end{table}
+
+\section*{Parte 2: declaración de uso técnico}
+
+Utiliza el siguiente modelo de declaración tantas veces como sea necesario, a fin de reflejar todos los tipos de iteración que has tenido con herramientas de IAG. Incluye un ejemplo por cada tipo de uso realizado donde se indique: [Añade un ejemplo].
+
+\vspace{0.5em}
+\noindent Declaro haber hecho uso del sistema de IAG Gemini para:
+
+\subsection*{Documentación y redacción:}
+\begin{itemize}
+    \item \textbf{Soporte a la reflexión en relación con el desarrollo del trabajo: proceso iterativo de análisis de alternativas y enfoques utilizando la IAG} \\
+    He solicitado un análisis temporal de la evolución de los sistemas de protección para ubicarlos en la línea temporal y posteriormente buscar información respecto a ellos. He solicitado también comparación con topologías diferentes para justificar que la elección era la correcta.
+    
+    \item \textbf{Revisión o reescritura de párrafos redactados previamente} \\
+    He solicitado la revisión de ciertos párrafos de la situación actual para simplificar las ideas y que fuera más sencillo el seguimiento de lo expuesto, además de enviar ciertas frases que era incapaz de adaptar a tono académico para que las modificara.
+    
+    \item \textbf{Búsqueda de información o respuesta a preguntas concretas} \\
+    He consultado para clarificar fórmulas de cálculo de inductancias de la ECSS para comprobar si se adaptaba a mi proyecto y si era correcto emplearlas sin ningún tipo de modificación.
+    
+    \item \textbf{Búsqueda de bibliografía} \\
+    He empleado la herramienta en ocasiones para determinar si un artículo determinado podía ser empleado para justificar cierto párrafo. Los textos fueron buscados y revisados previamente por mí.
+\end{itemize}
+
+\subsection*{Desarrollar contenido específico}
+Se ha hecho uso de IAG como herramienta de soporte para el desarrollo del contenido específico del TFG, incluyendo:
+\begin{itemize}
+    \item \textbf{Asistencia en el desarrollo de líneas de código (programación)} \\
+    Por la realización del trabajo en LaTex, se ha empleado la herramienta para reestructurar y mejorar ciertas tablas, figuras\dots{} Se ha empleado para crear el script de MATLAB encargado de, a partir de los puntos obtenidos en PSIM, representar las gráficas de las curvas de tensión y corriente.
+    
+    \item \textbf{Generación de esquemas, imágenes, audios o vídeos} \\
+    Las gráficas de simulación parten de resultados obtenidos en PSIM y graficados en MATLAB, pero el código para el graficado está realizado por la herramienta.
+    
+    \item \textbf{Procesos de optimización} \\
+    Una vez realizado el trabajo, he empleado la herramienta para revisar los errores de concordancia, gramática, ortografía\dots
+    
+    \item \textbf{Tratamiento de datos: recogida, análisis, cruce de datos\dots} \\
+    No se ha empleado con este fin.
+    
+    \item \textbf{Inspiración de ideas en el proceso creativo} \\
+    No se ha empleado con este fin.
+\end{itemize}
+
+\section*{Parte 3: reflexión sobre utilidad}
+
+Aporta una valoración personal (formato libre) sobre las fortalezas y debilidades que has identificado en el uso de herramientas de IAG en el desarrollo de tu trabajo. Menciona si te ha servido en el proceso de aprendizaje, o en el desarrollo o en la extracción de conclusiones de tu trabajo.
+
+\vspace{0.5em}
+\noindent Considero que la IAG ha sido de gran utilidad para la realización del trabajo de fin de grado. Es una herramienta que permite una revisión formal y académica correcta, permitiendo substituir palabras de bajo nivel por otras de más rigor, permite obtener un trabajo más depurado (script de Matlab para imágenes más nítidas) y permite resolver dudas (que no se incluyen en la memoria, pero permiten comprender en profundidad el tema) de forma rápida y sin tener que consultarlo directamente con el tutor (lo que entorpece el desarrollo).
+
+\vspace{0.5em}
+\noindent Como contrapunto negativo, la revisión de ciertos cálculos puede ser incorrecta y realiza aproximaciones diferentes al humano, por lo que los resultados a los que llega la herramienta y los alumnos pueden ser distintos y, sin tener una tercera opción, complica determinar cual es la correcta. Además, el alumno debe estar constantemente atento a las respuestas dadas por la herramienta y no tomarlas como verdad absoluta ya que la IAG tiende a dar la razón al usuario y no es capaz de decir que no o que no sabe.
 \end{document}
