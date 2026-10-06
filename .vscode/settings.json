@@ -2,5 +2,31 @@
     "ltex.enabled": true,
     "ltex.language": "es-ES",
     "ltex.checkFrequency": "onType",
-    "ltex.statusBarItem": "on"
+    "ltex.statusBarItem": "on",
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux",
+        "*.bbl",
+        "*.blg",
+        "*.idx",
+        "*.ind",
+        "*.lof",
+        "*.lot",
+        "*.out",
+        "*.toc",
+        "*.acn",
+        "*.acr",
+        "*.alg",
+        "*.glg",
+        "*.glo",
+        "*.gls",
+        "*.ist",
+        "*.fls",
+        "*.log",
+        "*.fdb_latexmk",
+        "*.nav",
+        "*.snm",
+        "*.vrb",
+        "*.synctex.gz"
+    ]
 }
