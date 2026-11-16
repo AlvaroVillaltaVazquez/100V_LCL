@@ -6,8 +6,7 @@
 
 **Trabajo Fin de Grado (2025–2026)**  
 * **Título:** Diseño, modelado e implementación de un circuito conmutado para la protección por sobre-corriente  
-* **Autor:** Álvaro Villalta Vázquez  
-* **Tutora:** Cristina Fernández Herrero  
+* **Autor:** Álvaro Villalta Vázquez    
 * **Departamento / Universidad:** Universidad Carlos III de Madrid (UC3M)
 
 ---
